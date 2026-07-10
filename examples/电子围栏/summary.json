@@ -1,0 +1,25 @@
+{
+  "point_count": 12879,
+  "distance_m": 1700.5049144880581,
+  "start": {
+    "stamp_ns": 1776074060015945087,
+    "x": 8.529643220707925,
+    "y": -56.0165089897168,
+    "yaw": -0.42166105471950827
+  },
+  "end": {
+    "stamp_ns": 1776077378215945087,
+    "x": -11.637220532182198,
+    "y": -50.05146746227997,
+    "yaw": -3.034642005952877
+  },
+  "bag_path": "",
+  "map_yaml": "../maptools_projects/beiguoshangcheng_floor_3/beiguoshangcheng_floor_3.yaml",
+  "map_frame": "map",
+  "base_frame": "base_footprint",
+  "publish_rate": 5.0,
+  "min_point_distance": 0.05,
+  "startup_delay_sec": 3.0,
+  "jsonl_path": "trajectory_from_tf.jsonl",
+  "overlay_png_path": "trajectory_overlay.png"
+}

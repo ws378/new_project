@@ -1,0 +1,62 @@
+{
+  "coverage_width_m": 0.6,
+  "open_kernel_m": 0.6,
+  "obstacle_expand_m": 0.6,
+  "robot_width_m": 0.4,
+  "path_gap_m": 2.0,
+  "save_debug_csv": true,
+  "turn_constraint": {
+    "enable_prohibit": false,
+    "near_max_turn_deg": 20.0,
+    "neighbor_max_turn_deg": 90.0,
+    "fallback_max_turn_deg": 135.0,
+    "fallback_relax_dist_m": 5.0
+  },
+  "local_direction": {
+    "enable": true,
+    "window_size_px": 41,
+    "smooth_sigma": 6.0,
+    "energy_weight": 2.5,
+    "min_confidence": 0.08
+  },
+  "strategy": {
+    "meta": {
+      "name": "default",
+      "description": ""
+    },
+    "foundation": {
+      "fallback_jump_weight": 0.0,
+      "fallback_heading_weight": 0.0,
+      "local_lateral_weight": 0.0,
+      "allow_revisit_bridge": false,
+      "max_revisit_count": 2,
+      "revisit_penalty": 4.0,
+      "revisit_frontier_depth": 2,
+      "revisit_frontier_weight": 1.4
+    },
+    "continuity": {
+      "near_reverse_enable": false,
+      "near_reverse_max_dist_factor": 1.4,
+      "near_reverse_prohibit_deg": 120.0,
+      "short_zigzag_enable": false,
+      "short_zigzag_seg_factor": 1.6,
+      "short_zigzag_prohibit_deg": 145.0,
+      "local_residual_radius_steps": 2,
+      "local_residual_continue_weight": 0.0,
+      "local_residual_leave_penalty": 0.0,
+      "history_clearance_weight": 0.0,
+      "history_clearance_radius_factor": 2.0
+    },
+    "postprocess": {
+      "simplify_enable": true,
+      "simplify_short_seg_factor": 1.6,
+      "simplify_turn_deg": 145.0,
+      "split_turn_deg": 150.0,
+      "split_jump_dist_factor": 10.0
+    }
+  },
+  "start_point_px": [
+    245,
+    2364
+  ]
+}

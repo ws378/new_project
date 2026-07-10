@@ -1,0 +1,9 @@
+{
+  "baseline_root": "algorithms/channel_topology_graph/baselines/channel_topology_graph_refactor/case_01",
+  "stage_files": [
+    "stages/geometry_preparation.json",
+    "stages/junction_rebuild.json",
+    "stages/topology_graph_build.json",
+    "stages/coverage_planning.json"
+  ]
+}

@@ -1,0 +1,216 @@
+{
+  "map_id": "beiguoshangcheng_floor_3",
+  "map_version": "1",
+  "coverage_version": "master_20260514T164548+0800",
+  "source": "editor_auto",
+  "status": "candidate",
+  "approved_by": "",
+  "master_version": "",
+  "candidate_version": "master_20260514T164548+0800",
+  "locked": false,
+  "editable": true,
+  "pending_review": true,
+  "approved_at": "",
+  "generated_at": "2026-05-14T16:45:49+0800",
+  "rooms": 6,
+  "paths": 6,
+  "planner_diagnostics_by_room": {
+    "3": {
+      "selected_planner": "",
+      "scene_type": "",
+      "fallback_chain": [],
+      "reasons": [],
+      "warnings": [],
+      "metrics": {
+        "skeleton_pixel_count": 0,
+        "free_area_pixel_count": 0,
+        "skeleton_to_free_area_ratio": 0.0,
+        "width_variation_score": 0.0,
+        "junction_candidate_count": 0,
+        "open_space_score": 0.0,
+        "mixed_scene_score": 0.0
+      },
+      "artifacts_dir": "",
+      "runtime": {
+        "pipeline_meta": {
+          "pipeline_name": "",
+          "source": "",
+          "map_yaml_path": ""
+        },
+        "coverage_meta": {},
+        "final_path_summary": {
+          "route_count": 0,
+          "path_point_count": 0
+        },
+        "final_path_validation": {
+          "is_valid": true
+        }
+      }
+    },
+    "5": {
+      "selected_planner": "",
+      "scene_type": "",
+      "fallback_chain": [],
+      "reasons": [],
+      "warnings": [],
+      "metrics": {
+        "skeleton_pixel_count": 0,
+        "free_area_pixel_count": 0,
+        "skeleton_to_free_area_ratio": 0.0,
+        "width_variation_score": 0.0,
+        "junction_candidate_count": 0,
+        "open_space_score": 0.0,
+        "mixed_scene_score": 0.0
+      },
+      "artifacts_dir": "",
+      "runtime": {
+        "pipeline_meta": {
+          "pipeline_name": "",
+          "source": "",
+          "map_yaml_path": ""
+        },
+        "coverage_meta": {},
+        "final_path_summary": {
+          "route_count": 0,
+          "path_point_count": 0
+        },
+        "final_path_validation": {
+          "is_valid": true
+        }
+      }
+    },
+    "6": {
+      "selected_planner": "",
+      "scene_type": "",
+      "fallback_chain": [],
+      "reasons": [],
+      "warnings": [],
+      "metrics": {
+        "skeleton_pixel_count": 0,
+        "free_area_pixel_count": 0,
+        "skeleton_to_free_area_ratio": 0.0,
+        "width_variation_score": 0.0,
+        "junction_candidate_count": 0,
+        "open_space_score": 0.0,
+        "mixed_scene_score": 0.0
+      },
+      "artifacts_dir": "",
+      "runtime": {
+        "pipeline_meta": {
+          "pipeline_name": "",
+          "source": "",
+          "map_yaml_path": ""
+        },
+        "coverage_meta": {},
+        "final_path_summary": {
+          "route_count": 0,
+          "path_point_count": 0
+        },
+        "final_path_validation": {
+          "is_valid": true
+        }
+      }
+    },
+    "7": {
+      "selected_planner": "",
+      "scene_type": "",
+      "fallback_chain": [],
+      "reasons": [],
+      "warnings": [],
+      "metrics": {
+        "skeleton_pixel_count": 0,
+        "free_area_pixel_count": 0,
+        "skeleton_to_free_area_ratio": 0.0,
+        "width_variation_score": 0.0,
+        "junction_candidate_count": 0,
+        "open_space_score": 0.0,
+        "mixed_scene_score": 0.0
+      },
+      "artifacts_dir": "",
+      "runtime": {
+        "pipeline_meta": {
+          "pipeline_name": "",
+          "source": "",
+          "map_yaml_path": ""
+        },
+        "coverage_meta": {},
+        "final_path_summary": {
+          "route_count": 0,
+          "path_point_count": 0
+        },
+        "final_path_validation": {
+          "is_valid": true
+        }
+      }
+    },
+    "8": {
+      "selected_planner": "",
+      "scene_type": "",
+      "fallback_chain": [],
+      "reasons": [],
+      "warnings": [],
+      "metrics": {
+        "skeleton_pixel_count": 0,
+        "free_area_pixel_count": 0,
+        "skeleton_to_free_area_ratio": 0.0,
+        "width_variation_score": 0.0,
+        "junction_candidate_count": 0,
+        "open_space_score": 0.0,
+        "mixed_scene_score": 0.0
+      },
+      "artifacts_dir": "",
+      "runtime": {
+        "pipeline_meta": {
+          "pipeline_name": "",
+          "source": "",
+          "map_yaml_path": ""
+        },
+        "coverage_meta": {},
+        "final_path_summary": {
+          "route_count": 0,
+          "path_point_count": 0
+        },
+        "final_path_validation": {
+          "is_valid": true
+        }
+      }
+    },
+    "16": {
+      "selected_planner": "",
+      "scene_type": "",
+      "fallback_chain": [],
+      "reasons": [],
+      "warnings": [],
+      "metrics": {
+        "skeleton_pixel_count": 0,
+        "free_area_pixel_count": 0,
+        "skeleton_to_free_area_ratio": 0.0,
+        "width_variation_score": 0.0,
+        "junction_candidate_count": 0,
+        "open_space_score": 0.0,
+        "mixed_scene_score": 0.0
+      },
+      "artifacts_dir": "",
+      "runtime": {
+        "pipeline_meta": {
+          "pipeline_name": "",
+          "source": "",
+          "map_yaml_path": ""
+        },
+        "coverage_meta": {},
+        "final_path_summary": {
+          "route_count": 0,
+          "path_point_count": 0
+        },
+        "final_path_validation": {
+          "is_valid": true
+        }
+      }
+    }
+  },
+  "failed_rooms": [],
+  "continue_on_room_failure": false,
+  "segmentation_sec": 0.0,
+  "sequence_sec": 0.0,
+  "exploration_sec": 0.0
+}

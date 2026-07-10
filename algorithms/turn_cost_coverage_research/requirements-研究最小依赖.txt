@@ -1,0 +1,8 @@
+numpy
+scipy
+shapely
+networkx
+matplotlib
+opencv-python-headless
+pyyaml
+pytest

@@ -1,0 +1,696 @@
+{
+  "map_id": "beiguoshangcheng_floor_3_demo",
+  "map_version": "1",
+  "coverage_version": "master_20260703T085500+0800",
+  "source": "editor_auto",
+  "status": "candidate",
+  "approved_by": "",
+  "master_version": "",
+  "candidate_version": "master_20260703T085500+0800",
+  "locked": false,
+  "editable": true,
+  "pending_review": true,
+  "approved_at": "",
+  "generated_at": "2026-07-03T08:55:01+0800",
+  "rooms": 4,
+  "paths": 4,
+  "planner_diagnostics_by_room": {
+    "3": {
+      "selected_planner": "",
+      "scene_type": "",
+      "fallback_chain": [],
+      "reasons": [],
+      "warnings": [],
+      "metrics": {
+        "skeleton_pixel_count": 0,
+        "free_area_pixel_count": 0,
+        "skeleton_to_free_area_ratio": 0.0,
+        "width_variation_score": 0.0,
+        "junction_candidate_count": 0,
+        "open_space_score": 0.0,
+        "mixed_scene_score": 0.0
+      },
+      "artifacts_dir": "",
+      "runtime": {
+        "pipeline_meta": {
+          "pipeline_name": "",
+          "source": "",
+          "map_yaml_path": ""
+        },
+        "coverage_meta": {},
+        "runtime_adjustments": {},
+        "postprocess_stage_summary": {},
+        "path_quality_summary": {},
+        "provenance_summary": {},
+        "geometry_risk_summary": {},
+        "final_path_summary": {
+          "route_count": 0,
+          "path_point_count": 0
+        },
+        "final_path_validation": {
+          "is_valid": true
+        }
+      },
+      "compact_summary": {
+        "selected_planner": "",
+        "scene_type": "",
+        "profile_id": "",
+        "profile_version": 0,
+        "profile_status": "",
+        "profile_version_policy": "",
+        "mode_default_override_count": 0,
+        "mode_default_override_fields": [],
+        "override_diff_count": 0,
+        "override_diff_fields": [],
+        "path_quality": {
+          "available": false,
+          "status": "unavailable",
+          "coverage_ratio": null,
+          "long_jump_count": null,
+          "infeasible_segment_count": null
+        },
+        "geometry_risk": {
+          "available": false,
+          "status": "not_run",
+          "reason": "",
+          "body_swept_collision_count": null,
+          "turn_swept_collision_count": null,
+          "cleaning_footprint_coverage_ratio": null,
+          "summary_path": ""
+        },
+        "provenance": {
+          "available": false,
+          "artifact_manifest_available": false,
+          "artifact_manifest_path": "",
+          "artifact_paths": {},
+          "path_generation_available": false,
+          "final_segment_available": false,
+          "candidate_decision_available": false,
+          "move_trace_count": 0,
+          "global_fallback_count": 0,
+          "revisit_bridge_count": 0
+        }
+      },
+      "readable_summary": {
+        "version": "coverage_planning_diagnostics_readable.v1",
+        "items": [
+          {
+            "key": "geometry_risk",
+            "label": "几何风险",
+            "value": "未作为硬约束运行：not run"
+          }
+        ],
+        "detail_sections": [
+          {
+            "key": "profile",
+            "label": "策略配置",
+            "rows": [
+              {
+                "key": "profile_version",
+                "label": "Profile 版本",
+                "value": "0"
+              }
+            ]
+          },
+          {
+            "key": "geometry_risk",
+            "label": "几何风险",
+            "rows": [
+              {
+                "key": "available",
+                "label": "几何诊断是否可用",
+                "value": "false"
+              },
+              {
+                "key": "policy",
+                "label": "规划约束关系",
+                "value": "只读诊断，不作为正式规划硬约束"
+              },
+              {
+                "key": "status",
+                "label": "几何诊断状态",
+                "value": "not_run"
+              }
+            ]
+          },
+          {
+            "key": "provenance",
+            "label": "路径溯源",
+            "rows": [
+              {
+                "key": "available",
+                "label": "路径溯源是否可用",
+                "value": "false"
+              },
+              {
+                "key": "artifact_manifest_available",
+                "label": "产物清单是否可用",
+                "value": "false"
+              },
+              {
+                "key": "path_generation_available",
+                "label": "路径生成溯源是否可用",
+                "value": "false"
+              },
+              {
+                "key": "final_segment_available",
+                "label": "最终线段溯源是否可用",
+                "value": "false"
+              },
+              {
+                "key": "candidate_decision_available",
+                "label": "候选决策调试是否可用",
+                "value": "false"
+              },
+              {
+                "key": "move_trace_count",
+                "label": "移动记录数量",
+                "value": "0"
+              },
+              {
+                "key": "global_fallback_count",
+                "label": "全局 fallback 数量",
+                "value": "0"
+              },
+              {
+                "key": "revisit_bridge_count",
+                "label": "重复访问桥接数量",
+                "value": "0"
+              }
+            ]
+          }
+        ],
+        "status_line": "几何风险=未作为硬约束运行：not run"
+      }
+    },
+    "5": {
+      "selected_planner": "",
+      "scene_type": "",
+      "fallback_chain": [],
+      "reasons": [],
+      "warnings": [],
+      "metrics": {
+        "skeleton_pixel_count": 0,
+        "free_area_pixel_count": 0,
+        "skeleton_to_free_area_ratio": 0.0,
+        "width_variation_score": 0.0,
+        "junction_candidate_count": 0,
+        "open_space_score": 0.0,
+        "mixed_scene_score": 0.0
+      },
+      "artifacts_dir": "",
+      "runtime": {
+        "pipeline_meta": {
+          "pipeline_name": "",
+          "source": "",
+          "map_yaml_path": ""
+        },
+        "coverage_meta": {},
+        "runtime_adjustments": {},
+        "postprocess_stage_summary": {},
+        "path_quality_summary": {},
+        "provenance_summary": {},
+        "geometry_risk_summary": {},
+        "final_path_summary": {
+          "route_count": 0,
+          "path_point_count": 0
+        },
+        "final_path_validation": {
+          "is_valid": true
+        }
+      },
+      "compact_summary": {
+        "selected_planner": "",
+        "scene_type": "",
+        "profile_id": "",
+        "profile_version": 0,
+        "profile_status": "",
+        "profile_version_policy": "",
+        "mode_default_override_count": 0,
+        "mode_default_override_fields": [],
+        "override_diff_count": 0,
+        "override_diff_fields": [],
+        "path_quality": {
+          "available": false,
+          "status": "unavailable",
+          "coverage_ratio": null,
+          "long_jump_count": null,
+          "infeasible_segment_count": null
+        },
+        "geometry_risk": {
+          "available": false,
+          "status": "not_run",
+          "reason": "",
+          "body_swept_collision_count": null,
+          "turn_swept_collision_count": null,
+          "cleaning_footprint_coverage_ratio": null,
+          "summary_path": ""
+        },
+        "provenance": {
+          "available": false,
+          "artifact_manifest_available": false,
+          "artifact_manifest_path": "",
+          "artifact_paths": {},
+          "path_generation_available": false,
+          "final_segment_available": false,
+          "candidate_decision_available": false,
+          "move_trace_count": 0,
+          "global_fallback_count": 0,
+          "revisit_bridge_count": 0
+        }
+      },
+      "readable_summary": {
+        "version": "coverage_planning_diagnostics_readable.v1",
+        "items": [
+          {
+            "key": "geometry_risk",
+            "label": "几何风险",
+            "value": "未作为硬约束运行：not run"
+          }
+        ],
+        "detail_sections": [
+          {
+            "key": "profile",
+            "label": "策略配置",
+            "rows": [
+              {
+                "key": "profile_version",
+                "label": "Profile 版本",
+                "value": "0"
+              }
+            ]
+          },
+          {
+            "key": "geometry_risk",
+            "label": "几何风险",
+            "rows": [
+              {
+                "key": "available",
+                "label": "几何诊断是否可用",
+                "value": "false"
+              },
+              {
+                "key": "policy",
+                "label": "规划约束关系",
+                "value": "只读诊断，不作为正式规划硬约束"
+              },
+              {
+                "key": "status",
+                "label": "几何诊断状态",
+                "value": "not_run"
+              }
+            ]
+          },
+          {
+            "key": "provenance",
+            "label": "路径溯源",
+            "rows": [
+              {
+                "key": "available",
+                "label": "路径溯源是否可用",
+                "value": "false"
+              },
+              {
+                "key": "artifact_manifest_available",
+                "label": "产物清单是否可用",
+                "value": "false"
+              },
+              {
+                "key": "path_generation_available",
+                "label": "路径生成溯源是否可用",
+                "value": "false"
+              },
+              {
+                "key": "final_segment_available",
+                "label": "最终线段溯源是否可用",
+                "value": "false"
+              },
+              {
+                "key": "candidate_decision_available",
+                "label": "候选决策调试是否可用",
+                "value": "false"
+              },
+              {
+                "key": "move_trace_count",
+                "label": "移动记录数量",
+                "value": "0"
+              },
+              {
+                "key": "global_fallback_count",
+                "label": "全局 fallback 数量",
+                "value": "0"
+              },
+              {
+                "key": "revisit_bridge_count",
+                "label": "重复访问桥接数量",
+                "value": "0"
+              }
+            ]
+          }
+        ],
+        "status_line": "几何风险=未作为硬约束运行：not run"
+      }
+    },
+    "6": {
+      "selected_planner": "",
+      "scene_type": "",
+      "fallback_chain": [],
+      "reasons": [],
+      "warnings": [],
+      "metrics": {
+        "skeleton_pixel_count": 0,
+        "free_area_pixel_count": 0,
+        "skeleton_to_free_area_ratio": 0.0,
+        "width_variation_score": 0.0,
+        "junction_candidate_count": 0,
+        "open_space_score": 0.0,
+        "mixed_scene_score": 0.0
+      },
+      "artifacts_dir": "",
+      "runtime": {
+        "pipeline_meta": {
+          "pipeline_name": "",
+          "source": "",
+          "map_yaml_path": ""
+        },
+        "coverage_meta": {},
+        "runtime_adjustments": {},
+        "postprocess_stage_summary": {},
+        "path_quality_summary": {},
+        "provenance_summary": {},
+        "geometry_risk_summary": {},
+        "final_path_summary": {
+          "route_count": 0,
+          "path_point_count": 0
+        },
+        "final_path_validation": {
+          "is_valid": true
+        }
+      },
+      "compact_summary": {
+        "selected_planner": "",
+        "scene_type": "",
+        "profile_id": "",
+        "profile_version": 0,
+        "profile_status": "",
+        "profile_version_policy": "",
+        "mode_default_override_count": 0,
+        "mode_default_override_fields": [],
+        "override_diff_count": 0,
+        "override_diff_fields": [],
+        "path_quality": {
+          "available": false,
+          "status": "unavailable",
+          "coverage_ratio": null,
+          "long_jump_count": null,
+          "infeasible_segment_count": null
+        },
+        "geometry_risk": {
+          "available": false,
+          "status": "not_run",
+          "reason": "",
+          "body_swept_collision_count": null,
+          "turn_swept_collision_count": null,
+          "cleaning_footprint_coverage_ratio": null,
+          "summary_path": ""
+        },
+        "provenance": {
+          "available": false,
+          "artifact_manifest_available": false,
+          "artifact_manifest_path": "",
+          "artifact_paths": {},
+          "path_generation_available": false,
+          "final_segment_available": false,
+          "candidate_decision_available": false,
+          "move_trace_count": 0,
+          "global_fallback_count": 0,
+          "revisit_bridge_count": 0
+        }
+      },
+      "readable_summary": {
+        "version": "coverage_planning_diagnostics_readable.v1",
+        "items": [
+          {
+            "key": "geometry_risk",
+            "label": "几何风险",
+            "value": "未作为硬约束运行：not run"
+          }
+        ],
+        "detail_sections": [
+          {
+            "key": "profile",
+            "label": "策略配置",
+            "rows": [
+              {
+                "key": "profile_version",
+                "label": "Profile 版本",
+                "value": "0"
+              }
+            ]
+          },
+          {
+            "key": "geometry_risk",
+            "label": "几何风险",
+            "rows": [
+              {
+                "key": "available",
+                "label": "几何诊断是否可用",
+                "value": "false"
+              },
+              {
+                "key": "policy",
+                "label": "规划约束关系",
+                "value": "只读诊断，不作为正式规划硬约束"
+              },
+              {
+                "key": "status",
+                "label": "几何诊断状态",
+                "value": "not_run"
+              }
+            ]
+          },
+          {
+            "key": "provenance",
+            "label": "路径溯源",
+            "rows": [
+              {
+                "key": "available",
+                "label": "路径溯源是否可用",
+                "value": "false"
+              },
+              {
+                "key": "artifact_manifest_available",
+                "label": "产物清单是否可用",
+                "value": "false"
+              },
+              {
+                "key": "path_generation_available",
+                "label": "路径生成溯源是否可用",
+                "value": "false"
+              },
+              {
+                "key": "final_segment_available",
+                "label": "最终线段溯源是否可用",
+                "value": "false"
+              },
+              {
+                "key": "candidate_decision_available",
+                "label": "候选决策调试是否可用",
+                "value": "false"
+              },
+              {
+                "key": "move_trace_count",
+                "label": "移动记录数量",
+                "value": "0"
+              },
+              {
+                "key": "global_fallback_count",
+                "label": "全局 fallback 数量",
+                "value": "0"
+              },
+              {
+                "key": "revisit_bridge_count",
+                "label": "重复访问桥接数量",
+                "value": "0"
+              }
+            ]
+          }
+        ],
+        "status_line": "几何风险=未作为硬约束运行：not run"
+      }
+    },
+    "16": {
+      "selected_planner": "",
+      "scene_type": "",
+      "fallback_chain": [],
+      "reasons": [],
+      "warnings": [],
+      "metrics": {
+        "skeleton_pixel_count": 0,
+        "free_area_pixel_count": 0,
+        "skeleton_to_free_area_ratio": 0.0,
+        "width_variation_score": 0.0,
+        "junction_candidate_count": 0,
+        "open_space_score": 0.0,
+        "mixed_scene_score": 0.0
+      },
+      "artifacts_dir": "",
+      "runtime": {
+        "pipeline_meta": {
+          "pipeline_name": "",
+          "source": "",
+          "map_yaml_path": ""
+        },
+        "coverage_meta": {},
+        "runtime_adjustments": {},
+        "postprocess_stage_summary": {},
+        "path_quality_summary": {},
+        "provenance_summary": {},
+        "geometry_risk_summary": {},
+        "final_path_summary": {
+          "route_count": 0,
+          "path_point_count": 0
+        },
+        "final_path_validation": {
+          "is_valid": true
+        }
+      },
+      "compact_summary": {
+        "selected_planner": "",
+        "scene_type": "",
+        "profile_id": "",
+        "profile_version": 0,
+        "profile_status": "",
+        "profile_version_policy": "",
+        "mode_default_override_count": 0,
+        "mode_default_override_fields": [],
+        "override_diff_count": 0,
+        "override_diff_fields": [],
+        "path_quality": {
+          "available": false,
+          "status": "unavailable",
+          "coverage_ratio": null,
+          "long_jump_count": null,
+          "infeasible_segment_count": null
+        },
+        "geometry_risk": {
+          "available": false,
+          "status": "not_run",
+          "reason": "",
+          "body_swept_collision_count": null,
+          "turn_swept_collision_count": null,
+          "cleaning_footprint_coverage_ratio": null,
+          "summary_path": ""
+        },
+        "provenance": {
+          "available": false,
+          "artifact_manifest_available": false,
+          "artifact_manifest_path": "",
+          "artifact_paths": {},
+          "path_generation_available": false,
+          "final_segment_available": false,
+          "candidate_decision_available": false,
+          "move_trace_count": 0,
+          "global_fallback_count": 0,
+          "revisit_bridge_count": 0
+        }
+      },
+      "readable_summary": {
+        "version": "coverage_planning_diagnostics_readable.v1",
+        "items": [
+          {
+            "key": "geometry_risk",
+            "label": "几何风险",
+            "value": "未作为硬约束运行：not run"
+          }
+        ],
+        "detail_sections": [
+          {
+            "key": "profile",
+            "label": "策略配置",
+            "rows": [
+              {
+                "key": "profile_version",
+                "label": "Profile 版本",
+                "value": "0"
+              }
+            ]
+          },
+          {
+            "key": "geometry_risk",
+            "label": "几何风险",
+            "rows": [
+              {
+                "key": "available",
+                "label": "几何诊断是否可用",
+                "value": "false"
+              },
+              {
+                "key": "policy",
+                "label": "规划约束关系",
+                "value": "只读诊断，不作为正式规划硬约束"
+              },
+              {
+                "key": "status",
+                "label": "几何诊断状态",
+                "value": "not_run"
+              }
+            ]
+          },
+          {
+            "key": "provenance",
+            "label": "路径溯源",
+            "rows": [
+              {
+                "key": "available",
+                "label": "路径溯源是否可用",
+                "value": "false"
+              },
+              {
+                "key": "artifact_manifest_available",
+                "label": "产物清单是否可用",
+                "value": "false"
+              },
+              {
+                "key": "path_generation_available",
+                "label": "路径生成溯源是否可用",
+                "value": "false"
+              },
+              {
+                "key": "final_segment_available",
+                "label": "最终线段溯源是否可用",
+                "value": "false"
+              },
+              {
+                "key": "candidate_decision_available",
+                "label": "候选决策调试是否可用",
+                "value": "false"
+              },
+              {
+                "key": "move_trace_count",
+                "label": "移动记录数量",
+                "value": "0"
+              },
+              {
+                "key": "global_fallback_count",
+                "label": "全局 fallback 数量",
+                "value": "0"
+              },
+              {
+                "key": "revisit_bridge_count",
+                "label": "重复访问桥接数量",
+                "value": "0"
+              }
+            ]
+          }
+        ],
+        "status_line": "几何风险=未作为硬约束运行：not run"
+      }
+    }
+  },
+  "failed_rooms": [],
+  "continue_on_room_failure": false,
+  "segmentation_sec": 0.0,
+  "sequence_sec": 0.0,
+  "exploration_sec": 0.0
+}

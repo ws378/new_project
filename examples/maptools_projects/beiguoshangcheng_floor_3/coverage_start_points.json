@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "start_points": [
+    {
+      "room_id": 3,
+      "area_fingerprint": "de9311acfa48a752c2b99bce07a741dc5e225029da8015c2d5c7a68853c50bc3",
+      "start_world_xy": [
+        -6.032577975447339,
+        -35.14107076435006
+      ]
+    },
+    {
+      "room_id": 5,
+      "area_fingerprint": "c8647ae9b9570bbe44a1c6934e151e2f97ac62765475ba0347ad3d121cdcdfef",
+      "start_world_xy": [
+        55.868479382838444,
+        -32.51869290608522
+      ]
+    },
+    {
+      "room_id": 6,
+      "area_fingerprint": "7fbfaf73df68dab53633670963b83573d8ad5ff83cf11c09bd2b0be11624cc30",
+      "start_world_xy": [
+        48.318867779549066,
+        -63.04668757767115
+      ]
+    },
+    {
+      "room_id": 7,
+      "area_fingerprint": "bfa75bc09c1af36bbec3cd5e20b980f54df4d230e66f848e9acb7f8bd7b90509",
+      "start_world_xy": [
+        16.586286490582367,
+        -57.168896606474036
+      ]
+    },
+    {
+      "room_id": 8,
+      "area_fingerprint": "4246b4dbaee9bb5bd258774411c6aa7bb1cda8917b5055c8de26dc9e1e405603",
+      "start_world_xy": [
+        0.0688659367308162,
+        -50.11871094827513
+      ]
+    },
+    {
+      "room_id": 10,
+      "area_fingerprint": "58cc3779337453f7335b19f04a276cb3e32acb584363e061f7e8a2e00d3473d4",
+      "start_world_xy": [
+        -62.153110029531575,
+        -27.585749213807865
+      ]
+    },
+    {
+      "room_id": 16,
+      "area_fingerprint": "2f3a4f170ae0de4b3eb325421d00b1ca3315ee4cbe42581637d1a31de5f9e4f1",
+      "start_world_xy": [
+        0.09954389018599841,
+        -8.93367180605064
+      ]
+    }
+  ]
+}

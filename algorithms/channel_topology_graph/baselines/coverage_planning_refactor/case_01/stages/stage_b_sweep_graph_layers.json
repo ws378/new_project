@@ -1,0 +1,1284 @@
+{
+  "groups": [
+    {
+      "center_sweep_id": 2,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 1,
+      "dst_node_id": 2,
+      "group_id": 1,
+      "ordered_sweep_ids": [
+        1,
+        2,
+        3
+      ],
+      "source_edge_id": 1,
+      "src_node_id": 1
+    },
+    {
+      "center_sweep_id": 5,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 2,
+      "dst_node_id": 7,
+      "group_id": 2,
+      "ordered_sweep_ids": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "source_edge_id": 2,
+      "src_node_id": 1
+    },
+    {
+      "center_sweep_id": 10,
+      "center_sweep_index": 2,
+      "coverage_lane_id": 3,
+      "dst_node_id": 5,
+      "group_id": 3,
+      "ordered_sweep_ids": [
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "source_edge_id": 3,
+      "src_node_id": 2
+    },
+    {
+      "center_sweep_id": 13,
+      "center_sweep_index": 0,
+      "coverage_lane_id": 4,
+      "dst_node_id": 6,
+      "group_id": 4,
+      "ordered_sweep_ids": [
+        13,
+        14
+      ],
+      "source_edge_id": 4,
+      "src_node_id": 2
+    },
+    {
+      "center_sweep_id": 16,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 5,
+      "dst_node_id": 12,
+      "group_id": 5,
+      "ordered_sweep_ids": [
+        15,
+        16,
+        17,
+        18
+      ],
+      "source_edge_id": 5,
+      "src_node_id": 3
+    },
+    {
+      "center_sweep_id": 20,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 6,
+      "dst_node_id": 4,
+      "group_id": 6,
+      "ordered_sweep_ids": [
+        19,
+        20,
+        21
+      ],
+      "source_edge_id": 6,
+      "src_node_id": 3
+    },
+    {
+      "center_sweep_id": 23,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 7,
+      "dst_node_id": 5,
+      "group_id": 7,
+      "ordered_sweep_ids": [
+        22,
+        23,
+        24
+      ],
+      "source_edge_id": 7,
+      "src_node_id": 4
+    },
+    {
+      "center_sweep_id": 25,
+      "center_sweep_index": 0,
+      "coverage_lane_id": 8,
+      "dst_node_id": 9,
+      "group_id": 8,
+      "ordered_sweep_ids": [
+        25,
+        26
+      ],
+      "source_edge_id": 8,
+      "src_node_id": 3
+    },
+    {
+      "center_sweep_id": 27,
+      "center_sweep_index": 0,
+      "coverage_lane_id": 9,
+      "dst_node_id": 10,
+      "group_id": 9,
+      "ordered_sweep_ids": [
+        27,
+        28
+      ],
+      "source_edge_id": 9,
+      "src_node_id": 4
+    },
+    {
+      "center_sweep_id": 29,
+      "center_sweep_index": 0,
+      "coverage_lane_id": 10,
+      "dst_node_id": 8,
+      "group_id": 10,
+      "ordered_sweep_ids": [
+        29,
+        30
+      ],
+      "source_edge_id": 10,
+      "src_node_id": 5
+    },
+    {
+      "center_sweep_id": 31,
+      "center_sweep_index": 0,
+      "coverage_lane_id": 11,
+      "dst_node_id": 13,
+      "group_id": 11,
+      "ordered_sweep_ids": [
+        31,
+        32
+      ],
+      "source_edge_id": 11,
+      "src_node_id": 6
+    },
+    {
+      "center_sweep_id": 34,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 12,
+      "dst_node_id": 20,
+      "group_id": 12,
+      "ordered_sweep_ids": [
+        33,
+        34,
+        35,
+        36
+      ],
+      "source_edge_id": 12,
+      "src_node_id": 7
+    },
+    {
+      "center_sweep_id": 38,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 14,
+      "dst_node_id": 12,
+      "group_id": 13,
+      "ordered_sweep_ids": [
+        37,
+        38,
+        39
+      ],
+      "source_edge_id": 16,
+      "src_node_id": 9
+    },
+    {
+      "center_sweep_id": 41,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 15,
+      "dst_node_id": 9,
+      "group_id": 14,
+      "ordered_sweep_ids": [
+        40,
+        41,
+        42
+      ],
+      "source_edge_id": 17,
+      "src_node_id": 10
+    },
+    {
+      "center_sweep_id": 43,
+      "center_sweep_index": 0,
+      "coverage_lane_id": 16,
+      "dst_node_id": 30,
+      "group_id": 15,
+      "ordered_sweep_ids": [
+        43,
+        44
+      ],
+      "source_edge_id": 19,
+      "src_node_id": 9
+    },
+    {
+      "center_sweep_id": 45,
+      "center_sweep_index": 0,
+      "coverage_lane_id": 17,
+      "dst_node_id": 28,
+      "group_id": 16,
+      "ordered_sweep_ids": [
+        45,
+        46
+      ],
+      "source_edge_id": 20,
+      "src_node_id": 12
+    },
+    {
+      "center_sweep_id": 48,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 18,
+      "dst_node_id": 14,
+      "group_id": 17,
+      "ordered_sweep_ids": [
+        47,
+        48,
+        49
+      ],
+      "source_edge_id": 21,
+      "src_node_id": 13
+    },
+    {
+      "center_sweep_id": 51,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 19,
+      "dst_node_id": 14,
+      "group_id": 18,
+      "ordered_sweep_ids": [
+        50,
+        51,
+        52,
+        53
+      ],
+      "source_edge_id": 24,
+      "src_node_id": 10
+    },
+    {
+      "center_sweep_id": 55,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 20,
+      "dst_node_id": 29,
+      "group_id": 19,
+      "ordered_sweep_ids": [
+        54,
+        55,
+        56
+      ],
+      "source_edge_id": 25,
+      "src_node_id": 10
+    },
+    {
+      "center_sweep_id": 58,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 21,
+      "dst_node_id": 20,
+      "group_id": 20,
+      "ordered_sweep_ids": [
+        57,
+        58,
+        59
+      ],
+      "source_edge_id": 28,
+      "src_node_id": 13
+    },
+    {
+      "center_sweep_id": 60,
+      "center_sweep_index": 0,
+      "coverage_lane_id": 22,
+      "dst_node_id": 21,
+      "group_id": 21,
+      "ordered_sweep_ids": [
+        60,
+        61
+      ],
+      "source_edge_id": 29,
+      "src_node_id": 14
+    },
+    {
+      "center_sweep_id": 63,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 25,
+      "dst_node_id": 33,
+      "group_id": 22,
+      "ordered_sweep_ids": [
+        62,
+        63,
+        64,
+        65
+      ],
+      "source_edge_id": 35,
+      "src_node_id": 21
+    },
+    {
+      "center_sweep_id": 68,
+      "center_sweep_index": 2,
+      "coverage_lane_id": 26,
+      "dst_node_id": 23,
+      "group_id": 23,
+      "ordered_sweep_ids": [
+        66,
+        67,
+        68,
+        69,
+        70
+      ],
+      "source_edge_id": 36,
+      "src_node_id": 21
+    },
+    {
+      "center_sweep_id": 72,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 28,
+      "dst_node_id": 29,
+      "group_id": 24,
+      "ordered_sweep_ids": [
+        71,
+        72,
+        73
+      ],
+      "source_edge_id": 39,
+      "src_node_id": 23
+    },
+    {
+      "center_sweep_id": 75,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 29,
+      "dst_node_id": 34,
+      "group_id": 25,
+      "ordered_sweep_ids": [
+        74,
+        75,
+        76
+      ],
+      "source_edge_id": 40,
+      "src_node_id": 28
+    },
+    {
+      "center_sweep_id": 78,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 30,
+      "dst_node_id": 32,
+      "group_id": 26,
+      "ordered_sweep_ids": [
+        77,
+        78,
+        79,
+        80
+      ],
+      "source_edge_id": 41,
+      "src_node_id": 30
+    },
+    {
+      "center_sweep_id": 82,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 31,
+      "dst_node_id": 33,
+      "group_id": 27,
+      "ordered_sweep_ids": [
+        81,
+        82,
+        83
+      ],
+      "source_edge_id": 42,
+      "src_node_id": 32
+    },
+    {
+      "center_sweep_id": 85,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 32,
+      "dst_node_id": 36,
+      "group_id": 28,
+      "ordered_sweep_ids": [
+        84,
+        85,
+        86,
+        87
+      ],
+      "source_edge_id": 43,
+      "src_node_id": 33
+    },
+    {
+      "center_sweep_id": 89,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 33,
+      "dst_node_id": 38,
+      "group_id": 29,
+      "ordered_sweep_ids": [
+        88,
+        89,
+        90
+      ],
+      "source_edge_id": 44,
+      "src_node_id": 34
+    },
+    {
+      "center_sweep_id": 92,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 34,
+      "dst_node_id": 36,
+      "group_id": 30,
+      "ordered_sweep_ids": [
+        91,
+        92,
+        93,
+        94
+      ],
+      "source_edge_id": 45,
+      "src_node_id": 35
+    },
+    {
+      "center_sweep_id": 96,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 35,
+      "dst_node_id": 37,
+      "group_id": 31,
+      "ordered_sweep_ids": [
+        95,
+        96,
+        97
+      ],
+      "source_edge_id": 46,
+      "src_node_id": 35
+    },
+    {
+      "center_sweep_id": 99,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 36,
+      "dst_node_id": 37,
+      "group_id": 32,
+      "ordered_sweep_ids": [
+        98,
+        99,
+        100,
+        101
+      ],
+      "source_edge_id": 47,
+      "src_node_id": 36
+    },
+    {
+      "center_sweep_id": 103,
+      "center_sweep_index": 1,
+      "coverage_lane_id": 37,
+      "dst_node_id": 38,
+      "group_id": 33,
+      "ordered_sweep_ids": [
+        102,
+        103,
+        104
+      ],
+      "source_edge_id": 48,
+      "src_node_id": 37
+    }
+  ],
+  "kept_transition_candidates": [],
+  "port_views": [
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 1,
+      "group_id": 1,
+      "node_id": 1,
+      "ordered_port_sweep_ids": [
+        1,
+        2,
+        3
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 1,
+      "group_id": 1,
+      "node_id": 2,
+      "ordered_port_sweep_ids": [
+        1,
+        2,
+        3
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 2,
+      "group_id": 2,
+      "node_id": 1,
+      "ordered_port_sweep_ids": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 2,
+      "group_id": 2,
+      "node_id": 7,
+      "ordered_port_sweep_ids": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 2,
+      "coverage_lane_id": 3,
+      "group_id": 3,
+      "node_id": 2,
+      "ordered_port_sweep_ids": [
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 2,
+      "coverage_lane_id": 3,
+      "group_id": 3,
+      "node_id": 5,
+      "ordered_port_sweep_ids": [
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 0,
+      "coverage_lane_id": 4,
+      "group_id": 4,
+      "node_id": 2,
+      "ordered_port_sweep_ids": [
+        13,
+        14
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 0,
+      "coverage_lane_id": 4,
+      "group_id": 4,
+      "node_id": 6,
+      "ordered_port_sweep_ids": [
+        13,
+        14
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 5,
+      "group_id": 5,
+      "node_id": 3,
+      "ordered_port_sweep_ids": [
+        15,
+        16,
+        17,
+        18
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 5,
+      "group_id": 5,
+      "node_id": 12,
+      "ordered_port_sweep_ids": [
+        15,
+        16,
+        17,
+        18
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 6,
+      "group_id": 6,
+      "node_id": 3,
+      "ordered_port_sweep_ids": [
+        19,
+        20,
+        21
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 6,
+      "group_id": 6,
+      "node_id": 4,
+      "ordered_port_sweep_ids": [
+        19,
+        20,
+        21
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 7,
+      "group_id": 7,
+      "node_id": 4,
+      "ordered_port_sweep_ids": [
+        22,
+        23,
+        24
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 7,
+      "group_id": 7,
+      "node_id": 5,
+      "ordered_port_sweep_ids": [
+        22,
+        23,
+        24
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 0,
+      "coverage_lane_id": 8,
+      "group_id": 8,
+      "node_id": 3,
+      "ordered_port_sweep_ids": [
+        25,
+        26
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 0,
+      "coverage_lane_id": 8,
+      "group_id": 8,
+      "node_id": 9,
+      "ordered_port_sweep_ids": [
+        25,
+        26
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 0,
+      "coverage_lane_id": 9,
+      "group_id": 9,
+      "node_id": 4,
+      "ordered_port_sweep_ids": [
+        27,
+        28
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 0,
+      "coverage_lane_id": 9,
+      "group_id": 9,
+      "node_id": 10,
+      "ordered_port_sweep_ids": [
+        27,
+        28
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 0,
+      "coverage_lane_id": 10,
+      "group_id": 10,
+      "node_id": 5,
+      "ordered_port_sweep_ids": [
+        29,
+        30
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 0,
+      "coverage_lane_id": 10,
+      "group_id": 10,
+      "node_id": 8,
+      "ordered_port_sweep_ids": [
+        29,
+        30
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 0,
+      "coverage_lane_id": 11,
+      "group_id": 11,
+      "node_id": 6,
+      "ordered_port_sweep_ids": [
+        31,
+        32
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 0,
+      "coverage_lane_id": 11,
+      "group_id": 11,
+      "node_id": 13,
+      "ordered_port_sweep_ids": [
+        31,
+        32
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 12,
+      "group_id": 12,
+      "node_id": 7,
+      "ordered_port_sweep_ids": [
+        33,
+        34,
+        35,
+        36
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 12,
+      "group_id": 12,
+      "node_id": 20,
+      "ordered_port_sweep_ids": [
+        33,
+        34,
+        35,
+        36
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 14,
+      "group_id": 13,
+      "node_id": 9,
+      "ordered_port_sweep_ids": [
+        37,
+        38,
+        39
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 14,
+      "group_id": 13,
+      "node_id": 12,
+      "ordered_port_sweep_ids": [
+        37,
+        38,
+        39
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 15,
+      "group_id": 14,
+      "node_id": 10,
+      "ordered_port_sweep_ids": [
+        40,
+        41,
+        42
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 15,
+      "group_id": 14,
+      "node_id": 9,
+      "ordered_port_sweep_ids": [
+        40,
+        41,
+        42
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 0,
+      "coverage_lane_id": 16,
+      "group_id": 15,
+      "node_id": 9,
+      "ordered_port_sweep_ids": [
+        43,
+        44
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 0,
+      "coverage_lane_id": 16,
+      "group_id": 15,
+      "node_id": 30,
+      "ordered_port_sweep_ids": [
+        43,
+        44
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 0,
+      "coverage_lane_id": 17,
+      "group_id": 16,
+      "node_id": 12,
+      "ordered_port_sweep_ids": [
+        45,
+        46
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 0,
+      "coverage_lane_id": 17,
+      "group_id": 16,
+      "node_id": 28,
+      "ordered_port_sweep_ids": [
+        45,
+        46
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 18,
+      "group_id": 17,
+      "node_id": 13,
+      "ordered_port_sweep_ids": [
+        47,
+        48,
+        49
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 18,
+      "group_id": 17,
+      "node_id": 14,
+      "ordered_port_sweep_ids": [
+        47,
+        48,
+        49
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 19,
+      "group_id": 18,
+      "node_id": 10,
+      "ordered_port_sweep_ids": [
+        50,
+        51,
+        52,
+        53
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 19,
+      "group_id": 18,
+      "node_id": 14,
+      "ordered_port_sweep_ids": [
+        50,
+        51,
+        52,
+        53
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 20,
+      "group_id": 19,
+      "node_id": 10,
+      "ordered_port_sweep_ids": [
+        54,
+        55,
+        56
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 20,
+      "group_id": 19,
+      "node_id": 29,
+      "ordered_port_sweep_ids": [
+        54,
+        55,
+        56
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 21,
+      "group_id": 20,
+      "node_id": 13,
+      "ordered_port_sweep_ids": [
+        57,
+        58,
+        59
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 21,
+      "group_id": 20,
+      "node_id": 20,
+      "ordered_port_sweep_ids": [
+        57,
+        58,
+        59
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 0,
+      "coverage_lane_id": 22,
+      "group_id": 21,
+      "node_id": 14,
+      "ordered_port_sweep_ids": [
+        60,
+        61
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 0,
+      "coverage_lane_id": 22,
+      "group_id": 21,
+      "node_id": 21,
+      "ordered_port_sweep_ids": [
+        60,
+        61
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 25,
+      "group_id": 22,
+      "node_id": 21,
+      "ordered_port_sweep_ids": [
+        62,
+        63,
+        64,
+        65
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 25,
+      "group_id": 22,
+      "node_id": 33,
+      "ordered_port_sweep_ids": [
+        62,
+        63,
+        64,
+        65
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 2,
+      "coverage_lane_id": 26,
+      "group_id": 23,
+      "node_id": 21,
+      "ordered_port_sweep_ids": [
+        66,
+        67,
+        68,
+        69,
+        70
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 2,
+      "coverage_lane_id": 26,
+      "group_id": 23,
+      "node_id": 23,
+      "ordered_port_sweep_ids": [
+        66,
+        67,
+        68,
+        70,
+        69
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 28,
+      "group_id": 24,
+      "node_id": 23,
+      "ordered_port_sweep_ids": [
+        71,
+        72,
+        73
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 28,
+      "group_id": 24,
+      "node_id": 29,
+      "ordered_port_sweep_ids": [
+        71,
+        72,
+        73
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 29,
+      "group_id": 25,
+      "node_id": 28,
+      "ordered_port_sweep_ids": [
+        74,
+        75,
+        76
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 29,
+      "group_id": 25,
+      "node_id": 34,
+      "ordered_port_sweep_ids": [
+        74,
+        75,
+        76
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 30,
+      "group_id": 26,
+      "node_id": 30,
+      "ordered_port_sweep_ids": [
+        77,
+        78,
+        79,
+        80
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 30,
+      "group_id": 26,
+      "node_id": 32,
+      "ordered_port_sweep_ids": [
+        77,
+        78,
+        79,
+        80
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 31,
+      "group_id": 27,
+      "node_id": 32,
+      "ordered_port_sweep_ids": [
+        81,
+        82,
+        83
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 31,
+      "group_id": 27,
+      "node_id": 33,
+      "ordered_port_sweep_ids": [
+        81,
+        82,
+        83
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 32,
+      "group_id": 28,
+      "node_id": 33,
+      "ordered_port_sweep_ids": [
+        84,
+        85,
+        86,
+        87
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 32,
+      "group_id": 28,
+      "node_id": 36,
+      "ordered_port_sweep_ids": [
+        84,
+        85,
+        86,
+        87
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 33,
+      "group_id": 29,
+      "node_id": 34,
+      "ordered_port_sweep_ids": [
+        88,
+        89,
+        90
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 33,
+      "group_id": 29,
+      "node_id": 38,
+      "ordered_port_sweep_ids": [
+        88,
+        89,
+        90
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 34,
+      "group_id": 30,
+      "node_id": 35,
+      "ordered_port_sweep_ids": [
+        91,
+        92,
+        93,
+        94
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 34,
+      "group_id": 30,
+      "node_id": 36,
+      "ordered_port_sweep_ids": [
+        91,
+        92,
+        93,
+        94
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 35,
+      "group_id": 31,
+      "node_id": 35,
+      "ordered_port_sweep_ids": [
+        95,
+        96,
+        97
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 35,
+      "group_id": 31,
+      "node_id": 37,
+      "ordered_port_sweep_ids": [
+        95,
+        96,
+        97
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 36,
+      "group_id": 32,
+      "node_id": 36,
+      "ordered_port_sweep_ids": [
+        98,
+        99,
+        100,
+        101
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 36,
+      "group_id": 32,
+      "node_id": 37,
+      "ordered_port_sweep_ids": [
+        98,
+        99,
+        100,
+        101
+      ],
+      "port_side": "dst"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 37,
+      "group_id": 33,
+      "node_id": 37,
+      "ordered_port_sweep_ids": [
+        102,
+        103,
+        104
+      ],
+      "port_side": "src"
+    },
+    {
+      "center_port_rank": 1,
+      "coverage_lane_id": 37,
+      "group_id": 33,
+      "node_id": 38,
+      "ordered_port_sweep_ids": [
+        102,
+        103,
+        104
+      ],
+      "port_side": "dst"
+    }
+  ],
+  "summary": {
+    "group_count": 33,
+    "kept_transition_candidate_count": 0,
+    "port_view_count": 66,
+    "transition_candidate_count": 1412,
+    "transition_count": 0
+  },
+  "transitions": []
+}

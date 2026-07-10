@@ -1,0 +1,36 @@
+{
+  "baseline_policy": "current code, fixed case, fixed pipeline entry, fixed config",
+  "generated_at": "2026-04-23T20:09:19.824606",
+  "spec": {
+    "case_dir": "tests/fixtures/coverage_cases/case_demo",
+    "case_name": "case_01",
+    "coverage_config": {
+      "coverage_width_m": 0.55,
+      "robot_width_m": 0.55,
+      "free_node_min_clearance_m": 0.35
+    },
+    "geometry_config": {
+      "crop_box_px": [
+        2068,
+        831,
+        2486,
+        1333
+      ],
+      "detail_viz": false,
+      "open_kernel_m": 0.3,
+      "short_side_branch_m": 1.2,
+      "summary_viz": false
+    },
+    "junction_config": {
+      "dead_end_polygon_radius_px": 4.0,
+      "detail_viz": false,
+      "initial_dead_end_zone_radius_px": 1,
+      "initial_junction_zone_radius_px": 2,
+      "intersection_merge_geodesic_px": 20,
+      "junction_polygon_radius_px": 10.0,
+      "summary_viz": false
+    },
+    "runtime_config": {},
+    "topology_config": {}
+  }
+}

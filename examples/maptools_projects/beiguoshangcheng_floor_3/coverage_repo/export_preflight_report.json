@@ -1,0 +1,17 @@
+{
+  "map_id": "beiguoshangcheng_floor_3",
+  "ok": true,
+  "issues": [],
+  "warnings": [],
+  "repo_dir": "beiguoshangcheng_floor_3",
+  "expected_files": [
+    "beiguoshangcheng_floor_3/coverage_path_master.yaml",
+    "beiguoshangcheng_floor_3/room_sequence_master.yaml",
+    "beiguoshangcheng_floor_3/room_partition_master.yaml",
+    "beiguoshangcheng_floor_3/segmented_map_master.bin",
+    "beiguoshangcheng_floor_3/segmented_map_meta.json",
+    "beiguoshangcheng_floor_3/segmented_map.png",
+    "beiguoshangcheng_floor_3/meta.json"
+  ],
+  "area_count": 7
+}

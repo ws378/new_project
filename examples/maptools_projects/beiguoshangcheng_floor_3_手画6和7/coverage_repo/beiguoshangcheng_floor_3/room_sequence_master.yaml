@@ -1,0 +1,28 @@
+map_id: beiguoshangcheng_floor_3
+map_version: 1
+coverage_version: master_20260522T141850+0800
+meta:
+  source: editor_auto
+  status: candidate
+  approved_by: ''
+  coverage_version: master_20260522T141850+0800
+  master_version: ''
+  candidate_version: master_20260522T141850+0800
+  locked: false
+  editable: true
+  pending_review: true
+  approved_at: ''
+  generated_at: 2026-05-22T14:18:50+0800
+room_sequence_spec:
+  map_id: beiguoshangcheng_floor_3
+  map_version: 1
+  coverage_version: master_20260522T141850+0800
+  revision: 1
+  name: editor_auto_candidate
+  allow_auto_fill: false
+  fixed_prefix_rooms: []
+  fixed_suffix_rooms: []
+  sequences:
+  - room_ids:
+    - 6
+    - 7

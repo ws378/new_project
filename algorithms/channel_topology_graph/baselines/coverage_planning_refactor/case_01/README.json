@@ -1,0 +1,9 @@
+{
+  "baseline_root": "algorithms/channel_topology_graph/baselines/coverage_planning_refactor/case_01",
+  "stage_files": [
+    "stages/stage_a_coverage_lanes_and_sweeps.json",
+    "stages/stage_b_sweep_graph_layers.json",
+    "stages/stage_c_sweep_cadence.json",
+    "stages/stage_d_final_coverage_path.json"
+  ]
+}

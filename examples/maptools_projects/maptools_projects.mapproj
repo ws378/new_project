@@ -1,0 +1,6 @@
+{
+  "format": "maptools-project",
+  "version": "1.0",
+  "project_dir": ".",
+  "project_json": "project.json"
+}

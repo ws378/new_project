@@ -1,0 +1,17 @@
+{
+  "map_id": "beiguo_lanshan_1770397756",
+  "ok": true,
+  "issues": [],
+  "warnings": [],
+  "repo_dir": "beiguo_lanshan_1770397756",
+  "expected_files": [
+    "beiguo_lanshan_1770397756/coverage_path_master.yaml",
+    "beiguo_lanshan_1770397756/room_sequence_master.yaml",
+    "beiguo_lanshan_1770397756/room_partition_master.yaml",
+    "beiguo_lanshan_1770397756/segmented_map_master.bin",
+    "beiguo_lanshan_1770397756/segmented_map_meta.json",
+    "beiguo_lanshan_1770397756/segmented_map.png",
+    "beiguo_lanshan_1770397756/meta.json"
+  ],
+  "area_count": 6
+}

@@ -1,0 +1,17 @@
+{
+  "map_id": "fourfloor_20250923_8",
+  "ok": true,
+  "issues": [],
+  "warnings": [],
+  "repo_dir": "fourfloor_20250923_8",
+  "expected_files": [
+    "fourfloor_20250923_8/coverage_path_master.yaml",
+    "fourfloor_20250923_8/room_sequence_master.yaml",
+    "fourfloor_20250923_8/room_partition_master.yaml",
+    "fourfloor_20250923_8/segmented_map_master.bin",
+    "fourfloor_20250923_8/segmented_map_meta.json",
+    "fourfloor_20250923_8/segmented_map.png",
+    "fourfloor_20250923_8/meta.json"
+  ],
+  "area_count": 6
+}

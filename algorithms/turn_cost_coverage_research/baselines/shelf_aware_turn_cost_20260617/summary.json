@@ -1,0 +1,1675 @@
+{
+  "runner": "shelf_aware_turn_cost_compact_baseline_fixture",
+  "planner_mode": "shelf_aware_turn_cost",
+  "project_names": [
+    "beiguo_lanshan_1770397756",
+    "beiguoshangcheng_floor_3",
+    "fourfloor_20250923_8"
+  ],
+  "area_count": 19,
+  "success_count": 19,
+  "failed_count": 0,
+  "min_coverage_ratio": 0.9,
+  "areas": [
+    {
+      "planner_mode": "shelf_aware_turn_cost",
+      "project_name": "beiguo_lanshan_1770397756",
+      "area_id": 1,
+      "status": "success",
+      "error_message": "",
+      "used_saved_params": false,
+      "point_count": 880,
+      "coverage_ratio": 0.9912209715785085,
+      "long_jump_count": 16,
+      "infeasible_segment_count": 184,
+      "total_turn_angle_deg": 17986.939662649576,
+      "length_px": 11815.717687389602,
+      "quality_guard_status": "warn",
+      "quality_guard_warnings": [
+        "long_jump_detected",
+        "infeasible_segment_detected"
+      ],
+      "planner_reasons": [
+        "explicit_planner_mode",
+        "shelf_ctg_auxiliary_enabled"
+      ],
+      "planner_warnings": [
+        "shelf_quality_guard:long_jump_detected",
+        "shelf_quality_guard:infeasible_segment_detected"
+      ],
+      "ctg_auxiliary": {
+        "enabled": true,
+        "geometry_crop_box_px": [
+          1695,
+          189,
+          2187,
+          599
+        ],
+        "boundary_smoothing": {
+          "enabled": true,
+          "method": "boundary_band_majority",
+          "accepted": false,
+          "rejection_reason": "free_component_count_changed",
+          "majority_radius_m": 0.25,
+          "majority_radius_px": 5,
+          "boundary_band_m": 0.35,
+          "obstacle_threshold": 0.5,
+          "kernel_pixel_count": 81,
+          "boundary_band_pixel_count": 110491,
+          "free_component_count_before": 1,
+          "free_component_count_after": 1,
+          "delta_add_pixel_count": 0,
+          "delta_remove_pixel_count": 0,
+          "updated_pixel_count": 0,
+          "attempted": true,
+          "applied": false,
+          "source": "baseline_geometry_result_no_delta"
+        },
+        "graph_node_count": 26,
+        "graph_edge_count": 13,
+        "coverage_lane_count": 0,
+        "coverage_lane_sweeps_built": false,
+        "edge_territory": {
+          "seed_edge_count": 13,
+          "expanded_edge_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13
+          ],
+          "pixel_count_by_edge": {
+            "1": 10367,
+            "2": 2258,
+            "3": 4904,
+            "4": 7724,
+            "5": 4391,
+            "6": 4347,
+            "7": 11132,
+            "8": 8347,
+            "9": 2229,
+            "10": 9561,
+            "11": 5763,
+            "12": 8809,
+            "13": 1726
+          }
+        },
+        "junction_labeled_pixel_count": 1066,
+        "topology_short_edge_fallback": {
+          "used": false,
+          "reason": "",
+          "fallback": ""
+        }
+      },
+      "area_run_dir": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguo_lanshan_1770397756_area_1",
+      "overlay_path": "",
+      "all_final_overlay_path": "",
+      "planner_artifacts_dir": "",
+      "final_path_pixels": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguo_lanshan_1770397756_area_1/path_pixels.json",
+      "narrow_coverage_ratio": 0.9912806106222835,
+      "turn_hotspot_count": 70,
+      "lane_over_dense_count": 567,
+      "lane_over_sparse_count": 19,
+      "lane_spacing_issue_count": 586,
+      "segment_crossing_count": 68,
+      "readonly_quality_metrics": {
+        "coverage_width_px": 12,
+        "narrow_coverage_ratio": 0.9912806106222835,
+        "turn_hotspot_count": 70,
+        "lane_over_dense_count": 567,
+        "lane_over_sparse_count": 19,
+        "lane_spacing_issue_count": 586,
+        "segment_crossing_count": 68
+      }
+    },
+    {
+      "planner_mode": "shelf_aware_turn_cost",
+      "project_name": "beiguo_lanshan_1770397756",
+      "area_id": 2,
+      "status": "success",
+      "error_message": "",
+      "used_saved_params": false,
+      "point_count": 218,
+      "coverage_ratio": 0.9977933712873472,
+      "long_jump_count": 2,
+      "infeasible_segment_count": 40,
+      "total_turn_angle_deg": 4727.19369605639,
+      "length_px": 2825.2640540617363,
+      "quality_guard_status": "warn",
+      "quality_guard_warnings": [
+        "long_jump_detected",
+        "infeasible_segment_detected"
+      ],
+      "planner_reasons": [
+        "explicit_planner_mode",
+        "start_snapped_to_nearest_free_pixel",
+        "shelf_ctg_auxiliary_enabled"
+      ],
+      "planner_warnings": [
+        "起点已从 (331, 2440) 吸附到最近可通行像素 (374, 2450)",
+        "shelf_quality_guard:long_jump_detected",
+        "shelf_quality_guard:infeasible_segment_detected"
+      ],
+      "ctg_auxiliary": {
+        "enabled": true,
+        "geometry_crop_box_px": [
+          0,
+          0,
+          234,
+          199
+        ],
+        "boundary_smoothing": {
+          "enabled": true,
+          "method": "boundary_band_majority",
+          "accepted": true,
+          "rejection_reason": null,
+          "majority_radius_m": 0.25,
+          "majority_radius_px": 5,
+          "boundary_band_m": 0.35,
+          "obstacle_threshold": 0.5,
+          "kernel_pixel_count": 81,
+          "boundary_band_pixel_count": 17489,
+          "free_component_count_before": 1,
+          "free_component_count_after": 1,
+          "delta_add_pixel_count": 91,
+          "delta_remove_pixel_count": 80,
+          "updated_pixel_count": 171,
+          "attempted": true,
+          "applied": true,
+          "source": "boundary_smoothed_geometry_rerun"
+        },
+        "graph_node_count": 2,
+        "graph_edge_count": 1,
+        "coverage_lane_count": 0,
+        "coverage_lane_sweeps_built": false,
+        "edge_territory": {
+          "seed_edge_count": 1,
+          "expanded_edge_ids": [
+            1
+          ],
+          "pixel_count_by_edge": {
+            "1": 22670
+          }
+        },
+        "junction_labeled_pixel_count": 82,
+        "topology_short_edge_fallback": {
+          "used": false,
+          "reason": "",
+          "fallback": ""
+        }
+      },
+      "area_run_dir": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguo_lanshan_1770397756_area_2",
+      "overlay_path": "",
+      "all_final_overlay_path": "",
+      "planner_artifacts_dir": "",
+      "final_path_pixels": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguo_lanshan_1770397756_area_2/path_pixels.json",
+      "narrow_coverage_ratio": 0.9981698637565241,
+      "turn_hotspot_count": 16,
+      "lane_over_dense_count": 124,
+      "lane_over_sparse_count": 4,
+      "lane_spacing_issue_count": 128,
+      "segment_crossing_count": 19,
+      "readonly_quality_metrics": {
+        "coverage_width_px": 12,
+        "narrow_coverage_ratio": 0.9981698637565241,
+        "turn_hotspot_count": 16,
+        "lane_over_dense_count": 124,
+        "lane_over_sparse_count": 4,
+        "lane_spacing_issue_count": 128,
+        "segment_crossing_count": 19
+      }
+    },
+    {
+      "planner_mode": "shelf_aware_turn_cost",
+      "project_name": "beiguo_lanshan_1770397756",
+      "area_id": 3,
+      "status": "success",
+      "error_message": "",
+      "used_saved_params": false,
+      "point_count": 324,
+      "coverage_ratio": 0.9999433042295045,
+      "long_jump_count": 3,
+      "infeasible_segment_count": 19,
+      "total_turn_angle_deg": 5672.371243738002,
+      "length_px": 3858.797982007592,
+      "quality_guard_status": "warn",
+      "quality_guard_warnings": [
+        "long_jump_detected",
+        "infeasible_segment_detected"
+      ],
+      "planner_reasons": [
+        "explicit_planner_mode",
+        "start_snapped_to_nearest_free_pixel",
+        "shelf_ctg_auxiliary_disabled_after_failure"
+      ],
+      "planner_warnings": [
+        "起点已从 (674, 1035) 吸附到最近可通行像素 (634, 1035)",
+        "shelf_ctg_auxiliary_unavailable:initial edge map must not be empty",
+        "shelf_quality_guard:long_jump_detected",
+        "shelf_quality_guard:infeasible_segment_detected"
+      ],
+      "ctg_auxiliary": {
+        "enabled": false,
+        "reason": "auxiliary_failed_continued_without_ctg",
+        "error_message": "initial edge map must not be empty"
+      },
+      "area_run_dir": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguo_lanshan_1770397756_area_3",
+      "overlay_path": "",
+      "all_final_overlay_path": "",
+      "planner_artifacts_dir": "",
+      "final_path_pixels": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguo_lanshan_1770397756_area_3/path_pixels.json",
+      "narrow_coverage_ratio": 0.9998605105314549,
+      "turn_hotspot_count": 26,
+      "lane_over_dense_count": 162,
+      "lane_over_sparse_count": 3,
+      "lane_spacing_issue_count": 165,
+      "segment_crossing_count": 14,
+      "readonly_quality_metrics": {
+        "coverage_width_px": 12,
+        "narrow_coverage_ratio": 0.9998605105314549,
+        "turn_hotspot_count": 26,
+        "lane_over_dense_count": 162,
+        "lane_over_sparse_count": 3,
+        "lane_spacing_issue_count": 165,
+        "segment_crossing_count": 14
+      }
+    },
+    {
+      "planner_mode": "shelf_aware_turn_cost",
+      "project_name": "beiguo_lanshan_1770397756",
+      "area_id": 4,
+      "status": "success",
+      "error_message": "",
+      "used_saved_params": false,
+      "point_count": 846,
+      "coverage_ratio": 0.9985767054119082,
+      "long_jump_count": 13,
+      "infeasible_segment_count": 135,
+      "total_turn_angle_deg": 16810.545916383744,
+      "length_px": 11090.555656256647,
+      "quality_guard_status": "warn",
+      "quality_guard_warnings": [
+        "long_jump_detected",
+        "infeasible_segment_detected"
+      ],
+      "planner_reasons": [
+        "explicit_planner_mode",
+        "shelf_ctg_auxiliary_enabled"
+      ],
+      "planner_warnings": [
+        "shelf_quality_guard:long_jump_detected",
+        "shelf_quality_guard:infeasible_segment_detected"
+      ],
+      "ctg_auxiliary": {
+        "enabled": true,
+        "geometry_crop_box_px": [
+          1258,
+          1010,
+          1984,
+          1282
+        ],
+        "boundary_smoothing": {
+          "enabled": true,
+          "method": "boundary_band_majority",
+          "accepted": false,
+          "rejection_reason": "free_component_count_changed",
+          "majority_radius_m": 0.25,
+          "majority_radius_px": 5,
+          "boundary_band_m": 0.35,
+          "obstacle_threshold": 0.5,
+          "kernel_pixel_count": 81,
+          "boundary_band_pixel_count": 62772,
+          "free_component_count_before": 1,
+          "free_component_count_after": 1,
+          "delta_add_pixel_count": 0,
+          "delta_remove_pixel_count": 0,
+          "updated_pixel_count": 0,
+          "attempted": true,
+          "applied": false,
+          "source": "baseline_geometry_result_no_delta"
+        },
+        "graph_node_count": 12,
+        "graph_edge_count": 6,
+        "coverage_lane_count": 0,
+        "coverage_lane_sweeps_built": false,
+        "edge_territory": {
+          "seed_edge_count": 6,
+          "expanded_edge_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "pixel_count_by_edge": {
+            "1": 17316,
+            "2": 26689,
+            "3": 8776,
+            "4": 12287,
+            "5": 14249,
+            "6": 9210
+          }
+        },
+        "junction_labeled_pixel_count": 480,
+        "topology_short_edge_fallback": {
+          "used": false,
+          "reason": "",
+          "fallback": ""
+        }
+      },
+      "area_run_dir": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguo_lanshan_1770397756_area_4",
+      "overlay_path": "",
+      "all_final_overlay_path": "",
+      "planner_artifacts_dir": "",
+      "final_path_pixels": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguo_lanshan_1770397756_area_4/path_pixels.json",
+      "narrow_coverage_ratio": 0.9979804039192162,
+      "turn_hotspot_count": 63,
+      "lane_over_dense_count": 493,
+      "lane_over_sparse_count": 20,
+      "lane_spacing_issue_count": 513,
+      "segment_crossing_count": 56,
+      "readonly_quality_metrics": {
+        "coverage_width_px": 12,
+        "narrow_coverage_ratio": 0.9979804039192162,
+        "turn_hotspot_count": 63,
+        "lane_over_dense_count": 493,
+        "lane_over_sparse_count": 20,
+        "lane_spacing_issue_count": 513,
+        "segment_crossing_count": 56
+      }
+    },
+    {
+      "planner_mode": "shelf_aware_turn_cost",
+      "project_name": "beiguo_lanshan_1770397756",
+      "area_id": 5,
+      "status": "success",
+      "error_message": "",
+      "used_saved_params": false,
+      "point_count": 443,
+      "coverage_ratio": 0.9952494596541787,
+      "long_jump_count": 8,
+      "infeasible_segment_count": 84,
+      "total_turn_angle_deg": 8400.458352868296,
+      "length_px": 5728.404718653371,
+      "quality_guard_status": "warn",
+      "quality_guard_warnings": [
+        "long_jump_detected",
+        "infeasible_segment_detected"
+      ],
+      "planner_reasons": [
+        "explicit_planner_mode",
+        "shelf_ctg_auxiliary_enabled"
+      ],
+      "planner_warnings": [
+        "shelf_quality_guard:long_jump_detected",
+        "shelf_quality_guard:infeasible_segment_detected"
+      ],
+      "ctg_auxiliary": {
+        "enabled": true,
+        "geometry_crop_box_px": [
+          0,
+          0,
+          249,
+          420
+        ],
+        "boundary_smoothing": {
+          "enabled": true,
+          "method": "boundary_band_majority",
+          "accepted": true,
+          "rejection_reason": null,
+          "majority_radius_m": 0.25,
+          "majority_radius_px": 5,
+          "boundary_band_m": 0.35,
+          "obstacle_threshold": 0.5,
+          "kernel_pixel_count": 81,
+          "boundary_band_pixel_count": 41602,
+          "free_component_count_before": 1,
+          "free_component_count_after": 1,
+          "delta_add_pixel_count": 233,
+          "delta_remove_pixel_count": 217,
+          "updated_pixel_count": 450,
+          "attempted": true,
+          "applied": true,
+          "source": "boundary_smoothed_geometry_rerun"
+        },
+        "graph_node_count": 8,
+        "graph_edge_count": 4,
+        "coverage_lane_count": 0,
+        "coverage_lane_sweeps_built": false,
+        "edge_territory": {
+          "seed_edge_count": 4,
+          "expanded_edge_ids": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "pixel_count_by_edge": {
+            "1": 12469,
+            "2": 14473,
+            "3": 4840,
+            "4": 12650
+          }
+        },
+        "junction_labeled_pixel_count": 328,
+        "topology_short_edge_fallback": {
+          "used": false,
+          "reason": "",
+          "fallback": ""
+        }
+      },
+      "area_run_dir": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguo_lanshan_1770397756_area_5",
+      "overlay_path": "",
+      "all_final_overlay_path": "",
+      "planner_artifacts_dir": "",
+      "final_path_pixels": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguo_lanshan_1770397756_area_5/path_pixels.json",
+      "narrow_coverage_ratio": 0.9939576112627673,
+      "turn_hotspot_count": 34,
+      "lane_over_dense_count": 223,
+      "lane_over_sparse_count": 8,
+      "lane_spacing_issue_count": 231,
+      "segment_crossing_count": 23,
+      "readonly_quality_metrics": {
+        "coverage_width_px": 12,
+        "narrow_coverage_ratio": 0.9939576112627673,
+        "turn_hotspot_count": 34,
+        "lane_over_dense_count": 223,
+        "lane_over_sparse_count": 8,
+        "lane_spacing_issue_count": 231,
+        "segment_crossing_count": 23
+      }
+    },
+    {
+      "planner_mode": "shelf_aware_turn_cost",
+      "project_name": "beiguo_lanshan_1770397756",
+      "area_id": 6,
+      "status": "success",
+      "error_message": "",
+      "used_saved_params": false,
+      "point_count": 1893,
+      "coverage_ratio": 0.9949750085440875,
+      "long_jump_count": 35,
+      "infeasible_segment_count": 478,
+      "total_turn_angle_deg": 45354.01145771148,
+      "length_px": 25950.47871931989,
+      "quality_guard_status": "warn",
+      "quality_guard_warnings": [
+        "long_jump_detected",
+        "infeasible_segment_detected"
+      ],
+      "planner_reasons": [
+        "explicit_planner_mode",
+        "start_snapped_to_nearest_free_pixel",
+        "shelf_ctg_auxiliary_disabled_after_failure"
+      ],
+      "planner_warnings": [
+        "起点已从 (1020, 2393) 吸附到最近可通行像素 (1052, 2371)",
+        "shelf_ctg_auxiliary_unavailable:edge 1 path too short",
+        "shelf_quality_guard:long_jump_detected",
+        "shelf_quality_guard:infeasible_segment_detected"
+      ],
+      "ctg_auxiliary": {
+        "enabled": false,
+        "reason": "auxiliary_failed_continued_without_ctg",
+        "error_message": "edge 1 path too short"
+      },
+      "area_run_dir": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguo_lanshan_1770397756_area_6",
+      "overlay_path": "",
+      "all_final_overlay_path": "",
+      "planner_artifacts_dir": "",
+      "final_path_pixels": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguo_lanshan_1770397756_area_6/path_pixels.json",
+      "narrow_coverage_ratio": 0.9937149394235938,
+      "turn_hotspot_count": 182,
+      "lane_over_dense_count": 1096,
+      "lane_over_sparse_count": 92,
+      "lane_spacing_issue_count": 1188,
+      "segment_crossing_count": 171,
+      "readonly_quality_metrics": {
+        "coverage_width_px": 12,
+        "narrow_coverage_ratio": 0.9937149394235938,
+        "turn_hotspot_count": 182,
+        "lane_over_dense_count": 1096,
+        "lane_over_sparse_count": 92,
+        "lane_spacing_issue_count": 1188,
+        "segment_crossing_count": 171
+      }
+    },
+    {
+      "planner_mode": "shelf_aware_turn_cost",
+      "project_name": "beiguoshangcheng_floor_3",
+      "area_id": 3,
+      "status": "success",
+      "error_message": "",
+      "used_saved_params": true,
+      "point_count": 2246,
+      "coverage_ratio": 0.9990735803007361,
+      "long_jump_count": 25,
+      "infeasible_segment_count": 40,
+      "total_turn_angle_deg": 30330.390865941354,
+      "length_px": 29688.790720803026,
+      "quality_guard_status": "warn",
+      "quality_guard_warnings": [
+        "long_jump_detected",
+        "infeasible_segment_detected"
+      ],
+      "planner_reasons": [
+        "explicit_planner_mode",
+        "start_snapped_to_nearest_free_pixel",
+        "shelf_ctg_auxiliary_enabled"
+      ],
+      "planner_warnings": [
+        "起点已从 (1264, 936) 吸附到最近可通行像素 (1264, 1057)",
+        "shelf_quality_guard:long_jump_detected",
+        "shelf_quality_guard:infeasible_segment_detected"
+      ],
+      "ctg_auxiliary": {
+        "enabled": true,
+        "geometry_crop_box_px": [
+          0,
+          0,
+          1318,
+          1136
+        ],
+        "boundary_smoothing": {
+          "enabled": true,
+          "method": "boundary_band_majority",
+          "accepted": true,
+          "rejection_reason": null,
+          "majority_radius_m": 0.25,
+          "majority_radius_px": 5,
+          "boundary_band_m": 0.35,
+          "obstacle_threshold": 0.5,
+          "kernel_pixel_count": 81,
+          "boundary_band_pixel_count": 152939,
+          "free_component_count_before": 1,
+          "free_component_count_after": 1,
+          "delta_add_pixel_count": 339,
+          "delta_remove_pixel_count": 95,
+          "updated_pixel_count": 434,
+          "attempted": true,
+          "applied": true,
+          "source": "boundary_smoothed_geometry_rerun"
+        },
+        "graph_node_count": 22,
+        "graph_edge_count": 11,
+        "coverage_lane_count": 0,
+        "coverage_lane_sweeps_built": false,
+        "edge_territory": {
+          "seed_edge_count": 11,
+          "expanded_edge_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "pixel_count_by_edge": {
+            "1": 13938,
+            "2": 13955,
+            "3": 27837,
+            "4": 29602,
+            "5": 13932,
+            "6": 30951,
+            "7": 8081,
+            "8": 24963,
+            "9": 24442,
+            "10": 58029,
+            "11": 11348
+          }
+        },
+        "junction_labeled_pixel_count": 902,
+        "topology_short_edge_fallback": {
+          "used": false,
+          "reason": "",
+          "fallback": ""
+        }
+      },
+      "area_run_dir": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguoshangcheng_floor_3_area_3",
+      "overlay_path": "",
+      "all_final_overlay_path": "",
+      "planner_artifacts_dir": "",
+      "final_path_pixels": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguoshangcheng_floor_3_area_3/path_pixels.json",
+      "narrow_coverage_ratio": 0.9987341772151899,
+      "turn_hotspot_count": 91,
+      "lane_over_dense_count": 1290,
+      "lane_over_sparse_count": 26,
+      "lane_spacing_issue_count": 1316,
+      "segment_crossing_count": 106,
+      "readonly_quality_metrics": {
+        "coverage_width_px": 12,
+        "narrow_coverage_ratio": 0.9987341772151899,
+        "turn_hotspot_count": 91,
+        "lane_over_dense_count": 1290,
+        "lane_over_sparse_count": 26,
+        "lane_spacing_issue_count": 1316,
+        "segment_crossing_count": 106
+      }
+    },
+    {
+      "planner_mode": "shelf_aware_turn_cost",
+      "project_name": "beiguoshangcheng_floor_3",
+      "area_id": 5,
+      "status": "success",
+      "error_message": "",
+      "used_saved_params": true,
+      "point_count": 1357,
+      "coverage_ratio": 0.9987936704766013,
+      "long_jump_count": 23,
+      "infeasible_segment_count": 85,
+      "total_turn_angle_deg": 22257.910372626757,
+      "length_px": 20636.317511743993,
+      "quality_guard_status": "warn",
+      "quality_guard_warnings": [
+        "long_jump_detected",
+        "infeasible_segment_detected"
+      ],
+      "planner_reasons": [
+        "explicit_planner_mode",
+        "shelf_ctg_auxiliary_enabled"
+      ],
+      "planner_warnings": [
+        "shelf_quality_guard:long_jump_detected",
+        "shelf_quality_guard:infeasible_segment_detected"
+      ],
+      "ctg_auxiliary": {
+        "enabled": true,
+        "geometry_crop_box_px": [
+          511,
+          2875,
+          1626,
+          4089
+        ],
+        "boundary_smoothing": {
+          "enabled": false,
+          "applied": false,
+          "source": "disabled"
+        },
+        "graph_node_count": 12,
+        "graph_edge_count": 6,
+        "coverage_lane_count": 0,
+        "coverage_lane_sweeps_built": false,
+        "edge_territory": {
+          "seed_edge_count": 6,
+          "expanded_edge_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "pixel_count_by_edge": {
+            "1": 17743,
+            "2": 27052,
+            "3": 27936,
+            "4": 47394,
+            "5": 10560,
+            "6": 17699
+          }
+        },
+        "junction_labeled_pixel_count": 492,
+        "topology_short_edge_fallback": {
+          "used": true,
+          "reason": "edge 2 path too short",
+          "fallback": "retry_ctg_auxiliary_with_boundary_smoothing_disabled"
+        }
+      },
+      "area_run_dir": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguoshangcheng_floor_3_area_5",
+      "overlay_path": "",
+      "all_final_overlay_path": "",
+      "planner_artifacts_dir": "",
+      "final_path_pixels": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguoshangcheng_floor_3_area_5/path_pixels.json",
+      "narrow_coverage_ratio": 0.9990901757742886,
+      "turn_hotspot_count": 74,
+      "lane_over_dense_count": 963,
+      "lane_over_sparse_count": 20,
+      "lane_spacing_issue_count": 983,
+      "segment_crossing_count": 78,
+      "readonly_quality_metrics": {
+        "coverage_width_px": 12,
+        "narrow_coverage_ratio": 0.9990901757742886,
+        "turn_hotspot_count": 74,
+        "lane_over_dense_count": 963,
+        "lane_over_sparse_count": 20,
+        "lane_spacing_issue_count": 983,
+        "segment_crossing_count": 78
+      }
+    },
+    {
+      "planner_mode": "shelf_aware_turn_cost",
+      "project_name": "beiguoshangcheng_floor_3",
+      "area_id": 6,
+      "status": "success",
+      "error_message": "",
+      "used_saved_params": true,
+      "point_count": 326,
+      "coverage_ratio": 0.9975427199548086,
+      "long_jump_count": 6,
+      "infeasible_segment_count": 14,
+      "total_turn_angle_deg": 5895.8178783404,
+      "length_px": 4378.516476244824,
+      "quality_guard_status": "warn",
+      "quality_guard_warnings": [
+        "long_jump_detected",
+        "infeasible_segment_detected"
+      ],
+      "planner_reasons": [
+        "explicit_planner_mode",
+        "start_snapped_to_nearest_free_pixel",
+        "shelf_ctg_auxiliary_enabled"
+      ],
+      "planner_warnings": [
+        "起点已从 (2314, 1644) 吸附到最近可通行像素 (2314, 1713)",
+        "shelf_quality_guard:long_jump_detected",
+        "shelf_quality_guard:infeasible_segment_detected"
+      ],
+      "ctg_auxiliary": {
+        "enabled": true,
+        "geometry_crop_box_px": [
+          0,
+          0,
+          229,
+          735
+        ],
+        "boundary_smoothing": {
+          "enabled": true,
+          "method": "boundary_band_majority",
+          "accepted": true,
+          "rejection_reason": null,
+          "majority_radius_m": 0.25,
+          "majority_radius_px": 5,
+          "boundary_band_m": 0.35,
+          "obstacle_threshold": 0.5,
+          "kernel_pixel_count": 81,
+          "boundary_band_pixel_count": 26941,
+          "free_component_count_before": 1,
+          "free_component_count_after": 1,
+          "delta_add_pixel_count": 151,
+          "delta_remove_pixel_count": 97,
+          "updated_pixel_count": 248,
+          "attempted": true,
+          "applied": true,
+          "source": "boundary_smoothed_geometry_rerun"
+        },
+        "graph_node_count": 2,
+        "graph_edge_count": 1,
+        "coverage_lane_count": 0,
+        "coverage_lane_sweeps_built": false,
+        "edge_territory": {
+          "seed_edge_count": 1,
+          "expanded_edge_ids": [
+            1
+          ],
+          "pixel_count_by_edge": {
+            "1": 35459
+          }
+        },
+        "junction_labeled_pixel_count": 82,
+        "topology_short_edge_fallback": {
+          "used": false,
+          "reason": "",
+          "fallback": ""
+        }
+      },
+      "area_run_dir": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguoshangcheng_floor_3_area_6",
+      "overlay_path": "",
+      "all_final_overlay_path": "",
+      "planner_artifacts_dir": "",
+      "final_path_pixels": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguoshangcheng_floor_3_area_6/path_pixels.json",
+      "narrow_coverage_ratio": 0.9961051170703318,
+      "turn_hotspot_count": 26,
+      "lane_over_dense_count": 153,
+      "lane_over_sparse_count": 4,
+      "lane_spacing_issue_count": 157,
+      "segment_crossing_count": 32,
+      "readonly_quality_metrics": {
+        "coverage_width_px": 12,
+        "narrow_coverage_ratio": 0.9961051170703318,
+        "turn_hotspot_count": 26,
+        "lane_over_dense_count": 153,
+        "lane_over_sparse_count": 4,
+        "lane_spacing_issue_count": 157,
+        "segment_crossing_count": 32
+      }
+    },
+    {
+      "planner_mode": "shelf_aware_turn_cost",
+      "project_name": "beiguoshangcheng_floor_3",
+      "area_id": 7,
+      "status": "success",
+      "error_message": "",
+      "used_saved_params": true,
+      "point_count": 1815,
+      "coverage_ratio": 0.9994435767278407,
+      "long_jump_count": 25,
+      "infeasible_segment_count": 86,
+      "total_turn_angle_deg": 25511.68036315391,
+      "length_px": 28338.151830886683,
+      "quality_guard_status": "warn",
+      "quality_guard_warnings": [
+        "long_jump_detected",
+        "infeasible_segment_detected"
+      ],
+      "planner_reasons": [
+        "explicit_planner_mode",
+        "start_snapped_to_nearest_free_pixel",
+        "shelf_ctg_auxiliary_enabled"
+      ],
+      "planner_warnings": [
+        "起点已从 (2365, 1083) 吸附到最近可通行像素 (2578, 1286)",
+        "shelf_quality_guard:long_jump_detected",
+        "shelf_quality_guard:infeasible_segment_detected"
+      ],
+      "ctg_auxiliary": {
+        "enabled": true,
+        "geometry_crop_box_px": [
+          602,
+          1663,
+          1571,
+          3344
+        ],
+        "boundary_smoothing": {
+          "enabled": false,
+          "applied": false,
+          "source": "disabled"
+        },
+        "graph_node_count": 16,
+        "graph_edge_count": 8,
+        "coverage_lane_count": 0,
+        "coverage_lane_sweeps_built": false,
+        "edge_territory": {
+          "seed_edge_count": 8,
+          "expanded_edge_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          "pixel_count_by_edge": {
+            "1": 17974,
+            "2": 19261,
+            "3": 20380,
+            "4": 22195,
+            "5": 18240,
+            "6": 41479,
+            "7": 32586,
+            "8": 32765
+          }
+        },
+        "junction_labeled_pixel_count": 651,
+        "topology_short_edge_fallback": {
+          "used": true,
+          "reason": "edge 6 path too short",
+          "fallback": "retry_ctg_auxiliary_with_boundary_smoothing_disabled"
+        }
+      },
+      "area_run_dir": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguoshangcheng_floor_3_area_7",
+      "overlay_path": "",
+      "all_final_overlay_path": "",
+      "planner_artifacts_dir": "",
+      "final_path_pixels": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguoshangcheng_floor_3_area_7/path_pixels.json",
+      "narrow_coverage_ratio": 0.9989685156265062,
+      "turn_hotspot_count": 65,
+      "lane_over_dense_count": 1326,
+      "lane_over_sparse_count": 21,
+      "lane_spacing_issue_count": 1347,
+      "segment_crossing_count": 108,
+      "readonly_quality_metrics": {
+        "coverage_width_px": 12,
+        "narrow_coverage_ratio": 0.9989685156265062,
+        "turn_hotspot_count": 65,
+        "lane_over_dense_count": 1326,
+        "lane_over_sparse_count": 21,
+        "lane_spacing_issue_count": 1347,
+        "segment_crossing_count": 108
+      }
+    },
+    {
+      "planner_mode": "shelf_aware_turn_cost",
+      "project_name": "beiguoshangcheng_floor_3",
+      "area_id": 8,
+      "status": "success",
+      "error_message": "",
+      "used_saved_params": true,
+      "point_count": 542,
+      "coverage_ratio": 0.999452409398646,
+      "long_jump_count": 8,
+      "infeasible_segment_count": 23,
+      "total_turn_angle_deg": 10725.600858862068,
+      "length_px": 7681.5498775867245,
+      "quality_guard_status": "warn",
+      "quality_guard_warnings": [
+        "long_jump_detected",
+        "infeasible_segment_detected"
+      ],
+      "planner_reasons": [
+        "explicit_planner_mode",
+        "start_snapped_to_nearest_free_pixel",
+        "shelf_ctg_auxiliary_disabled_after_failure"
+      ],
+      "planner_warnings": [
+        "起点已从 (1532, 1548) 吸附到最近可通行像素 (1460, 1584)",
+        "shelf_ctg_auxiliary_unavailable:edge 5 path too short",
+        "shelf_quality_guard:long_jump_detected",
+        "shelf_quality_guard:infeasible_segment_detected"
+      ],
+      "ctg_auxiliary": {
+        "enabled": false,
+        "reason": "auxiliary_failed_continued_without_ctg",
+        "error_message": "edge 5 path too short"
+      },
+      "area_run_dir": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguoshangcheng_floor_3_area_8",
+      "overlay_path": "",
+      "all_final_overlay_path": "",
+      "planner_artifacts_dir": "",
+      "final_path_pixels": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguoshangcheng_floor_3_area_8/path_pixels.json",
+      "narrow_coverage_ratio": 0.9993732062151552,
+      "turn_hotspot_count": 45,
+      "lane_over_dense_count": 248,
+      "lane_over_sparse_count": 11,
+      "lane_spacing_issue_count": 259,
+      "segment_crossing_count": 64,
+      "readonly_quality_metrics": {
+        "coverage_width_px": 12,
+        "narrow_coverage_ratio": 0.9993732062151552,
+        "turn_hotspot_count": 45,
+        "lane_over_dense_count": 248,
+        "lane_over_sparse_count": 11,
+        "lane_spacing_issue_count": 259,
+        "segment_crossing_count": 64
+      }
+    },
+    {
+      "planner_mode": "shelf_aware_turn_cost",
+      "project_name": "beiguoshangcheng_floor_3",
+      "area_id": 10,
+      "status": "success",
+      "error_message": "",
+      "used_saved_params": true,
+      "point_count": 400,
+      "coverage_ratio": 0.9988849739083895,
+      "long_jump_count": 3,
+      "infeasible_segment_count": 5,
+      "total_turn_angle_deg": 6775.953856890551,
+      "length_px": 4837.317288150333,
+      "quality_guard_status": "warn",
+      "quality_guard_warnings": [
+        "long_jump_detected",
+        "infeasible_segment_detected"
+      ],
+      "planner_reasons": [
+        "explicit_planner_mode",
+        "start_snapped_to_nearest_free_pixel",
+        "shelf_ctg_auxiliary_enabled"
+      ],
+      "planner_warnings": [
+        "起点已从 (367, 1104) 吸附到最近可通行像素 (297, 1104)",
+        "shelf_quality_guard:long_jump_detected",
+        "shelf_quality_guard:infeasible_segment_detected"
+      ],
+      "ctg_auxiliary": {
+        "enabled": true,
+        "geometry_crop_box_px": [
+          0,
+          0,
+          522,
+          393
+        ],
+        "boundary_smoothing": {
+          "enabled": true,
+          "method": "boundary_band_majority",
+          "accepted": true,
+          "rejection_reason": null,
+          "majority_radius_m": 0.25,
+          "majority_radius_px": 5,
+          "boundary_band_m": 0.35,
+          "obstacle_threshold": 0.5,
+          "kernel_pixel_count": 81,
+          "boundary_band_pixel_count": 20947,
+          "free_component_count_before": 1,
+          "free_component_count_after": 1,
+          "delta_add_pixel_count": 80,
+          "delta_remove_pixel_count": 58,
+          "updated_pixel_count": 138,
+          "attempted": true,
+          "applied": true,
+          "source": "boundary_smoothed_geometry_rerun"
+        },
+        "graph_node_count": 6,
+        "graph_edge_count": 3,
+        "coverage_lane_count": 0,
+        "coverage_lane_sweeps_built": false,
+        "edge_territory": {
+          "seed_edge_count": 3,
+          "expanded_edge_ids": [
+            1,
+            2,
+            3
+          ],
+          "pixel_count_by_edge": {
+            "1": 3940,
+            "2": 37701,
+            "3": 3165
+          }
+        },
+        "junction_labeled_pixel_count": 246,
+        "topology_short_edge_fallback": {
+          "used": false,
+          "reason": "",
+          "fallback": ""
+        }
+      },
+      "area_run_dir": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguoshangcheng_floor_3_area_10",
+      "overlay_path": "",
+      "all_final_overlay_path": "",
+      "planner_artifacts_dir": "",
+      "final_path_pixels": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguoshangcheng_floor_3_area_10/path_pixels.json",
+      "narrow_coverage_ratio": 0.9973479388872875,
+      "turn_hotspot_count": 31,
+      "lane_over_dense_count": 147,
+      "lane_over_sparse_count": 10,
+      "lane_spacing_issue_count": 157,
+      "segment_crossing_count": 20,
+      "readonly_quality_metrics": {
+        "coverage_width_px": 12,
+        "narrow_coverage_ratio": 0.9973479388872875,
+        "turn_hotspot_count": 31,
+        "lane_over_dense_count": 147,
+        "lane_over_sparse_count": 10,
+        "lane_spacing_issue_count": 157,
+        "segment_crossing_count": 20
+      }
+    },
+    {
+      "planner_mode": "shelf_aware_turn_cost",
+      "project_name": "beiguoshangcheng_floor_3",
+      "area_id": 16,
+      "status": "success",
+      "error_message": "",
+      "used_saved_params": true,
+      "point_count": 1041,
+      "coverage_ratio": 0.9997070639437563,
+      "long_jump_count": 15,
+      "infeasible_segment_count": 30,
+      "total_turn_angle_deg": 15041.867822134325,
+      "length_px": 14251.494376450566,
+      "quality_guard_status": "warn",
+      "quality_guard_warnings": [
+        "long_jump_detected",
+        "infeasible_segment_detected"
+      ],
+      "planner_reasons": [
+        "explicit_planner_mode",
+        "start_snapped_to_nearest_free_pixel",
+        "shelf_ctg_auxiliary_disabled_after_failure"
+      ],
+      "planner_warnings": [
+        "起点已从 (2404, 450) 吸附到最近可通行像素 (2448, 450)",
+        "shelf_ctg_auxiliary_unavailable:edge 6 path too short",
+        "shelf_quality_guard:long_jump_detected",
+        "shelf_quality_guard:infeasible_segment_detected"
+      ],
+      "ctg_auxiliary": {
+        "enabled": false,
+        "reason": "auxiliary_failed_continued_without_ctg",
+        "error_message": "edge 6 path too short"
+      },
+      "area_run_dir": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguoshangcheng_floor_3_area_16",
+      "overlay_path": "",
+      "all_final_overlay_path": "",
+      "planner_artifacts_dir": "",
+      "final_path_pixels": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/beiguoshangcheng_floor_3_area_16/path_pixels.json",
+      "narrow_coverage_ratio": 0.9997640222409038,
+      "turn_hotspot_count": 59,
+      "lane_over_dense_count": 627,
+      "lane_over_sparse_count": 8,
+      "lane_spacing_issue_count": 635,
+      "segment_crossing_count": 58,
+      "readonly_quality_metrics": {
+        "coverage_width_px": 12,
+        "narrow_coverage_ratio": 0.9997640222409038,
+        "turn_hotspot_count": 59,
+        "lane_over_dense_count": 627,
+        "lane_over_sparse_count": 8,
+        "lane_spacing_issue_count": 635,
+        "segment_crossing_count": 58
+      }
+    },
+    {
+      "planner_mode": "shelf_aware_turn_cost",
+      "project_name": "fourfloor_20250923_8",
+      "area_id": 2,
+      "status": "success",
+      "error_message": "",
+      "used_saved_params": false,
+      "point_count": 36,
+      "coverage_ratio": 1.0,
+      "long_jump_count": 1,
+      "infeasible_segment_count": 5,
+      "total_turn_angle_deg": 610.140436165164,
+      "length_px": 461.8115664130454,
+      "quality_guard_status": "warn",
+      "quality_guard_warnings": [
+        "long_jump_detected",
+        "infeasible_segment_detected"
+      ],
+      "planner_reasons": [
+        "explicit_planner_mode",
+        "shelf_ctg_auxiliary_enabled"
+      ],
+      "planner_warnings": [
+        "shelf_quality_guard:long_jump_detected",
+        "shelf_quality_guard:infeasible_segment_detected"
+      ],
+      "ctg_auxiliary": {
+        "enabled": true,
+        "geometry_crop_box_px": [
+          0,
+          0,
+          47,
+          144
+        ],
+        "boundary_smoothing": {
+          "enabled": true,
+          "method": "boundary_band_majority",
+          "accepted": true,
+          "rejection_reason": null,
+          "majority_radius_m": 0.25,
+          "majority_radius_px": 5,
+          "boundary_band_m": 0.35,
+          "obstacle_threshold": 0.5,
+          "kernel_pixel_count": 81,
+          "boundary_band_pixel_count": 4407,
+          "free_component_count_before": 1,
+          "free_component_count_after": 1,
+          "delta_add_pixel_count": 2,
+          "delta_remove_pixel_count": 24,
+          "updated_pixel_count": 26,
+          "attempted": true,
+          "applied": true,
+          "source": "boundary_smoothed_geometry_rerun"
+        },
+        "graph_node_count": 4,
+        "graph_edge_count": 2,
+        "coverage_lane_count": 0,
+        "coverage_lane_sweeps_built": false,
+        "edge_territory": {
+          "seed_edge_count": 2,
+          "expanded_edge_ids": [
+            1,
+            2
+          ],
+          "pixel_count_by_edge": {
+            "1": 1923,
+            "2": 2146
+          }
+        },
+        "junction_labeled_pixel_count": 146,
+        "topology_short_edge_fallback": {
+          "used": false,
+          "reason": "",
+          "fallback": ""
+        }
+      },
+      "area_run_dir": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/fourfloor_20250923_8_area_2",
+      "overlay_path": "",
+      "all_final_overlay_path": "",
+      "planner_artifacts_dir": "",
+      "final_path_pixels": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/fourfloor_20250923_8_area_2/path_pixels.json",
+      "narrow_coverage_ratio": 1.0,
+      "turn_hotspot_count": 5,
+      "lane_over_dense_count": 5,
+      "lane_over_sparse_count": 0,
+      "lane_spacing_issue_count": 5,
+      "segment_crossing_count": 2,
+      "readonly_quality_metrics": {
+        "coverage_width_px": 12,
+        "narrow_coverage_ratio": 1.0,
+        "turn_hotspot_count": 5,
+        "lane_over_dense_count": 5,
+        "lane_over_sparse_count": 0,
+        "lane_spacing_issue_count": 5,
+        "segment_crossing_count": 2
+      }
+    },
+    {
+      "planner_mode": "shelf_aware_turn_cost",
+      "project_name": "fourfloor_20250923_8",
+      "area_id": 3,
+      "status": "success",
+      "error_message": "",
+      "used_saved_params": false,
+      "point_count": 26,
+      "coverage_ratio": 0.9996316758747698,
+      "long_jump_count": 0,
+      "infeasible_segment_count": 4,
+      "total_turn_angle_deg": 451.776290754195,
+      "length_px": 285.7102165412254,
+      "quality_guard_status": "warn",
+      "quality_guard_warnings": [
+        "infeasible_segment_detected"
+      ],
+      "planner_reasons": [
+        "explicit_planner_mode",
+        "shelf_ctg_auxiliary_enabled"
+      ],
+      "planner_warnings": [
+        "shelf_quality_guard:infeasible_segment_detected"
+      ],
+      "ctg_auxiliary": {
+        "enabled": true,
+        "geometry_crop_box_px": [
+          0,
+          0,
+          31,
+          158
+        ],
+        "boundary_smoothing": {
+          "enabled": true,
+          "method": "boundary_band_majority",
+          "accepted": true,
+          "rejection_reason": null,
+          "majority_radius_m": 0.25,
+          "majority_radius_px": 5,
+          "boundary_band_m": 0.35,
+          "obstacle_threshold": 0.5,
+          "kernel_pixel_count": 81,
+          "boundary_band_pixel_count": 4211,
+          "free_component_count_before": 1,
+          "free_component_count_after": 1,
+          "delta_add_pixel_count": 3,
+          "delta_remove_pixel_count": 28,
+          "updated_pixel_count": 31,
+          "attempted": true,
+          "applied": true,
+          "source": "boundary_smoothed_geometry_rerun"
+        },
+        "graph_node_count": 2,
+        "graph_edge_count": 1,
+        "coverage_lane_count": 0,
+        "coverage_lane_sweeps_built": false,
+        "edge_territory": {
+          "seed_edge_count": 1,
+          "expanded_edge_ids": [
+            1
+          ],
+          "pixel_count_by_edge": {
+            "1": 2690
+          }
+        },
+        "junction_labeled_pixel_count": 82,
+        "topology_short_edge_fallback": {
+          "used": false,
+          "reason": "",
+          "fallback": ""
+        }
+      },
+      "area_run_dir": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/fourfloor_20250923_8_area_3",
+      "overlay_path": "",
+      "all_final_overlay_path": "",
+      "planner_artifacts_dir": "",
+      "final_path_pixels": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/fourfloor_20250923_8_area_3/path_pixels.json",
+      "narrow_coverage_ratio": 0.9996316758747698,
+      "turn_hotspot_count": 4,
+      "lane_over_dense_count": 6,
+      "lane_over_sparse_count": 0,
+      "lane_spacing_issue_count": 6,
+      "segment_crossing_count": 0,
+      "readonly_quality_metrics": {
+        "coverage_width_px": 12,
+        "narrow_coverage_ratio": 0.9996316758747698,
+        "turn_hotspot_count": 4,
+        "lane_over_dense_count": 6,
+        "lane_over_sparse_count": 0,
+        "lane_spacing_issue_count": 6,
+        "segment_crossing_count": 0
+      }
+    },
+    {
+      "planner_mode": "shelf_aware_turn_cost",
+      "project_name": "fourfloor_20250923_8",
+      "area_id": 4,
+      "status": "success",
+      "error_message": "",
+      "used_saved_params": false,
+      "point_count": 20,
+      "coverage_ratio": 0.9974842767295597,
+      "long_jump_count": 0,
+      "infeasible_segment_count": 1,
+      "total_turn_angle_deg": 419.7484006603189,
+      "length_px": 227.29652504131224,
+      "quality_guard_status": "warn",
+      "quality_guard_warnings": [
+        "infeasible_segment_detected"
+      ],
+      "planner_reasons": [
+        "explicit_planner_mode",
+        "shelf_ctg_auxiliary_enabled"
+      ],
+      "planner_warnings": [
+        "shelf_quality_guard:infeasible_segment_detected"
+      ],
+      "ctg_auxiliary": {
+        "enabled": true,
+        "geometry_crop_box_px": [
+          0,
+          0,
+          124,
+          34
+        ],
+        "boundary_smoothing": {
+          "enabled": true,
+          "method": "boundary_band_majority",
+          "accepted": true,
+          "rejection_reason": null,
+          "majority_radius_m": 0.25,
+          "majority_radius_px": 5,
+          "boundary_band_m": 0.35,
+          "obstacle_threshold": 0.5,
+          "kernel_pixel_count": 81,
+          "boundary_band_pixel_count": 3411,
+          "free_component_count_before": 1,
+          "free_component_count_after": 1,
+          "delta_add_pixel_count": 3,
+          "delta_remove_pixel_count": 24,
+          "updated_pixel_count": 27,
+          "attempted": true,
+          "applied": true,
+          "source": "boundary_smoothed_geometry_rerun"
+        },
+        "graph_node_count": 2,
+        "graph_edge_count": 1,
+        "coverage_lane_count": 0,
+        "coverage_lane_sweeps_built": false,
+        "edge_territory": {
+          "seed_edge_count": 1,
+          "expanded_edge_ids": [
+            1
+          ],
+          "pixel_count_by_edge": {
+            "1": 2364
+          }
+        },
+        "junction_labeled_pixel_count": 82,
+        "topology_short_edge_fallback": {
+          "used": false,
+          "reason": "",
+          "fallback": ""
+        }
+      },
+      "area_run_dir": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/fourfloor_20250923_8_area_4",
+      "overlay_path": "",
+      "all_final_overlay_path": "",
+      "planner_artifacts_dir": "",
+      "final_path_pixels": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/fourfloor_20250923_8_area_4/path_pixels.json",
+      "narrow_coverage_ratio": 0.9974842767295597,
+      "turn_hotspot_count": 4,
+      "lane_over_dense_count": 2,
+      "lane_over_sparse_count": 0,
+      "lane_spacing_issue_count": 2,
+      "segment_crossing_count": 0,
+      "readonly_quality_metrics": {
+        "coverage_width_px": 12,
+        "narrow_coverage_ratio": 0.9974842767295597,
+        "turn_hotspot_count": 4,
+        "lane_over_dense_count": 2,
+        "lane_over_sparse_count": 0,
+        "lane_spacing_issue_count": 2,
+        "segment_crossing_count": 0
+      }
+    },
+    {
+      "planner_mode": "shelf_aware_turn_cost",
+      "project_name": "fourfloor_20250923_8",
+      "area_id": 5,
+      "status": "success",
+      "error_message": "",
+      "used_saved_params": false,
+      "point_count": 43,
+      "coverage_ratio": 0.9941431670281996,
+      "long_jump_count": 0,
+      "infeasible_segment_count": 2,
+      "total_turn_angle_deg": 538.6735702079449,
+      "length_px": 464.8172563116288,
+      "quality_guard_status": "warn",
+      "quality_guard_warnings": [
+        "infeasible_segment_detected"
+      ],
+      "planner_reasons": [
+        "explicit_planner_mode",
+        "shelf_ctg_auxiliary_enabled"
+      ],
+      "planner_warnings": [
+        "shelf_quality_guard:infeasible_segment_detected"
+      ],
+      "ctg_auxiliary": {
+        "enabled": true,
+        "geometry_crop_box_px": [
+          0,
+          0,
+          34,
+          253
+        ],
+        "boundary_smoothing": {
+          "enabled": true,
+          "method": "boundary_band_majority",
+          "accepted": true,
+          "rejection_reason": null,
+          "majority_radius_m": 0.25,
+          "majority_radius_px": 5,
+          "boundary_band_m": 0.35,
+          "obstacle_threshold": 0.5,
+          "kernel_pixel_count": 81,
+          "boundary_band_pixel_count": 6874,
+          "free_component_count_before": 1,
+          "free_component_count_after": 1,
+          "delta_add_pixel_count": 5,
+          "delta_remove_pixel_count": 29,
+          "updated_pixel_count": 34,
+          "attempted": true,
+          "applied": true,
+          "source": "boundary_smoothed_geometry_rerun"
+        },
+        "graph_node_count": 2,
+        "graph_edge_count": 1,
+        "coverage_lane_count": 0,
+        "coverage_lane_sweeps_built": false,
+        "edge_territory": {
+          "seed_edge_count": 1,
+          "expanded_edge_ids": [
+            1
+          ],
+          "pixel_count_by_edge": {
+            "1": 4586
+          }
+        },
+        "junction_labeled_pixel_count": 82,
+        "topology_short_edge_fallback": {
+          "used": false,
+          "reason": "",
+          "fallback": ""
+        }
+      },
+      "area_run_dir": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/fourfloor_20250923_8_area_5",
+      "overlay_path": "",
+      "all_final_overlay_path": "",
+      "planner_artifacts_dir": "",
+      "final_path_pixels": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/fourfloor_20250923_8_area_5/path_pixels.json",
+      "narrow_coverage_ratio": 0.9941431670281996,
+      "turn_hotspot_count": 3,
+      "lane_over_dense_count": 5,
+      "lane_over_sparse_count": 0,
+      "lane_spacing_issue_count": 5,
+      "segment_crossing_count": 0,
+      "readonly_quality_metrics": {
+        "coverage_width_px": 12,
+        "narrow_coverage_ratio": 0.9941431670281996,
+        "turn_hotspot_count": 3,
+        "lane_over_dense_count": 5,
+        "lane_over_sparse_count": 0,
+        "lane_spacing_issue_count": 5,
+        "segment_crossing_count": 0
+      }
+    },
+    {
+      "planner_mode": "shelf_aware_turn_cost",
+      "project_name": "fourfloor_20250923_8",
+      "area_id": 6,
+      "status": "success",
+      "error_message": "",
+      "used_saved_params": false,
+      "point_count": 228,
+      "coverage_ratio": 0.9969361015924209,
+      "long_jump_count": 4,
+      "infeasible_segment_count": 29,
+      "total_turn_angle_deg": 5052.171965319273,
+      "length_px": 2959.8213008961984,
+      "quality_guard_status": "warn",
+      "quality_guard_warnings": [
+        "long_jump_detected",
+        "infeasible_segment_detected"
+      ],
+      "planner_reasons": [
+        "explicit_planner_mode",
+        "start_snapped_to_nearest_free_pixel",
+        "shelf_ctg_auxiliary_disabled_after_failure"
+      ],
+      "planner_warnings": [
+        "起点已从 (370, 330) 吸附到最近可通行像素 (365, 325)",
+        "shelf_ctg_auxiliary_unavailable:skeleton_pruned_mask must contain skeleton pixels",
+        "shelf_quality_guard:long_jump_detected",
+        "shelf_quality_guard:infeasible_segment_detected"
+      ],
+      "ctg_auxiliary": {
+        "enabled": false,
+        "reason": "auxiliary_failed_continued_without_ctg",
+        "error_message": "skeleton_pruned_mask must contain skeleton pixels"
+      },
+      "area_run_dir": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/fourfloor_20250923_8_area_6",
+      "overlay_path": "",
+      "all_final_overlay_path": "",
+      "planner_artifacts_dir": "",
+      "final_path_pixels": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/fourfloor_20250923_8_area_6/path_pixels.json",
+      "narrow_coverage_ratio": 0.9943241224794623,
+      "turn_hotspot_count": 25,
+      "lane_over_dense_count": 75,
+      "lane_over_sparse_count": 2,
+      "lane_spacing_issue_count": 77,
+      "segment_crossing_count": 17,
+      "readonly_quality_metrics": {
+        "coverage_width_px": 12,
+        "narrow_coverage_ratio": 0.9943241224794623,
+        "turn_hotspot_count": 25,
+        "lane_over_dense_count": 75,
+        "lane_over_sparse_count": 2,
+        "lane_spacing_issue_count": 77,
+        "segment_crossing_count": 17
+      }
+    },
+    {
+      "planner_mode": "shelf_aware_turn_cost",
+      "project_name": "fourfloor_20250923_8",
+      "area_id": 7,
+      "status": "success",
+      "error_message": "",
+      "used_saved_params": false,
+      "point_count": 249,
+      "coverage_ratio": 0.9996746086264868,
+      "long_jump_count": 4,
+      "infeasible_segment_count": 35,
+      "total_turn_angle_deg": 4514.434279928931,
+      "length_px": 3316.642664831756,
+      "quality_guard_status": "warn",
+      "quality_guard_warnings": [
+        "long_jump_detected",
+        "infeasible_segment_detected"
+      ],
+      "planner_reasons": [
+        "explicit_planner_mode",
+        "shelf_ctg_auxiliary_enabled"
+      ],
+      "planner_warnings": [
+        "shelf_quality_guard:long_jump_detected",
+        "shelf_quality_guard:infeasible_segment_detected"
+      ],
+      "ctg_auxiliary": {
+        "enabled": true,
+        "geometry_crop_box_px": [
+          54,
+          12,
+          206,
+          746
+        ],
+        "boundary_smoothing": {
+          "enabled": false,
+          "applied": false,
+          "source": "disabled"
+        },
+        "graph_node_count": 2,
+        "graph_edge_count": 1,
+        "coverage_lane_count": 0,
+        "coverage_lane_sweeps_built": false,
+        "edge_territory": {
+          "seed_edge_count": 1,
+          "expanded_edge_ids": [
+            1
+          ],
+          "pixel_count_by_edge": {
+            "1": 27659
+          }
+        },
+        "junction_labeled_pixel_count": 82,
+        "topology_short_edge_fallback": {
+          "used": true,
+          "reason": "edge 1 path too short",
+          "fallback": "retry_ctg_auxiliary_with_boundary_smoothing_disabled"
+        }
+      },
+      "area_run_dir": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/fourfloor_20250923_8_area_7",
+      "overlay_path": "",
+      "all_final_overlay_path": "",
+      "planner_artifacts_dir": "",
+      "final_path_pixels": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas/fourfloor_20250923_8_area_7/path_pixels.json",
+      "narrow_coverage_ratio": 0.9995378690629012,
+      "turn_hotspot_count": 21,
+      "lane_over_dense_count": 151,
+      "lane_over_sparse_count": 2,
+      "lane_spacing_issue_count": 153,
+      "segment_crossing_count": 7,
+      "readonly_quality_metrics": {
+        "coverage_width_px": 12,
+        "narrow_coverage_ratio": 0.9995378690629012,
+        "turn_hotspot_count": 21,
+        "lane_over_dense_count": 151,
+        "lane_over_sparse_count": 2,
+        "lane_spacing_issue_count": 153,
+        "segment_crossing_count": 7
+      }
+    }
+  ],
+  "artifacts": {
+    "summary": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/summary.json",
+    "path_pixels_root": "algorithms/turn_cost_coverage_research/baselines/shelf_aware_turn_cost_20260617/areas"
+  },
+  "source_run_summary": "algorithms/turn_cost_coverage_research/output/candidate_baselines/run_20260617_123210_721341_shelf_aware_turn_cost_all_areas/summary.json",
+  "baseline_fixture_note": "轻量基线只保留 summary 指标和每个区域的 path_pixels.json，用于 delivery gate path identity 对比。\n2026-06-19：基于 delivery gate 通过的候选 run 回填非硬门禁只读诊断指标；path_pixels 内容不变。\n2026-06-19：基于 delivery gate 通过后的正式批量脚本回填非硬门禁只读诊断指标；path_pixels 内容不变。"
+}

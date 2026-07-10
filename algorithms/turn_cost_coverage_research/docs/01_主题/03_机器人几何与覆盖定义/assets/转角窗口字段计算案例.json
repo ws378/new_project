@@ -1,0 +1,148 @@
+[
+  {
+    "name": "正常直线段",
+    "source": "synthetic",
+    "description": "用于说明没有明显转角时，各项转角字段应接近 0。",
+    "metrics": {
+      "window_start_index": 0,
+      "window_end_index": 4,
+      "center_index": 2,
+      "window_size": 5,
+      "window_length_m": 4.0,
+      "entry_heading_deg": 0.0,
+      "exit_heading_deg": 0.0,
+      "turn_angle_deg": 0.0,
+      "turn_angle_sum_deg": 0.0,
+      "direction_change_deg": 0.0,
+      "straight_length_before_m": 1.0,
+      "straight_length_after_m": 2.0,
+      "max_segment_length_m": 1.0,
+      "local_turns_deg": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "risk_reason": [
+        "normal_reference"
+      ],
+      "requires_turn_swept_check": false
+    }
+  },
+  {
+    "name": "单点急转",
+    "source": "synthetic",
+    "description": "3 点窗口能直接识别中心点处的突然转向。",
+    "metrics": {
+      "window_start_index": 1,
+      "window_end_index": 3,
+      "center_index": 2,
+      "window_size": 3,
+      "window_length_m": 2.0,
+      "entry_heading_deg": 0.0,
+      "exit_heading_deg": 90.0,
+      "turn_angle_deg": 90.0,
+      "turn_angle_sum_deg": 90.0,
+      "direction_change_deg": 90.0,
+      "straight_length_before_m": 1.0,
+      "straight_length_after_m": 2.0,
+      "max_segment_length_m": 1.0,
+      "local_turns_deg": [
+        90.0
+      ],
+      "risk_reason": [
+        "sharp_turn"
+      ],
+      "requires_turn_swept_check": true
+    }
+  },
+  {
+    "name": "短距离连续折线",
+    "source": "synthetic",
+    "description": "5 点窗口关注多个局部转角叠加，入口和出口方向变化可能不大，但中间折线很多。",
+    "metrics": {
+      "window_start_index": 0,
+      "window_end_index": 4,
+      "center_index": 2,
+      "window_size": 5,
+      "window_length_m": 2.5239,
+      "entry_heading_deg": 0.0,
+      "exit_heading_deg": 48.37,
+      "turn_angle_deg": 100.15,
+      "turn_angle_sum_deg": 248.67,
+      "direction_change_deg": 48.37,
+      "straight_length_before_m": 0.75,
+      "straight_length_after_m": 0.6403,
+      "max_segment_length_m": 0.75,
+      "local_turns_deg": [
+        48.81,
+        -100.15,
+        99.71
+      ],
+      "risk_reason": [
+        "sharp_turn",
+        "short_zigzag"
+      ],
+      "requires_turn_swept_check": true
+    }
+  },
+  {
+    "name": "方向逐步扭动",
+    "source": "synthetic",
+    "description": "7 点窗口用于识别单点不一定极端，但整体方向逐步变化的情况。",
+    "metrics": {
+      "window_start_index": 0,
+      "window_end_index": 6,
+      "center_index": 3,
+      "window_size": 7,
+      "window_length_m": 3.82,
+      "entry_heading_deg": 0.0,
+      "exit_heading_deg": 72.9,
+      "turn_angle_deg": 20.96,
+      "turn_angle_sum_deg": 72.9,
+      "direction_change_deg": 72.9,
+      "straight_length_before_m": 1.2185,
+      "straight_length_after_m": 1.3111,
+      "max_segment_length_m": 0.6801,
+      "local_turns_deg": [
+        14.04,
+        20.96,
+        16.35,
+        12.09,
+        9.46
+      ],
+      "risk_reason": [
+        "direction_change"
+      ],
+      "requires_turn_swept_check": true
+    }
+  },
+  {
+    "name": "长跳干扰",
+    "source": "synthetic",
+    "description": "长跳不能简单解释为普通转角，max_segment_length_m 和 risk_reason 需要标出 long_jump_nearby。",
+    "metrics": {
+      "window_start_index": 0,
+      "window_end_index": 4,
+      "center_index": 2,
+      "window_size": 5,
+      "window_length_m": 8.0,
+      "entry_heading_deg": 0.0,
+      "exit_heading_deg": 0.0,
+      "turn_angle_deg": 36.87,
+      "turn_angle_sum_deg": 73.74,
+      "direction_change_deg": 0.0,
+      "straight_length_before_m": 1.0,
+      "straight_length_after_m": 0.0,
+      "max_segment_length_m": 5.0,
+      "local_turns_deg": [
+        0.0,
+        36.87,
+        -36.87
+      ],
+      "risk_reason": [
+        "long_jump_nearby"
+      ],
+      "requires_turn_swept_check": true
+    }
+  }
+]

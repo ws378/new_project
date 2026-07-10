@@ -1,0 +1,17 @@
+{
+  "map_id": "maptools_projects",
+  "ok": true,
+  "issues": [],
+  "warnings": [],
+  "repo_dir": "maptools_projects",
+  "expected_files": [
+    "maptools_projects/coverage_path_master.yaml",
+    "maptools_projects/room_sequence_master.yaml",
+    "maptools_projects/room_partition_master.yaml",
+    "maptools_projects/segmented_map_master.bin",
+    "maptools_projects/segmented_map_meta.json",
+    "maptools_projects/segmented_map.png",
+    "maptools_projects/meta.json"
+  ],
+  "area_count": 6
+}

@@ -1,0 +1,17 @@
+{
+  "map_id": "beiguoshangcheng_floor_3",
+  "map_version": "1",
+  "coverage_version": "master_20260514T190352+0800",
+  "encoding": "32SC1",
+  "width": 4205,
+  "height": 1805,
+  "step": 16820,
+  "source": "editor_export",
+  "frame_id": "map",
+  "resolution": 0.05000000074505806,
+  "origin": {
+    "x": -88.86259523757059,
+    "y": -69.86933183108971,
+    "z": 0.0
+  }
+}

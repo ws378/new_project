@@ -1,0 +1,9 @@
+gmsh
+pygmsh
+scikit-image
+gurobipy
+pcst_fast
+descartes
+sympy
+chardet
+blossomv @ git+https://github.com/amcpherson/blossomv

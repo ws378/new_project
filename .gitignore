@@ -1,0 +1,67 @@
+# Virtual environments
+.venv/
+venv/
+ENV/
+.env/
+
+# Large files (>1MB) - maps, models, datasets
+*.pgm
+*.npy
+*.npz
+*.bin
+*.pbst
+*.zip
+*.tar.gz
+*.so
+*.so.*
+*.pdf
+*_runs/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Packaging
+build/
+dist/
+*.egg-info/
+
+# IDE/editor
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Project outputs
+/output/
+/outputs/
+/runtime_runs/
+*.log
+/test_outputs/
+
+# Large directories
+beiguo_project/
+coverage_dataset/
+backups/
+ros_nodes/
+prepare_map/
+output*/
+
+# Coverage dataset internal
+coverage_dataset/cases/channel_topology_graph/business_maps/
+coverage_dataset/maps/business_maps/
+algorithms/channel_topology_graph/test_outputs/
+algorithms/channel_topology_graph/compare/
+algorithms/channel_topology_graph/baseline_snapshots/
+
+# Large JSON files
+examples/maptools_projects/beiguo_lanshan_1770397756/maptools_channel_topology_graph_runs/
+examples/maptools_projects/beiguoshangcheng_floor_3/maptools_shelf_aware_guarded_runs/
+examples/maptools_projects/beiguoshangcheng_floor_3_demo/maptools_shelf_aware_guarded_runs/
+examples/maptools_projects/beiguoshangcheng_floor_3/maptools_channel_topology_graph_runs/
+examples/maptools_projects/beiguoshangcheng_floor_3_demo/maptools_channel_topology_graph_runs/
+algorithms/channel_topology_graph/baselines/coverage_planning_refactor/case_01/raw/
+algorithms/turn_cost_coverage_research/docs/reference/

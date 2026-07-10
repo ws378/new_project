@@ -1,0 +1,17 @@
+{
+  "map_id": "maptools_projects",
+  "map_version": "1",
+  "coverage_version": "master_20260709T133249+0800",
+  "encoding": "32SC1",
+  "width": 1641,
+  "height": 3106,
+  "step": 6564,
+  "source": "editor_export",
+  "frame_id": "map",
+  "resolution": 0.05000000074505806,
+  "origin": {
+    "x": -6.761125370439363,
+    "y": -38.21122981119409,
+    "z": 0.0
+  }
+}

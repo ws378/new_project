@@ -1,0 +1,33 @@
+map_id: beiguoshangcheng_floor_3_手画6和7
+map_version: 1
+coverage_version: master_20260629T120338+0800
+meta:
+  source: editor_auto
+  status: candidate
+  approved_by: ''
+  coverage_version: master_20260629T120338+0800
+  master_version: ''
+  candidate_version: master_20260629T120338+0800
+  locked: false
+  editable: true
+  pending_review: true
+  approved_at: ''
+  generated_at: 2026-06-29T12:03:39+0800
+room_sequence_spec:
+  map_id: beiguoshangcheng_floor_3_手画6和7
+  map_version: 1
+  coverage_version: master_20260629T120338+0800
+  revision: 1
+  name: editor_auto_candidate
+  allow_auto_fill: false
+  fixed_prefix_rooms: []
+  fixed_suffix_rooms: []
+  sequences:
+  - room_ids:
+    - 10
+    - 3
+    - 16
+    - 7
+    - 5
+    - 6
+    - 8
