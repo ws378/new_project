@@ -113,8 +113,8 @@ class CropTool(BaseTool):
                 self.anchor_rect = None
                 self.canvas.config(cursor=self.cursor)
                 self._render_preview()
-                if self.controller and hasattr(self.controller, "statusbar"):
-                    self.controller.statusbar.config(text="Crop selection cleared")
+                if self.controller and hasattr(self.controller, "statusbar_left"):
+                    self.controller.statusbar_left.config(text="Crop selection cleared")
             elif self.controller and hasattr(self.controller, "tool_manager"):
                 self.controller.tool_manager.set_tool("pan")
         elif event.keysym == "Return" and self.rect_px is not None:

@@ -7,11 +7,53 @@ by the UI, export path, formal planner factory, and routing adapters.
 from __future__ import annotations
 
 BASIC_MODE = "basic"
+BASIC_IMPROVED_MODE = "basic_improved"
 REGION_BASIC_ROUTED_MODE = "region_basic"
 SHELF_AWARE_MODE = "shelf_aware"
 SHELF_AWARE_TURN_COST_MODE = "shelf_aware_turn_cost"
 AUTO_MODE = "auto"
 CHANNEL_TOPOLOGY_GRAPH_MODE = "channel_topology_graph"
+CONTOUR_DNN_MODE = "contour_dnn"
+CELL_DNN_MODE = "cell_dnn"
+ECD_DNN_MODE = "ecd_dnn"
+CONTOUR_MATRIX_MODE = "contour_matrix"
+
+CSTAR_RECT_MODE = "cstar_rect"
+CSTAR_CIRCLE_MODE = "cstar_circle"
+CSTAR_TSP_MODE = "cstar_tsp"
+
+BOUSTROPHEDON_MODE = "boustrophedon"
+SPIRAL_MODE = "spiral"
+WAVEFRONT_MODE = "wavefront"
+STC_MODE = "stc"
+BCD_BOUSTROPHEDON_MODE = "bcd_boustrophedon"
+
+SURVEY_MODES = frozenset(
+    {
+        BOUSTROPHEDON_MODE,
+        SPIRAL_MODE,
+        WAVEFRONT_MODE,
+        STC_MODE,
+        BCD_BOUSTROPHEDON_MODE,
+    }
+)
+
+GBNN_MODES = frozenset(
+    {
+        CONTOUR_DNN_MODE,
+        CELL_DNN_MODE,
+        ECD_DNN_MODE,
+        CONTOUR_MATRIX_MODE,
+    }
+)
+
+CSTAR_MODES = frozenset(
+    {
+        CSTAR_RECT_MODE,
+        CSTAR_CIRCLE_MODE,
+        CSTAR_TSP_MODE,
+    }
+)
 
 SHELF_AWARE_FORMAL_MODES = frozenset(
     {
@@ -23,6 +65,10 @@ SHELF_AWARE_FORMAL_MODES = frozenset(
 FORMAL_FACTORY_MODES = frozenset(
     {
         BASIC_MODE,
+        BASIC_IMPROVED_MODE,
+        *GBNN_MODES,
+        *CSTAR_MODES,
+        *SURVEY_MODES,
         *SHELF_AWARE_FORMAL_MODES,
     }
 )
@@ -44,6 +90,16 @@ ROUTED_PLANNER_MODES = frozenset(
 UI_PLANNER_MODES = (
     AUTO_MODE,
     BASIC_MODE,
+    BASIC_IMPROVED_MODE,
+    CONTOUR_DNN_MODE,
+    ECD_DNN_MODE,
+    CSTAR_RECT_MODE,
+    CSTAR_TSP_MODE,
+    BOUSTROPHEDON_MODE,
+    BCD_BOUSTROPHEDON_MODE,
+    SPIRAL_MODE,
+    WAVEFRONT_MODE,
+    STC_MODE,
     SHELF_AWARE_MODE,
     SHELF_AWARE_TURN_COST_MODE,
     CHANNEL_TOPOLOGY_GRAPH_MODE,

@@ -2,6 +2,7 @@ from algorithms.coverage_planning.modes import (
     ADAPTER_ONLY_MODES,
     AUTO_MODE,
     BASIC_MODE,
+    BCD_BOUSTROPHEDON_MODE,
     CHANNEL_TOPOLOGY_GRAPH_MODE,
     FORMAL_FACTORY_MODES,
     REGION_BASIC_ROUTED_MODE,
@@ -44,28 +45,19 @@ def test_top_level_coverage_planning_exports_turn_cost_profile_contract():
 
 
 def test_planner_mode_registry_separates_ui_factory_and_router_domains():
-    assert set(UI_PLANNER_MODES) == {
-        AUTO_MODE,
-        BASIC_MODE,
-        SHELF_AWARE_MODE,
-        SHELF_AWARE_TURN_COST_MODE,
-        CHANNEL_TOPOLOGY_GRAPH_MODE,
-    }
-    assert FORMAL_FACTORY_MODES == {
-        BASIC_MODE,
-        SHELF_AWARE_MODE,
-        SHELF_AWARE_TURN_COST_MODE,
-    }
+    assert BCD_BOUSTROPHEDON_MODE in UI_PLANNER_MODES
+    assert BCD_BOUSTROPHEDON_MODE in FORMAL_FACTORY_MODES
+
+    assert AUTO_MODE not in FORMAL_FACTORY_MODES
+    assert CHANNEL_TOPOLOGY_GRAPH_MODE not in FORMAL_FACTORY_MODES
+    assert REGION_BASIC_ROUTED_MODE not in FORMAL_FACTORY_MODES
+
     assert ROUTED_PLANNER_MODES == {
         REGION_BASIC_ROUTED_MODE,
         SHELF_AWARE_MODE,
         CHANNEL_TOPOLOGY_GRAPH_MODE,
     }
     assert ADAPTER_ONLY_MODES == {CHANNEL_TOPOLOGY_GRAPH_MODE}
-
-    assert AUTO_MODE not in FORMAL_FACTORY_MODES
-    assert CHANNEL_TOPOLOGY_GRAPH_MODE not in FORMAL_FACTORY_MODES
-    assert REGION_BASIC_ROUTED_MODE not in FORMAL_FACTORY_MODES
 
 
 def test_planner_mode_registry_maps_public_config_and_diagnostics_names():

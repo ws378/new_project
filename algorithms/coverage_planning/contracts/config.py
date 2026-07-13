@@ -87,6 +87,43 @@ class CoveragePlannerConfig:
     intersection_merge_geodesic_px: int = 20
     junction_polygon_radius_px: float = 10.0
 
+    # ------- GBNN 等高线参数 -------
+    step: float = 0.5
+    contour_start_offset: float = 0.3
+    contour_layer_gap: float = 0.5
+    contour_layers: int = 0  # 0 = 自适应, >0 = 固定层数
+    min_perimeter_factor: float = 1.0
+    min_node_dist_factor: float = 0.4
+    connection_dist_factor: float = 2.5
+
+    # ------- GBNN 核心参数 -------
+    gbnn_A: float = 5.0
+    gbnn_B: float = 1.0
+    gbnn_D: float = 1.0
+    gbnn_E: float = 100.0
+    gbnn_iters: int = 80
+
+    # ------- GBNN 评分权重 -------
+    gbnn_frontier_weight: float = 0.3
+    gbnn_dist_weight: float = 0.5
+    gbnn_turn_weight: float = 0.5
+    gbnn_straight_weight: float = 0.0
+    gbnn_zigzag_weight: float = 0.0
+    gbnn_backtrack_enable: bool = True
+    turn_forward_bonus: float = 0.5
+    zigzag_bonus: float = 0.3
+
+    # ------- GBNN gap fill（不再使用，保留兼容） -------
+    gap_fill_threshold_m: float = 0.3
+    gap_fill_node_count: int = 5
+
+    # ------- 基础算法 能量函数权重 -------
+    straight_ahead_weight: float = 1.5
+    turn_penalty_weight: float = 2.0
+    lateral_weight: float = 0.8
+    max_turn_deg: float = 90.0
+    jump_bridge_interpolations: int = 2
+
     # ------- 转角约束 -------
     turn_constraint_enable: bool = True
     turn_constraint_prohibit_energy: float = 1e6
@@ -95,6 +132,11 @@ class CoveragePlannerConfig:
     turn_constraint_neighbor_max_turn_deg: float = 100.0
     turn_constraint_fallback_max_turn_deg: float = 135.0
     turn_constraint_fallback_relax_dist_m: float = 2.0
+
+    # ------- C* 专属参数 -------
+    bridge_astar_enable: bool = False
+    debug_show_nodes_only: bool = False
+    layer_bridge_enable: bool = True
 
     # ------- map-tools artifact / adapter parameters -------
     map_yaml_path: str = ""

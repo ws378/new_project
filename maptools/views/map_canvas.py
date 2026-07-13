@@ -14,13 +14,14 @@ from ..utils.free_space_components import (
     FreeSpaceComponentStat,
     analyze_free_space_components,
 )
+from .theme import COLORS
 
 class MapCanvas(tk.Canvas):
     """
     负责地图显示、缩放、平移的画布组件
     """
     def __init__(self, parent, **kwargs):
-        super().__init__(parent, bg="#2b2b2b", highlightthickness=0, **kwargs)
+        super().__init__(parent, bg=COLORS["bg_root"], highlightthickness=0, **kwargs)
 
         # 状态数据
         self.map_data = None
@@ -34,6 +35,7 @@ class MapCanvas(tk.Canvas):
         self.pan_offset_x = 0
         self.pan_offset_y = 0
         self._zoom_refresh_after_id = None
+        self.zoom_callback = None
 
         # 显示选项
         self.show_base_map = True
@@ -98,6 +100,7 @@ class MapCanvas(tk.Canvas):
         self.bind("<Button-4>", self.on_zoom)         # Linux Scroll Up
         self.bind("<Button-5>", self.on_zoom)         # Linux Scroll Down
         self.bind("<Button-3>", self._on_right_click)  # 右键菜单
+        self.bind("<Double-Button-1>", self._on_double_click)  # 双击居中
         self.bind("<Leave>", self._on_leave)
         self.bind("<Escape>", self._on_escape)
         self.bind("<KeyPress>", self._on_key_press)
@@ -1063,6 +1066,8 @@ class MapCanvas(tk.Canvas):
     def _flush_zoom_refresh(self):
         self._zoom_refresh_after_id = None
         self.refresh()
+        if self.zoom_callback:
+            self.zoom_callback(self.zoom_level)
 
     def on_resize(self, event):
         # 窗口大小改变时，如果还没有加载图片，不处理
@@ -1081,6 +1086,23 @@ class MapCanvas(tk.Canvas):
         cx = px * self.zoom_level + self.pan_offset_x
         cy = py * self.zoom_level + self.pan_offset_y
         return cx, cy
+
+    # ==================== 双击居中 ====================
+
+    def _on_double_click(self, event):
+        """双击将点击位置居中到画布中央。"""
+        if not self.original_image:
+            return
+        canvas_w = self.winfo_width()
+        canvas_h = self.winfo_height()
+        if canvas_w <= 0 or canvas_h <= 0:
+            return
+        # 计算鼠标位置相对于当前视图的偏移
+        dx = canvas_w / 2 - event.x
+        dy = canvas_h / 2 - event.y
+        self.pan_offset_x += dx
+        self.pan_offset_y += dy
+        self._schedule_zoom_refresh()
 
     # ==================== 右键菜单 ====================
 
@@ -1263,8 +1285,8 @@ class MapCanvas(tk.Canvas):
         self.config(cursor="crosshair")
         # 更新状态栏提示
         main_win = self.winfo_toplevel()
-        if hasattr(main_win, 'statusbar'):
-            main_win.statusbar.config(
+        if hasattr(main_win, 'statusbar_left'):
+            main_win.statusbar_left.config(
                 text=f"请在地图上点击选择覆盖路径起点（Esc 取消） - {area_label.name}")
 
     def _exit_pick_start_mode(self):
@@ -1273,8 +1295,8 @@ class MapCanvas(tk.Canvas):
         self._pick_start_area_label = None
         self.config(cursor="arrow")
         main_win = self.winfo_toplevel()
-        if hasattr(main_win, 'statusbar'):
-            main_win.statusbar.config(text="Ready")
+        if hasattr(main_win, 'statusbar_left'):
+            main_win.statusbar_left.config(text="Ready")
 
     def _on_left_click(self, event):
         """左键点击事件：在取点模式下拦截并获取起点坐标"""
@@ -1597,3 +1619,61 @@ class MapCanvas(tk.Canvas):
                     text=str(p.id), fill="white", font=("Arial", max(8, int(10 * self.zoom_level))),
                     anchor="sw", tags="coverage_path"
                 )
+
+        # 5. 绘制起始点/终止点标记
+        self._draw_start_end_markers()
+
+    def _draw_start_end_markers(self):
+        """绘制全局及每个 Room 的起始点/终止点醒目标记"""
+        mgr = self.coverage_path_manager
+        if not mgr or not self.coord_transformer:
+            return
+
+        markers = []
+        # 全局终点（起点由 Room 级标记 R{rid}-S 代替）
+        if mgr.end_point:
+            markers.append(("E", mgr.end_point, "#FF3333", "#660000"))
+
+        # 每个 Room 的起点和终点
+        room_starts: dict[int, tuple[float, float]] = {}
+        room_ends: dict[int, tuple[float, float]] = {}
+        for node in mgr.nodes:
+            rid = node.room_id
+            if rid not in room_starts:
+                room_starts[rid] = (node.x, node.y)
+            room_ends[rid] = (node.x, node.y)
+
+        _SNAP_TOL = 1.0
+        for rid in sorted(room_starts):
+            markers.append((f"R{rid}-S", room_starts[rid], "#66FF66", "#338833"))
+        for rid in sorted(room_ends):
+            if not mgr.end_point:
+                markers.append((f"R{rid}-E", room_ends[rid], "#FF6666", "#883333"))
+            else:
+                dx = room_ends[rid][0] - mgr.end_point[0]
+                dy = room_ends[rid][1] - mgr.end_point[1]
+                if dx*dx + dy*dy > _SNAP_TOL*_SNAP_TOL:
+                    markers.append((f"R{rid}-E", room_ends[rid], "#FF6666", "#883333"))
+
+        for label, (wx, wy), fill, outline in markers:
+            u, v = self.coord_transformer.world_to_pixel(wx, wy)
+            cx, cy = self.image_to_canvas(u, v)
+
+            r = max(6, 8 * self.zoom_level)
+            # 外圈白色光晕
+            self.create_oval(
+                cx - r - 3, cy - r - 3, cx + r + 3, cy + r + 3,
+                fill="", outline="#FFFFFF", width=2, tags="coverage_path"
+            )
+            # 实心圆
+            self.create_oval(
+                cx - r, cy - r, cx + r, cy + r,
+                fill=fill, outline=outline, width=2, tags="coverage_path"
+            )
+            # 标签文字
+            font_size = max(10, int(12 * self.zoom_level))
+            self.create_text(
+                cx + r + 4, cy, text=label, fill="#FFFFFF",
+                font=("Arial", font_size, "bold"), tags="coverage_path",
+                anchor="w",
+            )

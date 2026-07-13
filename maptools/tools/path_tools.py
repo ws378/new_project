@@ -10,10 +10,10 @@ from ..utils.room_identity import area_room_id, valid_area_room_ids
 def _update_path_selection_status(controller, point):
     if not controller:
         return
-    statusbar = getattr(controller, 'statusbar', None)
+    statusbar = getattr(controller, 'statusbar_left', None)
     if not statusbar and hasattr(controller, 'winfo_toplevel'):
         top = controller.winfo_toplevel()
-        statusbar = getattr(top, 'statusbar', None)
+        statusbar = getattr(top, 'statusbar_left', None)
     if statusbar is None or point is None:
         return
     statusbar.config(
@@ -61,9 +61,9 @@ def _valid_manual_room_id(canvas, room_id: int) -> Optional[int]:
 
 
 def _notify_room_inference_failed(controller) -> None:
-    statusbar = getattr(controller, "statusbar", None)
+    statusbar = getattr(controller, "statusbar_left", None)
     if statusbar is None and hasattr(controller, "winfo_toplevel"):
-        statusbar = getattr(controller.winfo_toplevel(), "statusbar", None)
+        statusbar = getattr(controller.winfo_toplevel(), "statusbar_left", None)
     if statusbar is not None:
         statusbar.config(
             text="Path drawing cancelled: no valid Room ID was inferred from selected area, geometry, or Room ID field."

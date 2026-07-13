@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import simpledialog
+from .theme import COLORS, FONTS, SPACING
+
 
 class RotationDialog(simpledialog.Dialog):
     def __init__(self, parent, title="Rotate Map"):
@@ -8,17 +10,38 @@ class RotationDialog(simpledialog.Dialog):
         super().__init__(parent, title)
 
     def body(self, master):
-        tk.Label(master, text="旋转角度（度）：").grid(row=0, sticky=tk.W)
-        tk.Label(master, text="（逆时针为正）").grid(row=1, sticky=tk.W)
+        master.configure(bg=COLORS["bg_primary"])
+        tk.Label(master, text="旋转角度（度）：",
+                 bg=COLORS["bg_primary"], fg=COLORS["fg_primary"],
+                 font=FONTS["body"]).grid(row=0, sticky=tk.W, padx=8, pady=4)
+        tk.Label(master, text="（逆时针为正）",
+                 bg=COLORS["bg_primary"], fg=COLORS["fg_secondary"],
+                 font=FONTS["caption"]).grid(row=1, sticky=tk.W, padx=8)
 
-        self.e1 = tk.Entry(master)
-        self.e1.grid(row=0, column=1)
+        self.e1 = tk.Entry(
+            master, width=12,
+            bg=COLORS["bg_surface"], fg=COLORS["fg_bright"],
+            insertbackground=COLORS["fg_primary"],
+            relief=tk.FLAT, bd=1, font=FONTS["body"],
+        )
+        self.e1.grid(row=0, column=1, padx=8, pady=4)
         self.e1.insert(0, "0.0")
 
-        tk.Label(master, text="图像插值：").grid(row=2, sticky=tk.W)
+        tk.Label(master, text="图像插值：",
+                 bg=COLORS["bg_primary"], fg=COLORS["fg_primary"],
+                 font=FONTS["body"]).grid(row=2, sticky=tk.W, padx=8, pady=(8, 4))
         self.interpolation_var = tk.StringVar(value="nearest")
-        tk.Radiobutton(master, text="保真栅格", variable=self.interpolation_var, value="nearest").grid(row=2, column=1, sticky=tk.W)
-        tk.Radiobutton(master, text="平滑显示", variable=self.interpolation_var, value="smooth").grid(row=3, column=1, sticky=tk.W)
+        for row, (text, value) in enumerate([
+            ("保真栅格", "nearest"),
+            ("平滑显示", "smooth"),
+        ]):
+            tk.Radiobutton(
+                master, text=text, variable=self.interpolation_var, value=value,
+                bg=COLORS["bg_primary"], fg=COLORS["fg_primary"],
+                activebackground=COLORS["bg_primary"],
+                selectcolor=COLORS["bg_surface"],
+                font=FONTS["body"],
+            ).grid(row=2 + row, column=1, sticky=tk.W, padx=8)
         return self.e1
 
     def apply(self):
@@ -37,14 +60,29 @@ class CropInfoDialog(simpledialog.Dialog):
         super().__init__(parent, title)
 
     def body(self, master):
-        tk.Label(master, text="Release mouse to finish crop selection.").grid(row=0, sticky=tk.W)
-        tk.Label(master, text=f"Selected size: {self.width_px} x {self.height_px} px").grid(row=1, sticky=tk.W)
+        master.configure(bg=COLORS["bg_primary"])
+        tk.Label(master, text="Release mouse to finish crop selection.",
+                 bg=COLORS["bg_primary"], fg=COLORS["fg_primary"],
+                 font=FONTS["body"]).grid(row=0, sticky=tk.W, padx=8, pady=4)
+        tk.Label(master, text=f"Selected size: {self.width_px} x {self.height_px} px",
+                 bg=COLORS["bg_primary"], fg=COLORS["fg_secondary"],
+                 font=FONTS["body"]).grid(row=1, sticky=tk.W, padx=8)
         return None
 
     def buttonbox(self):
-        box = tk.Frame(self)
-        tk.Button(box, text="Crop", width=10, command=self.ok, default=tk.ACTIVE).pack(side=tk.LEFT, padx=5, pady=5)
-        tk.Button(box, text="Cancel", width=10, command=self.cancel).pack(side=tk.LEFT, padx=5, pady=5)
+        box = tk.Frame(self, bg=COLORS["bg_primary"])
+        tk.Button(
+            box, text="Crop", width=10, command=self.ok, default=tk.ACTIVE,
+            bg=COLORS["accent"], fg=COLORS["fg_on_accent"],
+            activebackground=COLORS["accent_hover"],
+            relief=tk.FLAT, bd=0, font=FONTS["button"], cursor="hand2",
+        ).pack(side=tk.LEFT, padx=SPACING["md"], pady=SPACING["md"])
+        tk.Button(
+            box, text="Cancel", width=10, command=self.cancel,
+            bg=COLORS["bg_surface"], fg=COLORS["fg_primary"],
+            activebackground=COLORS["bg_hover"],
+            relief=tk.FLAT, bd=0, font=FONTS["button"], cursor="hand2",
+        ).pack(side=tk.LEFT, padx=SPACING["md"], pady=SPACING["md"])
         self.bind("<Return>", self.ok)
         self.bind("<Escape>", self.cancel)
         box.pack()

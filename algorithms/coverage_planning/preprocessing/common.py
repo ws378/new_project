@@ -217,6 +217,9 @@ def preprocess_total_map(
         resolution_m_per_px=float(resolution_m_per_px),
     )
     prepared_map = remove_small_free_islands(after_obstacle_expand, min_area_px=min_area_px)
+    # Re-apply region mask after morphological ops to prevent free-space bleed
+    if region_mask is not None:
+        prepared_map = apply_region_constraint(prepared_map, region_mask)
     _write_prepare_map_stage_images(
         output_root=output_root,
         raw_map=constrained_raw_map,

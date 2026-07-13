@@ -5,7 +5,24 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from typing import Any, Mapping
 
-from .modes import BASIC_MODE, SHELF_AWARE_MODE, SHELF_AWARE_TURN_COST_MODE
+from .modes import (
+    BASIC_MODE,
+    BASIC_IMPROVED_MODE,
+    BOUSTROPHEDON_MODE,
+    BCD_BOUSTROPHEDON_MODE,
+    CELL_DNN_MODE,
+    CONTOUR_DNN_MODE,
+    CONTOUR_MATRIX_MODE,
+    CSTAR_CIRCLE_MODE,
+    CSTAR_RECT_MODE,
+    CSTAR_TSP_MODE,
+    ECD_DNN_MODE,
+    SHELF_AWARE_MODE,
+    SHELF_AWARE_TURN_COST_MODE,
+    SPIRAL_MODE,
+    STC_MODE,
+    WAVEFRONT_MODE,
+)
 
 SHELF_AWARE_TURN_COST_NODE_GENERATION_MODE = "turn_cost_repaired_grid"
 SHELF_AWARE_TURN_COST_REPAIRED_GRID_MAX_OFFSET_FACTOR = 0.28
@@ -30,6 +47,109 @@ PLANNER_MODE_PROFILES: dict[str, PlannerModeProfile] = {
         profile_id="basic_default",
         profile_version=1,
         profile_status="formal_baseline",
+        default_overrides={},
+    ),
+    BASIC_IMPROVED_MODE: PlannerModeProfile(
+        planner_mode=BASIC_IMPROVED_MODE,
+        profile_id="basic_improved_default",
+        profile_version=1,
+        profile_status="candidate_enhancement",
+        default_overrides={
+            "straight_ahead_weight": 2.0,
+            "turn_penalty_weight": 2.5,
+            "lateral_weight": 1.0,
+            "max_turn_deg": 90.0,
+        },
+    ),
+    CONTOUR_DNN_MODE: PlannerModeProfile(
+        planner_mode=CONTOUR_DNN_MODE,
+        profile_id="contour_dnn_default",
+        profile_version=1,
+        profile_status="research_baseline",
+        default_overrides={
+            "min_perimeter_factor": 0.3,
+            "gbnn_frontier_weight": 0.3,
+            "gbnn_dist_weight": 0.5,
+            "gbnn_turn_weight": 0.5,
+        },
+    ),
+    CELL_DNN_MODE: PlannerModeProfile(
+        planner_mode=CELL_DNN_MODE,
+        profile_id="cell_dnn_default",
+        profile_version=1,
+        profile_status="research_baseline",
+        default_overrides={},
+    ),
+    ECD_DNN_MODE: PlannerModeProfile(
+        planner_mode=ECD_DNN_MODE,
+        profile_id="ecd_dnn_default",
+        profile_version=1,
+        profile_status="research_baseline",
+        default_overrides={},
+    ),
+    CONTOUR_MATRIX_MODE: PlannerModeProfile(
+        planner_mode=CONTOUR_MATRIX_MODE,
+        profile_id="contour_matrix_default",
+        profile_version=1,
+        profile_status="research_baseline",
+        default_overrides={
+            "min_perimeter_factor": 0.3,
+        },
+    ),
+    CSTAR_RECT_MODE: PlannerModeProfile(
+        planner_mode=CSTAR_RECT_MODE,
+        profile_id="cstar_rect_default",
+        profile_version=1,
+        profile_status="research_baseline",
+        default_overrides={},
+    ),
+    CSTAR_CIRCLE_MODE: PlannerModeProfile(
+        planner_mode=CSTAR_CIRCLE_MODE,
+        profile_id="cstar_circle_default",
+        profile_version=1,
+        profile_status="research_baseline",
+        default_overrides={},
+    ),
+    CSTAR_TSP_MODE: PlannerModeProfile(
+        planner_mode=CSTAR_TSP_MODE,
+        profile_id="cstar_tsp_default",
+        profile_version=1,
+        profile_status="research_baseline",
+        default_overrides={},
+    ),
+    BOUSTROPHEDON_MODE: PlannerModeProfile(
+        planner_mode=BOUSTROPHEDON_MODE,
+        profile_id="boustrophedon_default",
+        profile_version=1,
+        profile_status="research_baseline",
+        default_overrides={},
+    ),
+    BCD_BOUSTROPHEDON_MODE: PlannerModeProfile(
+        planner_mode=BCD_BOUSTROPHEDON_MODE,
+        profile_id="bcd_boustrophedon_default",
+        profile_version=1,
+        profile_status="research_baseline",
+        default_overrides={},
+    ),
+    SPIRAL_MODE: PlannerModeProfile(
+        planner_mode=SPIRAL_MODE,
+        profile_id="spiral_default",
+        profile_version=1,
+        profile_status="research_baseline",
+        default_overrides={},
+    ),
+    WAVEFRONT_MODE: PlannerModeProfile(
+        planner_mode=WAVEFRONT_MODE,
+        profile_id="wavefront_default",
+        profile_version=1,
+        profile_status="research_baseline",
+        default_overrides={},
+    ),
+    STC_MODE: PlannerModeProfile(
+        planner_mode=STC_MODE,
+        profile_id="stc_default",
+        profile_version=1,
+        profile_status="research_baseline",
         default_overrides={},
     ),
     SHELF_AWARE_MODE: PlannerModeProfile(

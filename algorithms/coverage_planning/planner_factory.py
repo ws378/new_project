@@ -23,13 +23,30 @@ from .contracts import (
 )
 from .modes import (
     BASIC_MODE,
+    BASIC_IMPROVED_MODE,
+    BOUSTROPHEDON_MODE,
+    BCD_BOUSTROPHEDON_MODE,
+    CELL_DNN_MODE,
+    CONTOUR_DNN_MODE,
+    CONTOUR_MATRIX_MODE,
+    CSTAR_CIRCLE_MODE,
+    CSTAR_RECT_MODE,
+    CSTAR_TSP_MODE,
+    ECD_DNN_MODE,
     FORMAL_FACTORY_MODES,
     SHELF_AWARE_MODE,
+    SPIRAL_MODE,
+    STC_MODE,
+    WAVEFRONT_MODE,
     formal_selected_planner_name,
     is_formal_factory_mode,
     is_shelf_aware_formal_mode,
 )
+from .planners.cstar import CStarCircleCoveragePlanner, CStarRectCoveragePlanner, CStarTspCoveragePlanner
+from .planners.gbnn import ContourDnnCoveragePlanner, ContourMatrixCoveragePlanner, EcdCoveragePlanner, GbnnCoveragePlanner
 from .planners.region_basic import CoveragePlanner
+from .planners.region_basic_improved import CoveragePlanner as CoveragePlannerImproved
+from .planners.survey import BoustrophedonCoveragePlanner, BcdBoustrophedonCoveragePlanner, SpiralCoveragePlanner, WavefrontCoveragePlanner, SpanningTreeCoveragePlanner
 from .planners.shelf_aware_guarded import ShelfAwareCoveragePlanner
 from .planners.shelf_aware_guarded.artifacts.schema_registry import (
     ARTIFACT_MANIFEST_RESULT_CONTRACT,
@@ -83,8 +100,34 @@ def create_coverage_planner(config: CoveragePlannerConfig | None = None):
 
     cfg = apply_planner_mode_defaults(config or CoveragePlannerConfig())
     planner_mode = getattr(cfg, "planner_mode", BASIC_MODE)
+    if planner_mode == CONTOUR_DNN_MODE:
+        return ContourDnnCoveragePlanner(cfg)
+    if planner_mode == CELL_DNN_MODE:
+        return GbnnCoveragePlanner(cfg)
+    if planner_mode == ECD_DNN_MODE:
+        return EcdCoveragePlanner(cfg)
+    if planner_mode == CONTOUR_MATRIX_MODE:
+        return ContourMatrixCoveragePlanner(cfg)
+    if planner_mode == CSTAR_RECT_MODE:
+        return CStarRectCoveragePlanner(cfg)
+    if planner_mode == CSTAR_CIRCLE_MODE:
+        return CStarCircleCoveragePlanner(cfg)
+    if planner_mode == CSTAR_TSP_MODE:
+        return CStarTspCoveragePlanner(cfg)
+    if planner_mode == BOUSTROPHEDON_MODE:
+        return BoustrophedonCoveragePlanner(cfg)
+    if planner_mode == BCD_BOUSTROPHEDON_MODE:
+        return BcdBoustrophedonCoveragePlanner(cfg)
+    if planner_mode == SPIRAL_MODE:
+        return SpiralCoveragePlanner(cfg)
+    if planner_mode == WAVEFRONT_MODE:
+        return WavefrontCoveragePlanner(cfg)
+    if planner_mode == STC_MODE:
+        return SpanningTreeCoveragePlanner(cfg)
     if is_shelf_aware_formal_mode(planner_mode):
         return ShelfAwareCoveragePlanner(cfg)
+    if planner_mode == BASIC_IMPROVED_MODE:
+        return CoveragePlannerImproved(cfg)
     if planner_mode != BASIC_MODE:
         raise ValueError(
             f"unsupported planner_mode={planner_mode!r}; "

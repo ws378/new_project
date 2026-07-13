@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox, simpledialog
 import os
+import math
 import json
 import shutil
 import subprocess
@@ -8,6 +9,7 @@ import sys
 from pathlib import Path
 from .map_canvas import MapCanvas
 from .layout_components import Toolbar, Sidebar
+from .theme import COLORS, FONTS, SPACING, apply_theme
 from ..models.map_data import MapData
 from ..models.annotations import Annotations, ConstraintSegment, DerivedConstraintRegion
 from ..models.project import ProjectManager
@@ -240,7 +242,11 @@ class MainWindow(tk.Tk):
         super().__init__()
 
         self.title("ROS2 Map Editor")
-        self.geometry("1024x768")
+        self.geometry("1280x800")
+        self.minsize(800, 600)
+
+        # 应用主题
+        apply_theme(self)
 
         # 数据模型
         self.map_data = MapData()
@@ -294,6 +300,7 @@ class MainWindow(tk.Tk):
         edit_menu.add_command(label="Crop Map...", command=self.start_crop_map)
         edit_menu.add_separator()
         edit_menu.add_command(label="Clear Coverage Paths", command=self._clear_coverage_paths)
+        edit_menu.add_command(label="Reorder Room Paths...", command=self._reorder_room_paths)
         self.menu_bar.add_cascade(label="Edit", menu=edit_menu)
 
         # 视图菜单
@@ -313,19 +320,52 @@ class MainWindow(tk.Tk):
         view_menu.add_command(label="Apply Unknown Areas as Forbidden", command=self._apply_unknown_areas_as_forbidden)
         view_menu.add_separator()
         view_menu.add_command(label="Coverage Planner Diagnostics...", command=self._show_coverage_planning_diagnostics)
+        view_menu.add_separator()
+        view_menu.add_command(label="检测障碍物生成区域标签...", command=self._detect_obstacles_as_area_labels)
         self.menu_bar.add_cascade(label="View", menu=view_menu)
 
-        # 2. 状态栏
-        self.statusbar = tk.Label(self, text="Ready", bd=1, relief=tk.SUNKEN, anchor=tk.W)
+        # 2. 状态栏 (底部)
+        self.statusbar = tk.Frame(self, bg=COLORS["statusbar_bg"], height=24)
         self.statusbar.pack(side=tk.BOTTOM, fill=tk.X)
+        self.statusbar.pack_propagate(False)
+        self.statusbar_left = tk.Label(
+            self.statusbar, text="Ready", bg=COLORS["statusbar_bg"],
+            fg=COLORS["statusbar_fg"], font=FONTS["status"], anchor=tk.W,
+        )
+        self.statusbar_left.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=SPACING["md"])
+        self.statusbar_right = tk.Label(
+            self.statusbar, text="", bg=COLORS["statusbar_bg"],
+            fg=COLORS["statusbar_fg"], font=FONTS["status"], anchor=tk.E,
+        )
+        self.statusbar_right.pack(side=tk.RIGHT, padx=SPACING["md"])
 
         # 3. 工具栏 (Top) - 稍后在init_tools中传入tool_manager
         self.toolbar = Toolbar(self)
         self._toolbar_breakpoint = getattr(self.toolbar, "current_breakpoint", None)
 
         # 3.1 会话状态区（当前地图/项目/脏状态）
-        self.session_statusbar = tk.Label(self, text="", bd=1, relief=tk.GROOVE, anchor=tk.W)
+        self.session_statusbar = tk.Frame(self, bg=COLORS["session_bg"], height=28)
         self.session_statusbar.pack(side=tk.TOP, fill=tk.X)
+        self.session_statusbar.pack_propagate(False)
+        self.session_label_project = tk.Label(
+            self.session_statusbar, text="", bg=COLORS["session_bg"],
+            fg=COLORS["fg_secondary"], font=FONTS["session"], anchor=tk.W,
+        )
+        self.session_label_project.pack(side=tk.LEFT, padx=SPACING["lg"])
+        self.session_sep1 = tk.Frame(self.session_statusbar, width=1, bg=COLORS["border"])
+        self.session_sep1.pack(side=tk.LEFT, fill=tk.Y, padx=SPACING["sm"], pady=4)
+        self.session_label_map = tk.Label(
+            self.session_statusbar, text="", bg=COLORS["session_bg"],
+            fg=COLORS["fg_secondary"], font=FONTS["session"], anchor=tk.W,
+        )
+        self.session_label_map.pack(side=tk.LEFT, padx=SPACING["sm"])
+        self.session_sep2 = tk.Frame(self.session_statusbar, width=1, bg=COLORS["border"])
+        self.session_sep2.pack(side=tk.LEFT, fill=tk.Y, padx=SPACING["sm"], pady=4)
+        self.session_label_status = tk.Label(
+            self.session_statusbar, text="", bg=COLORS["session_bg"],
+            fg=COLORS["fg_secondary"], font=FONTS["session"], anchor=tk.W,
+        )
+        self.session_label_status.pack(side=tk.LEFT, padx=SPACING["sm"])
 
         # 4. 侧边栏 (Right)
         self.sidebar = Sidebar(self)
@@ -333,6 +373,7 @@ class MainWindow(tk.Tk):
         # 5. 主画布 (Center)
         self.canvas = MapCanvas(self)
         self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.canvas.zoom_callback = self._on_zoom_changed
 
         # 绑定快捷键
         self.bind("<Control-z>", lambda e: self.undo())
@@ -340,6 +381,10 @@ class MainWindow(tk.Tk):
 
         # Link Sidebar to Canvas
         self.sidebar.canvas = self.canvas
+
+        # Room 顺序面板回调
+        self.sidebar.room_order_panel.set_apply_callback(self._apply_room_order)
+        self.sidebar.room_order_panel.set_tsp_callback(self._on_tsp_optimize_room_order)
 
         # 绑定标注数据
         self.canvas.set_annotations(self.annotations)
@@ -368,7 +413,7 @@ class MainWindow(tk.Tk):
             return
         self.canvas.set_free_space_components_enabled(enabled)
         if enabled:
-            self.statusbar.config(
+            self.statusbar_left.config(
                 text=(
                     f"Free space components enabled. Repair radius={self.canvas.free_space_component_repair_radius_m:.2f} m | "
                     f"Small-threshold={self.canvas.small_component_no_coverage_threshold_m2:.0f} m² | "
@@ -376,7 +421,7 @@ class MainWindow(tk.Tk):
                 )
             )
         else:
-            self.statusbar.config(text="Free space components disabled")
+            self.statusbar_left.config(text="Free space components disabled")
 
     def _set_free_space_component_repair_radius(self):
         value = simpledialog.askfloat(
@@ -392,14 +437,14 @@ class MainWindow(tk.Tk):
         if self._free_space_components_var.get():
             result = self.canvas.free_space_components_result
             count = result.total_component_count if result is not None else 0
-            self.statusbar.config(
+            self.statusbar_left.config(
                 text=(
                     f"Free space components refreshed. Radius={value:.2f} m, components={count} | "
                     f"semantic=free | color={FREE_SPACE_COMPONENT_COLOR_HEX}"
                 )
             )
         else:
-            self.statusbar.config(text=f"Obstacle repair radius set to {value:.2f} m")
+            self.statusbar_left.config(text=f"Obstacle repair radius set to {value:.2f} m")
 
     def _set_small_component_no_coverage_threshold(self):
         value = simpledialog.askfloat(
@@ -419,14 +464,14 @@ class MainWindow(tk.Tk):
                 for stat in (result.component_stats.values() if result is not None else ())
                 if stat.suggested_no_coverage
             )
-            self.statusbar.config(
+            self.statusbar_left.config(
                 text=(
                     f"Small-component threshold refreshed. Threshold={value:.0f} m², suggested={count} | "
                     f"semantic=free | color={FREE_SPACE_COMPONENT_COLOR_HEX}"
                 )
             )
         else:
-            self.statusbar.config(text=f"Small component no-coverage threshold set to {value:.0f} m²")
+            self.statusbar_left.config(text=f"Small component no-coverage threshold set to {value:.0f} m²")
 
     def _update_free_space_component_status(self, stat, result, semantic_type=None):
         semantic = str(semantic_type or "free")
@@ -439,7 +484,7 @@ class MainWindow(tk.Tk):
             return
         if stat is None or result is None:
             count = result.total_component_count if result is not None else 0
-            self.statusbar.config(
+            self.statusbar_left.config(
                 text=(
                     f"Free space components: {count} | "
                     f"Repair radius={self.canvas.free_space_component_repair_radius_m:.2f} m | "
@@ -448,7 +493,7 @@ class MainWindow(tk.Tk):
                 )
             )
             return
-        self.statusbar.config(
+        self.statusbar_left.config(
             text=(
                 f"Component {stat.component_id} | "
                 f"pixels={stat.pixel_count} | "
@@ -709,7 +754,7 @@ class MainWindow(tk.Tk):
             target_key=str(target.component_key),
             matched_after=self._matching_derived_region_summaries_for_target(target),
         )
-        self.statusbar.config(
+        self.statusbar_left.config(
             text=f"Component {target.component_id} -> {constraint_type} (semantic) | color={constraint_base_color(constraint_type)}"
         )
 
@@ -777,7 +822,7 @@ class MainWindow(tk.Tk):
             )
         ]
         self._commit_constraint_region_truth(new_segments, new_regions)
-        self.statusbar.config(
+        self.statusbar_left.config(
             text=f"Component {target.component_id} -> {constraint_type} polygon | color={constraint_base_color(constraint_type)}"
         )
 
@@ -822,7 +867,7 @@ class MainWindow(tk.Tk):
                 target_key=str(target.component_key),
                 matched_after=self._matching_derived_region_summaries_for_target(target),
             )
-            self.statusbar.config(text=f"Component {target.component_id} has no removable constraint overlays")
+            self.statusbar_left.config(text=f"Component {target.component_id} has no removable constraint overlays")
             return
         self._commit_constraint_region_truth(new_segments, new_regions)
         self._log_free_space_semantic_state(
@@ -831,7 +876,7 @@ class MainWindow(tk.Tk):
             target_key=str(target.component_key),
             matched_after=self._matching_derived_region_summaries_for_target(target),
         )
-        self.statusbar.config(text=f"Component {target.component_id} restored to free | color={FREE_SPACE_COMPONENT_COLOR_HEX}")
+        self.statusbar_left.config(text=f"Component {target.component_id} restored to free | color={FREE_SPACE_COMPONENT_COLOR_HEX}")
 
     def _apply_small_components_as_no_coverage(self):
         result = getattr(self.canvas, "free_space_components_result", None)
@@ -853,7 +898,7 @@ class MainWindow(tk.Tk):
             if stat.suggested_no_coverage
         ]
         if not candidate_ids:
-            self.statusbar.config(
+            self.statusbar_left.config(
                 text=f"No free-space components <= {self.canvas.small_component_no_coverage_threshold_m2:.2f} m²"
             )
             return
@@ -877,10 +922,10 @@ class MainWindow(tk.Tk):
             existing_component_keys.add(component_key)
             added += 1
         if added <= 0:
-            self.statusbar.config(text="All suggested small components already marked as no_coverage")
+            self.statusbar_left.config(text="All suggested small components already marked as no_coverage")
             return
         self._commit_constraint_region_truth(new_segments, new_regions)
-        self.statusbar.config(
+        self.statusbar_left.config(
             text=f"Applied {added} small components as no_coverage | color={constraint_base_color('no_coverage')}"
         )
 
@@ -894,7 +939,7 @@ class MainWindow(tk.Tk):
             return
         result = analyze_unknown_regions(self.map_data)
         if result.total_component_count <= 0:
-            self.statusbar.config(text="No unknown areas found")
+            self.statusbar_left.config(text="No unknown areas found")
             return
 
         confirmed = messagebox.askyesno(
@@ -909,7 +954,7 @@ class MainWindow(tk.Tk):
             parent=self,
         )
         if not confirmed:
-            self.statusbar.config(text="Apply unknown areas as forbidden canceled")
+            self.statusbar_left.config(text="Apply unknown areas as forbidden canceled")
             return
 
         generated_regions = build_unknown_forbidden_regions(self.annotations, result)
@@ -924,7 +969,7 @@ class MainWindow(tk.Tk):
             [copy.deepcopy(item) for item in self.annotations.constraint_segments],
             new_regions,
         )
-        self.statusbar.config(
+        self.statusbar_left.config(
             text=(
                 f"Applied {len(generated_regions)} unknown area(s) as forbidden | "
                 f"components={result.total_component_count} | "
@@ -932,6 +977,79 @@ class MainWindow(tk.Tk):
             )
         )
         
+
+    def _detect_obstacles_as_area_labels(self):
+        """检测地图中的障碍物和禁行区轮廓，自动生成区域标签。"""
+        if self.map_data.metadata is None:
+            self._show_warning(problem="未加载地图", impact="无法分析",
+                               suggestion="先加载工程后再操作")
+            return
+
+        from ..utils.free_space_components import build_obstacle_semantic_mask
+        obstacle_mask = build_obstacle_semantic_mask(self.map_data, self.annotations)
+        if cv2.countNonZero(obstacle_mask) == 0:
+            self.statusbar_left.config(text="地图中无检测到障碍物")
+            return
+
+        min_area = simpledialog.askfloat(
+            "最小面积 (m²)", "忽略小于此面积的障碍物 (m², 默认0.5):",
+            parent=self, minvalue=0.01, initialvalue=0.5)
+        if min_area is None:
+            return
+
+        resolution = float(self.map_data.metadata.resolution)
+        origin_x = float(self.map_data.metadata.origin[0])
+        origin_y = float(self.map_data.metadata.origin[1])
+        height = int(self.map_data.height)
+        min_area_px = min_area / (resolution * resolution)
+
+        contours, _ = cv2.findContours(
+            obstacle_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        existing_ids = {a.area_id for a in self.annotations.area_labels}
+        next_id = 1
+        while next_id in existing_ids:
+            next_id += 1
+
+        from ..controllers.commands.annotation_command import AddAnnotationCommand
+
+        added = 0
+        for contour in contours:
+            area_px = cv2.contourArea(contour)
+            if area_px < min_area_px:
+                continue
+            contour = cv2.approxPolyDP(contour, epsilon=1.5, closed=True)
+            if contour.shape[0] < 3:
+                continue
+            polygon = []
+            for pt in contour[:, 0, :]:
+                wx = origin_x + float(pt[0]) * resolution
+                wy = origin_y + float(height - pt[1]) * resolution
+                polygon.append((wx, wy))
+            if len(polygon) < 3:
+                continue
+            area_m2 = area_px * resolution * resolution
+            label = AreaLabel(
+                id="", area_id=next_id,
+                name=f"障碍物 {area_m2:.1f}m²",
+                polygon=polygon, color="",
+            )
+            cmd = AddAnnotationCommand(
+                self.annotations, "area_label",
+                {"polygon": label.polygon, "name": label.name,
+                 "area_id": label.area_id},
+                refresh_cb=self.canvas.refresh,
+            )
+            self.command_manager.execute(cmd)
+            next_id += 1
+            while next_id in existing_ids:
+                next_id += 1
+            added += 1
+
+        self.canvas.refresh()
+        self.statusbar_left.config(
+            text=f"障碍物检测: {added} 个区域已生成 (min={min_area}m²)")
+
     def _check_dirty_state(self):
         if bool(getattr(self, "_is_closing", False)) or not self._window_exists():
             self._dirty_state_after_id = None
@@ -1106,31 +1224,20 @@ class MainWindow(tk.Tk):
         if manager is None:
             return
         manager.set_tool(tool_name)
-        statusbar = self.__dict__.get("statusbar")
+        statusbar = self.__dict__.get("statusbar_left")
         if statusbar is not None:
             statusbar.config(text=f"Switched tool: {label}")
 
     def _get_toolbar_shortcut_hints(self) -> str:
         pairs = [
-            ("Select", "V"),
-            ("Pan", "Space"),
-            ("Brush", "B"),
-            ("Line", "L"),
-            ("Eraser", "E"),
-            ("Crop", "C"),
-            ("Origin", "O"),
-            ("Forbidden", "F"),
-            ("PassOnly", "P"),
-            ("Wall", "W"),
-            ("Station", "S"),
-            ("Area", "A"),
-            ("PathSel", "1"),
-            ("PathPoly", "2"),
-            ("PathAdd", "3"),
-            ("PathDraw", "4"),
-            ("PathLine", "5"),
+            ("V", "Select"),
+            ("Space", "Pan"),
+            ("B", "Brush"),
+            ("L", "Line"),
+            ("E", "Eraser"),
+            ("C", "Crop"),
         ]
-        return " | ".join(f"{name}: {key}" for name, key in pairs)
+        return "  ".join(f"{key}:{name}" for key, name in pairs)
 
     def _build_session_status_text(self) -> str:
         map_data = self.__dict__.get("map_data")
@@ -1161,9 +1268,36 @@ class MainWindow(tk.Tk):
         )
 
     def _refresh_session_status(self):
-        session_statusbar = self.__dict__.get("session_statusbar")
-        if session_statusbar is not None:
-            session_statusbar.config(text=self._build_session_status_text())
+        map_data = self.__dict__.get("map_data")
+        map_name = "-"
+        if map_data and getattr(map_data, "yaml_path", ""):
+            map_name = os.path.basename(map_data.yaml_path)
+
+        project_dir = self.__dict__.get("_current_project_dir")
+        project_name = os.path.basename(project_dir) if project_dir else "-"
+
+        command_manager = self.__dict__.get("command_manager")
+        coverage_manager = self.__dict__.get("coverage_path_manager")
+        dirty = False
+        if command_manager and command_manager.can_undo():
+            dirty = True
+        if coverage_manager and getattr(coverage_manager, "is_dirty", False):
+            dirty = True
+
+        dirty_label = " \u25cf unsaved" if dirty else ""
+
+        session_label_project = self.__dict__.get("session_label_project")
+        session_label_map = self.__dict__.get("session_label_map")
+        session_label_status = self.__dict__.get("session_label_status")
+        if session_label_project:
+            session_label_project.config(text=f"\u2002{project_name}")
+        if session_label_map:
+            session_label_map.config(text=f"\u2002{map_name}")
+        if session_label_status:
+            session_label_status.config(
+                text=f"{dirty_label}",
+                fg=COLORS["warning"] if dirty else COLORS["fg_secondary"],
+            )
 
     def _on_window_resize(self, event):
         if event.widget is not self or not self.toolbar:
@@ -1180,6 +1314,10 @@ class MainWindow(tk.Tk):
             self.toolbar.apply_breakpoint(breakpoint_name)
             self._toolbar_breakpoint = breakpoint_name
 
+    def _on_zoom_changed(self, zoom_level: float):
+        statusbar_right = self.__dict__.get("statusbar_right")
+        if statusbar_right:
+            statusbar_right.config(text=f"Zoom: {zoom_level:.1f}x")
 
     def _init_tools(self):
         """初始化工具管理器和工具"""
@@ -1268,7 +1406,7 @@ class MainWindow(tk.Tk):
         self.command_manager.execute(cmd)
 
         self.canvas.refresh()
-        self.statusbar.config(text=f"Rotated map by {dlg.angle} degrees")
+        self.statusbar_left.config(text=f"Rotated map by {dlg.angle} degrees")
 
     def start_crop_map(self):
         """进入框选裁剪模式。"""
@@ -1281,7 +1419,7 @@ class MainWindow(tk.Tk):
             return
 
         self.tool_manager.set_tool("crop")
-        self.statusbar.config(text="Drag to create crop box, adjust handles, press Enter to apply")
+        self.statusbar_left.config(text="Drag to create crop box, adjust handles, press Enter to apply")
 
     def crop_map_to_pixels(self, x0: int, y0: int, x1: int, y1: int):
         """按像素矩形裁剪地图，并同步更新标注和 undo/redo。"""
@@ -1294,17 +1432,17 @@ class MainWindow(tk.Tk):
         y1 = max(0, min(int(y1), self.map_data.height))
 
         if x1 <= x0 or y1 <= y0:
-            self.statusbar.config(text="Crop cancelled: empty selection")
+            self.statusbar_left.config(text="Crop cancelled: empty selection")
             return False
 
         dlg = CropInfoDialog(self, x1 - x0, y1 - y0)
         if not dlg.confirmed:
-            self.statusbar.config(text="Crop cancelled")
+            self.statusbar_left.config(text="Crop cancelled")
             return False
 
         before_state = TransformCommand.capture_state(self.map_data, self.annotations)
         if not self.map_data.crop(x0, y0, x1, y1):
-            self.statusbar.config(text="Crop failed")
+            self.statusbar_left.config(text="Crop failed")
             return False
 
         bounds = self.map_data.get_world_bounds()
@@ -1322,7 +1460,7 @@ class MainWindow(tk.Tk):
         self.command_manager.execute(cmd)
 
         self.canvas.refresh()
-        self.statusbar.config(text=f"Cropped map to {self.map_data.width} x {self.map_data.height}")
+        self.statusbar_left.config(text=f"Cropped map to {self.map_data.width} x {self.map_data.height}")
         return True
 
 
@@ -1372,7 +1510,7 @@ class MainWindow(tk.Tk):
             self._current_project_dir = dir_path
             extra_warnings = list(getattr(self, "_last_project_extra_warnings", []) or [])
             if extra_warnings:
-                self.statusbar.config(text=f"Saved project to {dir_path}; coverage repo warnings: {len(extra_warnings)}")
+                self.statusbar_left.config(text=f"Saved project to {dir_path}; coverage repo warnings: {len(extra_warnings)}")
                 self._show_warning(
                     title="Project Saved With Warnings",
                     problem="工程已保存，但 coverage_repo 派生产物未完整刷新",
@@ -1380,7 +1518,7 @@ class MainWindow(tk.Tk):
                     suggestion="根据提示检查区域重叠和覆盖路径一致性；路径不会被自动修改或重算",
                 )
             else:
-                self.statusbar.config(text=f"Saved project to {dir_path}")
+                self.statusbar_left.config(text=f"Saved project to {dir_path}")
                 self._safe_showinfo("Success", f"Project saved to {dir_path}")
         except Exception as e:
             import traceback
@@ -1434,7 +1572,7 @@ class MainWindow(tk.Tk):
         if not map_yaml:
             return
 
-        self.statusbar.config(text=f"Loading map for new project: {map_yaml}...")
+        self.statusbar_left.config(text=f"Loading map for new project: {map_yaml}...")
         self.update()
 
         self._reset_project_session()
@@ -1444,7 +1582,7 @@ class MainWindow(tk.Tk):
                 impact="无法创建新工程",
                 suggestion="确认选择的是有效 map.yaml 且底图图像可访问",
             )
-            self.statusbar.config(text="New project failed")
+            self.statusbar_left.config(text="New project failed")
             return
 
         self.canvas.set_map_data(self.map_data)
@@ -1455,12 +1593,12 @@ class MainWindow(tk.Tk):
             try:
                 self._prompt_load_electronic_fence()
             except Exception:
-                self.statusbar.config(text=f"New project ready without electronic fence: {map_yaml}")
+                self.statusbar_left.config(text=f"New project ready without electronic fence: {map_yaml}")
                 self._log_coverage_canvas_state("new_project_without_fence", map_yaml=map_yaml)
                 return
 
         self._log_coverage_canvas_state("new_project", map_yaml=map_yaml)
-        self.statusbar.config(text=f"New project ready: {map_yaml}")
+        self.statusbar_left.config(text=f"New project ready: {map_yaml}")
 
     def open_project(self):
         """打开项目"""
@@ -1482,10 +1620,10 @@ class MainWindow(tk.Tk):
                 impact="项目未加载",
                 suggestion="确认 .mapproj、project.json 和底图路径完整可访问",
             )
-            self.statusbar.config(text="Load project failed")
+            self.statusbar_left.config(text="Load project failed")
 
     def _open_project_file(self, project_file_path: str):
-        self.statusbar.config(text=f"Loading project file {project_file_path}...")
+        self.statusbar_left.config(text=f"Loading project file {project_file_path}...")
         self.update()
         if not self.project_manager.load_project_file(project_file_path):
             self._show_error(
@@ -1493,7 +1631,7 @@ class MainWindow(tk.Tk):
                 impact="项目未被打开",
                 suggestion="确认 .mapproj 文件存在且 project_dir 可访问",
             )
-            self.statusbar.config(text="Load project failed")
+            self.statusbar_left.config(text="Load project failed")
             return
         dir_path = self.project_manager.project_dir
         try:
@@ -1511,7 +1649,7 @@ class MainWindow(tk.Tk):
             notes = ", ".join(note for note in (project_note, params_note, start_note, unknown_note) if note)
             if notes:
                 status += f" ({notes})"
-            self.statusbar.config(text=status)
+            self.statusbar_left.config(text=status)
         except Exception as e:
             import traceback
             traceback.print_exc()
@@ -1524,7 +1662,7 @@ class MainWindow(tk.Tk):
             self.canvas.set_annotations(self.annotations)
             self.canvas.refresh()
             self._log_coverage_canvas_state("open_project_file_partial", project_file=project_file_path)
-            self.statusbar.config(text=f"Loaded project with partial extras: {dir_path}")
+            self.statusbar_left.config(text=f"Loaded project with partial extras: {dir_path}")
 
     def open_resource(self):
         """统一主入口：选择 YAML 文件或项目目录并自动识别。"""
@@ -1532,7 +1670,7 @@ class MainWindow(tk.Tk):
         if not resource_path:
             return
 
-        self.statusbar.config(text=f"Loading {resource_path}...")
+        self.statusbar_left.config(text=f"Loading {resource_path}...")
         self.update()
         try:
             self._open_resource(resource_path)
@@ -1544,7 +1682,7 @@ class MainWindow(tk.Tk):
                 impact="资源未导入到当前会话",
                 suggestion="若是目录请使用项目目录；若是文件请确认 YAML schema 正确",
             )
-            self.statusbar.config(text="Load failed")
+            self.statusbar_left.config(text="Load failed")
 
     def _choose_resource_path(self) -> str | None:
         # 单入口：不先询问资源类型。先选文件，取消后再选目录。
@@ -1569,12 +1707,12 @@ class MainWindow(tk.Tk):
 
     def _open_project_dir(self, dir_path: str):
         """加载项目目录资源"""
-        self.statusbar.config(text=f"Loading project from {dir_path}...")
+        self.statusbar_left.config(text=f"Loading project from {dir_path}...")
         self.update()
 
         if not self.project_manager.load_project(dir_path):
             self._show_error("项目加载失败", "项目未被打开", "确认目录包含 project.json 且底图路径可访问")
-            self.statusbar.config(text="Load project failed")
+            self.statusbar_left.config(text="Load project failed")
             return
 
         try:
@@ -1590,7 +1728,7 @@ class MainWindow(tk.Tk):
             notes = ", ".join(note for note in (project_note, unknown_note) if note)
             if notes:
                 status += f" ({notes})"
-            self.statusbar.config(text=status)
+            self.statusbar_left.config(text=status)
         except Exception as e:
             import traceback
             traceback.print_exc()
@@ -1603,7 +1741,7 @@ class MainWindow(tk.Tk):
             self.canvas.set_annotations(self.annotations)
             self.canvas.refresh()
             self._log_coverage_canvas_state("open_project_dir_partial", project_dir=dir_path)
-            self.statusbar.config(text=f"Loaded project with partial extras: {dir_path}")
+            self.statusbar_left.config(text=f"Loaded project with partial extras: {dir_path}")
 
     def _compact_unknown_forbidden_regions(self) -> str:
         removed = compact_unknown_forbidden_regions(self.annotations)
@@ -1844,7 +1982,7 @@ class MainWindow(tk.Tk):
                 exporter = Exporter(self.map_data, self.annotations)
                 exporter.export(dir_path)
                 messagebox.showinfo("Success", f"Exported to {dir_path}")
-                self.statusbar.config(text=f"Exported to {dir_path}")
+                self.statusbar_left.config(text=f"Exported to {dir_path}")
             except Exception as e:
                 import traceback
                 traceback.print_exc()
@@ -1899,7 +2037,7 @@ class MainWindow(tk.Tk):
                 ),
             )
             if not allow_partial_export:
-                self.statusbar.config(text="Coverage repo export canceled")
+                self.statusbar_left.config(text="Coverage repo export canceled")
                 return
 
         dir_path = filedialog.askdirectory(title="Select Coverage Repo Root Directory")
@@ -1921,7 +2059,7 @@ class MainWindow(tk.Tk):
                     suggestion="; ".join(preflight.issues),
                     title="Export Blocked",
                 )
-                self.statusbar.config(text="Coverage repo export preflight failed")
+                self.statusbar_left.config(text="Coverage repo export preflight failed")
                 return
 
             checklist = "\n".join(f"- {name}" for name in preflight.expected_files)
@@ -1934,7 +2072,7 @@ class MainWindow(tk.Tk):
                     f"将生成文件:\n{checklist}\n\n继续导出?"
                 ),
             ):
-                self.statusbar.config(text="Coverage repo export canceled")
+                self.statusbar_left.config(text="Coverage repo export canceled")
                 return
 
             result = export_coverage_repo(
@@ -1956,7 +2094,7 @@ class MainWindow(tk.Tk):
                     f"Output files:\n{summary_lines}"
                 ),
             )
-            self.statusbar.config(
+            self.statusbar_left.config(
                 text=f"Coverage repo exported: rooms={result.room_count}, paths={result.path_count}, dir={result.repo_dir}"
             )
         except Exception as e:
@@ -1971,12 +2109,12 @@ class MainWindow(tk.Tk):
     def undo(self):
         self.command_manager.undo()
         self.canvas.refresh()
-        self.statusbar.config(text="Undo")
+        self.statusbar_left.config(text="Undo")
 
     def redo(self):
         self.command_manager.redo()
         self.canvas.refresh()
-        self.statusbar.config(text="Redo")
+        self.statusbar_left.config(text="Redo")
 
     def open_map(self):
         """打开 YAML 资源：标准地图或 coverage repo"""
@@ -1989,7 +2127,7 @@ class MainWindow(tk.Tk):
         if not file_path:
             return
 
-        self.statusbar.config(text=f"Loading {file_path}...")
+        self.statusbar_left.config(text=f"Loading {file_path}...")
         self.update()
 
         try:
@@ -2002,7 +2140,7 @@ class MainWindow(tk.Tk):
                 impact="当前文件未被导入",
                 suggestion="确认文件类型为地图 YAML/coverage repo YAML，且内容结构正确",
             )
-            self.statusbar.config(text="Load failed")
+            self.statusbar_left.config(text="Load failed")
 
     def _open_resource(self, resource_path: str):
         """统一资源入口：支持地图 YAML、coverage repo YAML、项目目录。"""
@@ -2051,7 +2189,7 @@ class MainWindow(tk.Tk):
         if not file_path:
             return
 
-        self.statusbar.config(text=f"Importing {file_path}...")
+        self.statusbar_left.config(text=f"Importing {file_path}...")
         self.update()
         try:
             self._load_yaml_resource(file_path, expected_kind="coverage_repo")
@@ -2063,7 +2201,7 @@ class MainWindow(tk.Tk):
                 impact="覆盖路径与区域标签未更新",
                 suggestion="确认 YAML 为 coverage_path_master.yaml 且 map_id 可匹配到底图",
             )
-            self.statusbar.config(text="Coverage repo import failed")
+            self.statusbar_left.config(text="Coverage repo import failed")
 
     def _load_yaml_resource(self, file_path: str, expected_kind: str | None = None):
         kind = detect_yaml_kind(file_path)
@@ -2075,7 +2213,7 @@ class MainWindow(tk.Tk):
                 raise ValueError("failed to load map yaml")
             self._current_project_dir = None
             self.canvas.set_map_data(self.map_data)
-            self.statusbar.config(text=f"Loaded map: {file_path} ({self.map_data.width}x{self.map_data.height})")
+            self.statusbar_left.config(text=f"Loaded map: {file_path} ({self.map_data.width}x{self.map_data.height})")
             return
 
         if kind == "coverage_repo":
@@ -2099,7 +2237,7 @@ class MainWindow(tk.Tk):
                 f"Area Labels: {summary.area_labels}"
             )
             messagebox.showinfo("Import Summary", summary_text)
-            self.statusbar.config(
+            self.statusbar_left.config(
                 text=(
                     f"Imported coverage repo: map={result.map_id}, rooms={result.imported_rooms}, "
                     f"nodes={result.imported_nodes}, labels={result.imported_area_labels}"
@@ -2174,7 +2312,7 @@ class MainWindow(tk.Tk):
     def _load_electronic_fence_path(self, selected_path: str) -> None:
         """内部电子围栏恢复逻辑；正式入口由 New/Open Project 驱动。"""
 
-        self.statusbar.config(text=f"Loading electronic fence: {selected_path}...")
+        self.statusbar_left.config(text=f"Loading electronic fence: {selected_path}...")
         self.update()
 
         try:
@@ -2186,7 +2324,7 @@ class MainWindow(tk.Tk):
             )
             self.canvas.clear_reference_trajectory()
             self.canvas.refresh()
-            self.statusbar.config(
+            self.statusbar_left.config(
                 text=f"已载入电子围栏并转为可编辑约束段: {trajectory_path} ({len(trajectory_world)} points)"
             )
         except Exception as e:
@@ -2197,7 +2335,7 @@ class MainWindow(tk.Tk):
                 impact="电子围栏未导入为可编辑约束段",
                 suggestion="确认输入为 trajectory_from_tf.jsonl、summary.json 或包含它们的目录",
             )
-            self.statusbar.config(text="Load electronic fence failed")
+            self.statusbar_left.config(text="Load electronic fence failed")
             raise
 
     def _replace_electronic_fence_segments(self, trajectory_world, *, source_path: str = "") -> None:
@@ -2366,7 +2504,7 @@ class MainWindow(tk.Tk):
                     ))
                 )
         self._commit_constraint_segments(new_segments)
-        self.statusbar.config(text=f"Constraint segment split at vertex {vertex_idx}")
+        self.statusbar_left.config(text=f"Constraint segment split at vertex {vertex_idx}")
 
     def _toggle_constraint_segment_closed(self, segment=None):
         target = self._selected_constraint_segment_or_none(segment)
@@ -2390,7 +2528,7 @@ class MainWindow(tk.Tk):
             updated.closed = new_closed
             new_segments.append(updated)
         self._commit_constraint_segments(new_segments)
-        self.statusbar.config(text=f"Constraint segment {'closed' if new_closed else 'opened'}")
+        self.statusbar_left.config(text=f"Constraint segment {'closed' if new_closed else 'opened'}")
 
     @staticmethod
     def _same_point(a, b, tol: float = 0.05) -> bool:
@@ -2462,7 +2600,7 @@ class MainWindow(tk.Tk):
             updated.closed = False
             new_segments.append(updated)
         self._commit_constraint_segments(new_segments)
-        self.statusbar.config(text=f"Constraint segments merged into {target.name}")
+        self.statusbar_left.config(text=f"Constraint segments merged into {target.name}")
 
     def _merge_selected_constraint_segments(self):
         selected_segments = self.canvas.get_selected_constraint_segments()
@@ -2610,7 +2748,7 @@ class MainWindow(tk.Tk):
             self.canvas.selected_item = merged_segments[0]
             self.canvas.selected_type = "constraint_segments"
         self.canvas.refresh()
-        self.statusbar.config(text=f"Merged {len(selected_segments)} selected constraint segments")
+        self.statusbar_left.config(text=f"Merged {len(selected_segments)} selected constraint segments")
 
     def _can_merge_selected_constraint_segments(self):
         selected_segments = self.canvas.get_selected_constraint_segments()
@@ -2662,7 +2800,7 @@ class MainWindow(tk.Tk):
                 updated.name = default_name
             new_segments.append(updated)
         self._commit_constraint_segments(new_segments)
-        self.statusbar.config(text=f"Constraint segment type changed to {new_type}")
+        self.statusbar_left.config(text=f"Constraint segment type changed to {new_type}")
 
     # ==================== 覆盖路径生成 ====================
     def _on_generate_coverage_path(self, area_label, start_world_xy=None):
@@ -2683,7 +2821,7 @@ class MainWindow(tk.Tk):
             self.canvas._enter_pick_start_mode(area_label)
             return
         if resolved_start == "cancel":
-            self.statusbar.config(text="Coverage path generation cancelled.")
+            self.statusbar_left.config(text="Coverage path generation cancelled.")
             return
         self._generate_coverage_path_for_area(area_label, start_world_xy=resolved_start)
 
@@ -2720,7 +2858,7 @@ class MainWindow(tk.Tk):
 
         old_room_id = area_room_id(selected)
         if old_room_id == new_room_id:
-            self.statusbar.config(text=f"Room ID unchanged: {new_room_id}")
+            self.statusbar_left.config(text=f"Room ID unchanged: {new_room_id}")
             return
 
         set_area_room_id(selected, new_room_id)
@@ -2749,7 +2887,7 @@ class MainWindow(tk.Tk):
         path_panel = getattr(self.sidebar, "path_panel", None)
         if path_panel is not None and hasattr(path_panel, "set_draw_room"):
             path_panel.set_draw_room(new_room_id)
-        self.statusbar.config(
+        self.statusbar_left.config(
             text=f"Updated selected area Room ID {old_room_id} -> {new_room_id}; path nodes updated: {changed_nodes}"
         )
 
@@ -2894,7 +3032,7 @@ class MainWindow(tk.Tk):
         start_v = int(round(h - (s_wy - origin_y) / res))
 
         # 5. 调用算法
-        self.statusbar.config(text=f"Generating coverage path for {area_label.name}...")
+        self.statusbar_left.config(text=f"Generating coverage path for {area_label.name}...")
         self.update()
 
         try:
@@ -2932,7 +3070,7 @@ class MainWindow(tk.Tk):
                 impact="当前区域未生成路径，编辑状态保持不变",
                 suggestion="检查地图可达区域与算法模式参数后重试",
             )
-            self.statusbar.config(text="Coverage path generation failed.")
+            self.statusbar_left.config(text="Coverage path generation failed.")
             return
 
         if not result.success or not result.path:
@@ -2942,7 +3080,7 @@ class MainWindow(tk.Tk):
                 impact="该区域没有新增覆盖路径",
                 suggestion="检查区域可达性、起点位置或切换算法参数后重试",
             )
-            self.statusbar.config(text="No path generated.")
+            self.statusbar_left.config(text="No path generated.")
             return
 
         path_world = result.path
@@ -2958,7 +3096,7 @@ class MainWindow(tk.Tk):
             summary = build_routing_summary(diagnostics)
             if summary:
                 status_text += f" | {summary}"
-        self.statusbar.config(text=status_text)
+        self.statusbar_left.config(text=status_text)
 
         # 6. 同步到 CoveragePathManager，使路径可编辑
         from ..models.coverage_path import CoveragePathNode
@@ -2968,6 +3106,32 @@ class MainWindow(tk.Tk):
         room_id = area_room_id(area_label)
         segment_id = 0
         base_idx = len(manager.nodes)
+
+        # 如果用户手动指定了起点且该像素是自由的，前置插入作为第 0 个节点
+        if start_world_xy is not None and path_world:
+            su = int(round((s_wx - origin_x) / res))
+            sv = int(round(h - (s_wy - origin_y) / res))
+            if (0 <= su < selected_area_planning_map.shape[1] and
+                0 <= sv < selected_area_planning_map.shape[0] and
+                selected_area_planning_map[sv, su] == 255):
+                import math
+                first_pose = path_world[0]
+                dir_yaw = math.atan2(first_pose.y - s_wy, first_pose.x - s_wx)
+                click_node = CoveragePathNode(
+                    id=base_idx,
+                    room=room_id,
+                    segment=segment_id,
+                    x=s_wx,
+                    y=s_wy,
+                    yaw=dir_yaw,
+                    u=(s_wx - origin_x) / res,
+                    v=h - (s_wy - origin_y) / res,
+                    acc_dist=0.0,
+                    room_dist=0.0,
+                    seg_dist=0.0,
+                )
+                manager.nodes.append(click_node)
+                base_idx += 1
 
         for i, pose in enumerate(path_world):
             u = (pose.x - origin_x) / res
@@ -2989,6 +3153,15 @@ class MainWindow(tk.Tk):
 
         manager.renumber_nodes()  # 重算 ID 和 distances
         manager.is_dirty = True
+        self._refresh_room_order_panel()
+
+        # 保存起始点/终止点用于画布标记
+        manager.start_point = (s_wx, s_wy)
+        if path_world:
+            last = path_world[-1]
+            manager.end_point = (last.x, last.y)
+        else:
+            manager.end_point = None
 
         # 7. 显示在画布上（使用可编辑渲染器）
         self.canvas.refresh()
@@ -3003,7 +3176,7 @@ class MainWindow(tk.Tk):
 
         total_areas = len({int(node.room) for node in manager.nodes})
         total_pts = len(manager.nodes)
-        self.statusbar.config(
+        self.statusbar_left.config(
             text=build_coverage_status_text(
                 total_areas=total_areas,
                 total_points=total_pts,
@@ -3022,7 +3195,7 @@ class MainWindow(tk.Tk):
         self.coverage_path_manager.clear()
         self.canvas.refresh()
         self._log_coverage_canvas_state("new_coverage_path")
-        self.statusbar.config(text="Started a new path edit session.")
+        self.statusbar_left.config(text="Started a new path edit session.")
 
     def _import_coverage_path(self):
         """导入 TSV 路径"""
@@ -3057,8 +3230,9 @@ class MainWindow(tk.Tk):
             manager.renumber_nodes()
             manager.is_dirty = False
             self.canvas.refresh()
+            self._refresh_room_order_panel()
             self._log_coverage_canvas_state("import_coverage_path", path_file=path_file)
-            self.statusbar.config(text=f"Imported path from {os.path.basename(path_file)}")
+            self.statusbar_left.config(text=f"Imported path from {os.path.basename(path_file)}")
             
         except Exception as e:
             import traceback
@@ -3130,7 +3304,7 @@ class MainWindow(tk.Tk):
             if repaired_rooms:
                 status += f" (repaired room_id for {repaired_rooms} points)"
                 message += f"\nRepaired room_id for {repaired_rooms} points before saving."
-            self.statusbar.config(text=status)
+            self.statusbar_left.config(text=status)
             messagebox.showinfo("Success", message)
                 
         except Exception as e:
@@ -3152,10 +3326,24 @@ class MainWindow(tk.Tk):
             manager.selection = {idx for idx in manager.selection if idx < len(manager.nodes)}
             manager.renumber_nodes()
             manager.is_dirty = True
+            # 更新全局起终点标记
+            if manager.nodes:
+                manager.start_point = (manager.nodes[0].x, manager.nodes[0].y)
+                manager.end_point = (manager.nodes[-1].x, manager.nodes[-1].y)
+            else:
+                manager.start_point = None
+                manager.end_point = None
+
+        # 清除该区域记忆的起点
+        points = self.__dict__.get("_coverage_start_points_by_area_id", {})
+        points.pop(room_id, None)
+        fingerprints = self.__dict__.get("_coverage_start_fingerprints_by_area_id", {})
+        fingerprints.pop(room_id, None)
 
         self.canvas.refresh()
+        self._refresh_room_order_panel()
         self._log_coverage_canvas_state("delete_coverage_path", area_id=room_id, area_name=area_label.name)
-        self.statusbar.config(
+        self.statusbar_left.config(
             text=f"Deleted coverage path for {area_label.name}. "
                  f"{len({int(node.room) for node in manager.nodes})} area(s) remaining, {len(manager.nodes)} total points.")
 
@@ -3164,8 +3352,93 @@ class MainWindow(tk.Tk):
         self.coverage_path_manager.clear()
         self.canvas.clear_coverage_path()
         self.canvas.refresh()
+        self._refresh_room_order_panel()
         self._log_coverage_canvas_state("clear_coverage_paths")
-        self.statusbar.config(text="All coverage paths cleared.")
+        self.statusbar_left.config(text="All coverage paths cleared.")
+
+    def _on_tsp_optimize_room_order(self) -> list[int] | None:
+        """TSP 优化回调：计算房间最优访问顺序。"""
+        from algorithms.coverage_planning.routing.room_tsp_solver import solve_room_tsp
+
+        manager = self.coverage_path_manager
+        if not manager.nodes:
+            return None
+
+        room_to_nodes: dict[int, list] = {}
+        for node in manager.nodes:
+            room_to_nodes.setdefault(node.room_id, []).append(node)
+
+        if len(room_to_nodes) <= 1:
+            return None
+
+        rooms = []
+        for rid in sorted(room_to_nodes):
+            nodes = room_to_nodes[rid]
+            start = nodes[0]
+            end = nodes[-1]
+            rooms.append({
+                "id": rid,
+                "start": (start.x, start.y),
+                "end": (end.x, end.y),
+            })
+
+        global_start = None
+        if manager.start_point is not None:
+            global_start = manager.start_point
+
+        indices = solve_room_tsp(rooms, global_start)
+        new_order = [rooms[i]["id"] for i in indices]
+        return new_order
+
+    def _reorder_room_paths(self):
+        """菜单入口：触发 Room 顺序面板的 apply"""
+        self._refresh_room_order_panel()
+
+    def _apply_room_order(self, new_order):
+        """RoomOrderPanel 的 apply 回调：按新顺序重排 nodes"""
+        manager = self.coverage_path_manager
+        if not manager.nodes:
+            return
+
+        room_to_nodes = {}
+        for node in manager.nodes:
+            rid = int(node.room)
+            room_to_nodes.setdefault(rid, []).append(node)
+
+        reordered = []
+        for rid in new_order:
+            reordered.extend(room_to_nodes.get(rid, []))
+
+        manager.nodes = reordered
+        manager.renumber_nodes()
+        manager.is_dirty = True
+        self.canvas.refresh()
+        total_dist = sum(
+            math.hypot(
+                manager.nodes[i + 1].x - manager.nodes[i].x,
+                manager.nodes[i + 1].y - manager.nodes[i].y,
+            )
+            for i in range(len(manager.nodes) - 1)
+        )
+        self.statusbar_left.config(
+            text=f"Room 连接顺序已更新: {new_order} | 总路径长度: {total_dist:.2f} m"
+        )
+
+    def _refresh_room_order_panel(self):
+        """从 CoveragePathManager 提取 room 顺序，刷新侧边栏面板"""
+        panel = getattr(self.sidebar, "room_order_panel", None)
+        if panel is None:
+            return
+        manager = self.coverage_path_manager
+        if not manager.nodes:
+            panel.clear()
+            return
+        seen = []
+        for node in manager.nodes:
+            rid = int(node.room)
+            if rid not in seen:
+                seen.append(rid)
+        panel.refresh(seen)
 
     def _has_coverage_path_for(self, area_label) -> bool:
         """检查某个区域是否已有覆盖路径"""

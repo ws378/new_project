@@ -76,11 +76,15 @@ class CoveragePathManager:
         self.spatial = SpatialGrid()
         self.is_dirty: bool = False
         self.current_file_path: Optional[str] = None
+        self.start_point: Optional[Tuple[float, float]] = None  # (x, y) 世界坐标
+        self.end_point: Optional[Tuple[float, float]] = None    # (x, y) 世界坐标
 
     def clear(self):
         self.nodes.clear()
         self.selection.clear()
         self.spatial.clear()
+        self.start_point = None
+        self.end_point = None
         self.is_dirty = True
 
     def rebuild_spatial(self):
