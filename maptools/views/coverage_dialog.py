@@ -6,13 +6,13 @@ from pathlib import Path
 import tkinter as tk
 from tkinter import ttk, simpledialog
 
+from .layout_components import _ToolTip
 from .theme import COLORS, FONTS, SPACING
 
 from algorithms.coverage_planning.modes import (
     AUTO_MODE,
     BASIC_MODE,
     BASIC_IMPROVED_MODE,
-    BOUSTROPHEDON_MODE,
     BCD_BOUSTROPHEDON_MODE,
     CELL_DNN_MODE,
     CHANNEL_TOPOLOGY_GRAPH_MODE,
@@ -37,15 +37,12 @@ from ..adapters.coverage_planning_adapter import CoveragePlannerConfig
 
 UI_PLANNER_CHOICES = (
     ("自动选择", AUTO_MODE),
+    ("C*矩形算法", CSTAR_RECT_MODE),
+    ("C*TSP优化", CSTAR_TSP_MODE),
     ("基础算法", BASIC_MODE),
     ("基础算法改进版", BASIC_IMPROVED_MODE),
     ("等高线GBNN", CONTOUR_DNN_MODE),
     ("细胞分解GBNN", ECD_DNN_MODE),
-
-    ("C*矩形算法", CSTAR_RECT_MODE),
-
-    ("C*TSP优化", CSTAR_TSP_MODE),
-    ("牛耕往复", BOUSTROPHEDON_MODE),
     ("BCD牛耕分解", BCD_BOUSTROPHEDON_MODE),
     ("螺旋覆盖", SPIRAL_MODE),
     ("波前算法", WAVEFRONT_MODE),
@@ -55,6 +52,77 @@ UI_PLANNER_CHOICES = (
     ("通道拓扑图", CHANNEL_TOPOLOGY_GRAPH_MODE),
 )
 assert tuple(value for _, value in UI_PLANNER_CHOICES) == UI_PLANNER_MODES
+
+TOOLTIP_MAP: dict[str, str] = {
+    "coverage_width_m": "相邻扫描线/等高线之间的间距，也是路径点的间距。越小覆盖率越高但路径越长。",
+    "robot_width_m": "机器人的物理宽度，用于障碍物膨胀和窄通道判断。",
+    "open_kernel_m": "形态学开运算核大小，去除地图噪点。",
+    "obstacle_expand_m": "障碍物膨胀距离，确保机器人安全通过。",
+    "step": "等高线/扫描线的取样步长（沿轮廓撒点的间距）。",
+    "contour_start_offset": "第一条等高线距离障碍物的偏移量 (m)。",
+    "contour_layer_gap": "相邻等高线层之间的间距 (m)。",
+    "contour_layers": "等高线层数。0=根据地图自适应。",
+    "min_perimeter_factor": "最小周长倍率，过滤过短的等高线片段。",
+    "min_node_dist_factor": "节点最小间距倍率，防止节点过密。",
+    "connection_dist_factor": "层间连接距离倍率，决定上下层节点的连接范围。",
+    "straight_ahead_weight": "直行奖励权重，越大越倾向于直行。",
+    "turn_penalty_weight": "转向惩罚权重，越大越少转弯。",
+    "lateral_weight": "横切惩罚权重，抑制横向移动。",
+    "max_turn_deg": "规划路径中允许的最大转角 (度)。",
+    "jump_bridge_interpolations": "层间桥接时的插值点数。",
+    "turn_weight": "TSP 阶段的转向惩罚权重。",
+    "boustrophedon_turn_weight": "牛耕往复直线权重，控制行间跳转时的方向偏好。",
+    "gbnn_frontier_weight": "GBNN 前沿（未访问邻居）在评分中的权重。",
+    "gbnn_dist_weight": "GBNN 距离项在评分中的权重。",
+    "gbnn_turn_weight": "GBNN 转弯惩罚在评分中的权重。",
+    "gbnn_straight_weight": "GBNN 直行偏好在评分中的权重。",
+    "gbnn_zigzag_weight": "GBNN 蛇形换行偏好的权重。",
+    "gbnn_A": "GBNN 动力学方程参数 A（衰减率）。",
+    "gbnn_B": "GBNN 动力学方程参数 B（上界）。",
+    "gbnn_D": "GBNN 动力学方程参数 D（下界）。",
+    "gbnn_E": "GBNN 动力学方程参数 E（外部输入强度）。",
+    "gbnn_iters": "GBNN 动力学迭代次数。",
+    "gbnn_backtrack_enable": "启用回溯，死胡同时跳向全局最近未覆盖节点。",
+    "layer_bridge_enable": "启用层间 A* 桥接连接。",
+    "short_side_branch_m": "通道拓扑图中短侧枝的阈值长度 (m)。",
+    "free_node_min_clearance_m": "自由节点所需的最小净空距离 (m)。",
+    "auto_rotate": "自动将地图旋转对齐到主方向。",
+    "write_artifacts": "将调试中间结果（分段图、节点可视化等）写出到文件。",
+    "turn_constraint_enable": "启用转角约束，在靠近障碍物时限制最大转角。",
+    "turn_constraint_near_dist_m": "近邻判定距离，在此距离内的障碍物触发转角约束 (m)。",
+    "turn_constraint_near_max_turn_deg": "近邻区域内的最大允许转角 (度)。",
+    "turn_constraint_neighbor_max_turn_deg": "邻接路径段的最大允许转角 (度)。",
+    "turn_constraint_fallback_max_turn_deg": "回退模式的最大允许转角 (度)。",
+    "turn_constraint_fallback_relax_dist_m": "回退放宽距离，超过此距离放松转角约束 (m)。",
+    "local_direction_enable": "启用局部方向图，为 ShelfAware 规划器提供局部方向引导。",
+    "local_direction_energy_weight": "局部方向图在评分中的权重。",
+    "fallback_jump_weight": "长跳惩罚权重，用于 ShelfAware 的跳转评分。",
+    "history_clearance_weight": "历史轨迹净空权重，避免重复路径。",
+    "shelf_ctg_auxiliary_enable": "启用 CTG territory/junction 辅助。",
+    "shelf_quality_guard_enable": "启用质量守卫，确保覆盖率达标。",
+    "shelf_quality_guard_min_coverage_ratio": "质量守卫要求的最小覆盖率。",
+    "shelf_row_endpoint_alignment_enable": "启用行段首尾对齐。",
+    "shelf_node_obstacle_ratio_filter_enable": "启用节点障碍比例过滤。",
+    "shelf_node_obstacle_ratio_threshold": "节点障碍比例阈值。",
+    "local_lateral_weight": "横切惩罚权重（局部）。",
+    "split_jump_dist_factor": "长跳切段阈值倍率。",
+    "allow_revisit_bridge": "允许重复回接已覆盖区域。",
+    "isolated_jump_cleanup_enable": "启用孤立跳变点治理。",
+    "isolated_jump_distance_m": "孤立跳变判定距离 (m)。",
+    "isolated_jump_max_points": "孤立段最大点数。",
+    "isolated_jump_max_length_m": "孤立段最大长度 (m)。",
+    "isolated_jump_reinsert_max_distance_m": "回插最大邻近距离 (m)。",
+    "isolated_jump_reinsert_improvement_ratio": "回插改善比例。",
+    "intersection_merge_geodesic_px": "交汇合并 geodesic 距离 (px)。",
+    "junction_polygon_radius_px": "交汇 polygon 半径 (px)。",
+}
+
+COMPARISON_CANDIDATES = (
+    CSTAR_RECT_MODE,
+    CSTAR_TSP_MODE,
+    CONTOUR_DNN_MODE,
+    BASIC_IMPROVED_MODE,
+)
 
 COMMON_PARAMETER_FIELDS = (
     "coverage_width_m",
@@ -195,10 +263,17 @@ GBNN_DYNAMICS_FIELDS = (
     "gbnn_iters",
 )
 
-CSTAR_PARAMETER_FIELDS = (
+CSTAR_SHARED_FIELDS = (
     "layer_bridge_enable",
     "jump_bridge_interpolations",
+    "boustrophedon_turn_weight",
 )
+
+CSTAR_TSP_FIELDS = (
+    "turn_weight",
+)
+
+CSTAR_PARAMETER_FIELDS = (*CSTAR_SHARED_FIELDS, *CSTAR_TSP_FIELDS)
 
 BASIC_ENERGY_FIELDS = (
     "straight_ahead_weight",
@@ -283,6 +358,8 @@ DIALOG_VARIABLE_NAMES = {
     "lateral_weight": "lateral_weight_var",
     "max_turn_deg": "max_turn_deg_var",
     "jump_bridge_interpolations": "jump_bridge_interpolations_var",
+    "turn_weight": "turn_weight_var",
+    "boustrophedon_turn_weight": "boustrophedon_turn_weight_var",
     "write_artifacts": "write_artifacts_var",
     "show_advanced": "show_advanced_var",
 }
@@ -346,6 +423,8 @@ def coverage_dialog_default_values() -> dict[str, object]:
         "lateral_weight": 0.8,
         "max_turn_deg": 90.0,
         "jump_bridge_interpolations": 2,
+        "turn_weight": 0.0,
+        "boustrophedon_turn_weight": 0.0,
         "turn_constraint_enable": True,
         "turn_constraint_near_dist_m": 0.1,
         "turn_constraint_near_max_turn_deg": 20.0,
@@ -417,6 +496,7 @@ def resolve_visible_parameter_groups(planner_mode: str) -> dict[str, tuple[str, 
         "gbnn_score": (),
         "gbnn_dynamics": (),
         "cstar": (),
+        "boustrophedon": (),
         "shelf": (),
         "shelf_advanced": (),
         "shelf_quality_guard": (),
@@ -426,7 +506,7 @@ def resolve_visible_parameter_groups(planner_mode: str) -> dict[str, tuple[str, 
     if mode == BASIC_IMPROVED_MODE:
         groups["basic_energy"] = BASIC_ENERGY_FIELDS
 
-    SURVEY_DIALOG_MODES = (BOUSTROPHEDON_MODE, SPIRAL_MODE, WAVEFRONT_MODE, STC_MODE)
+    SURVEY_DIALOG_MODES = (SPIRAL_MODE, WAVEFRONT_MODE, STC_MODE)
     if mode in {BASIC_MODE, BASIC_IMPROVED_MODE, *SHELF_AWARE_DIALOG_MODES, *CSTAR_DIALOG_MODES, *SURVEY_DIALOG_MODES}:
         groups["turn_constraint"] = TURN_CONSTRAINT_FIELDS
 
@@ -614,7 +694,13 @@ class CoverageDialog(simpledialog.Dialog):
         self.lateral_weight_var = tk.DoubleVar(value=0.8)
         self.max_turn_deg_var = tk.DoubleVar(value=90.0)
         self.jump_bridge_interpolations_var = tk.IntVar(value=2)
+        self.turn_weight_var = tk.DoubleVar(value=0.0)
+        self.boustrophedon_turn_weight_var = tk.DoubleVar(value=0.0)
         self.show_advanced_var = tk.BooleanVar(value=False)
+
+        self._comparison_vars: dict[str, tk.BooleanVar] = {}
+        for cm in COMPARISON_CANDIDATES:
+            self._comparison_vars[cm] = tk.BooleanVar(value=False)
 
         common_frame = tk.LabelFrame(
             master, text="通用参数",
@@ -730,13 +816,15 @@ class CoverageDialog(simpledialog.Dialog):
         )
 
         self.cstar_frame = tk.LabelFrame(
-            master, text="C* 专属参数",
+            master, text="C* 算法专属参数",
             bg=COLORS["bg_primary"], fg=COLORS["fg_primary"],
             font=FONTS["body_bold"], relief=tk.GROOVE, bd=1,
         )
         self.cstar_frame.grid(row=6, column=0, columnspan=2, sticky=tk.EW, padx=8, pady=4)
         self._build_parameter_row(self.cstar_frame, 0, "layer_bridge_enable", "层间 A* 桥接:", self.layer_bridge_enable_var, field_type="bool")
         self._build_parameter_row(self.cstar_frame, 1, "jump_bridge_interpolations", "桥接插值点数:", self.jump_bridge_interpolations_var)
+        self._build_parameter_row(self.cstar_frame, 2, "turn_weight", "转向惩罚权重:", self.turn_weight_var)
+        self._build_parameter_row(self.cstar_frame, 3, "boustrophedon_turn_weight", "牛耕直线权重:", self.boustrophedon_turn_weight_var)
 
         self.ctg_frame = tk.LabelFrame(
             master, text="通道拓扑图专属参数",
@@ -748,7 +836,7 @@ class CoverageDialog(simpledialog.Dialog):
         self._build_parameter_row(self.ctg_frame, 1, "free_node_min_clearance_m", "自由节点最小净空 (m):", self.free_node_min_clearance_var)
 
         toggle_frame = tk.Frame(master, bg=COLORS["bg_primary"])
-        toggle_frame.grid(row=8, column=0, columnspan=2, sticky=tk.W, padx=8, pady=(4, 2))
+        toggle_frame.grid(row=9, column=0, columnspan=2, sticky=tk.W, padx=8, pady=(4, 2))
         tk.Checkbutton(
             toggle_frame, text="显示高级参数",
             variable=self.show_advanced_var,
@@ -804,12 +892,33 @@ class CoverageDialog(simpledialog.Dialog):
         for row, (field_name, label, variable, field_type) in enumerate(advanced_fields[split_index:]):
             self._build_parameter_row(advanced_right, row, field_name, label, variable, field_type=field_type)
 
+        comparison_frame = tk.LabelFrame(
+            master, text="批量对比（可选）",
+            bg=COLORS["bg_primary"], fg=COLORS["fg_primary"],
+            font=FONTS["body_bold"], relief=tk.GROOVE, bd=1,
+        )
+        comparison_frame.grid(row=10, column=0, columnspan=2, sticky=tk.EW, padx=8, pady=4)
+        label_map = {m: n for n, m in UI_PLANNER_CHOICES}
+        for ci, cm in enumerate(COMPARISON_CANDIDATES):
+            cb = tk.Checkbutton(
+                comparison_frame, text=label_map.get(cm, cm),
+                variable=self._comparison_vars[cm],
+                bg=COLORS["bg_primary"], fg=COLORS["fg_primary"],
+                activebackground=COLORS["bg_primary"],
+                activeforeground=COLORS["fg_bright"],
+                selectcolor=COLORS["bg_surface"],
+                font=FONTS["body"],
+            )
+            cb.grid(row=0, column=ci, sticky=tk.W, padx=(8, 0))
+            tip = "勾选后，主规划器运行完成自动追加该规划器的对比结果。"
+            _ToolTip(cb, tip)
+
         tk.Label(
             master,
             text="说明: auto 默认只展示通用参数；切换到具体算法后显示对应专属参数，高级参数折叠展示。",
             bg=COLORS["bg_primary"], fg=COLORS["fg_muted"],
             font=FONTS["caption"],
-        ).grid(row=10, column=0, columnspan=2, sticky=tk.W, padx=8, pady=(4, 3))
+        ).grid(row=11, column=0, columnspan=2, sticky=tk.W, padx=8, pady=(4, 3))
 
         self._apply_values(self._initial_values)
         return None
@@ -839,6 +948,11 @@ class CoverageDialog(simpledialog.Dialog):
                 insertbackground=COLORS["fg_primary"],
                 relief=tk.FLAT, bd=1, font=FONTS["body"],
             ).grid(row=0, column=1, sticky=tk.W, padx=(8, 0))
+        tip = TOOLTIP_MAP.get(field_name)
+        if tip:
+            for child in row_frame.winfo_children():
+                if isinstance(child, (tk.Label, tk.Checkbutton, tk.Entry)):
+                    _ToolTip(child, tip)
         self._field_rows[field_name] = row_frame
 
     def _set_fields_visible(self, field_names, visible):
@@ -957,6 +1071,9 @@ class CoverageDialog(simpledialog.Dialog):
     def apply(self):
         self.result_values = self._snapshot_values()
         self.result_config = coverage_dialog_config_from_values(self.result_values)
+        selected = tuple(cm for cm, v in self._comparison_vars.items() if v.get())
+        if selected:
+            object.__setattr__(self.result_config, "comparison_modes", selected)
 
 
 def show_coverage_dialog(parent, *, input_summary=None) -> CoveragePlannerConfig | None:

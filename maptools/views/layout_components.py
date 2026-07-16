@@ -180,6 +180,17 @@ class RoomOrderPanel(tk.Frame):
         self._room_ids = []
         self._apply_cb = None  # 回调：def callback(new_order: list[int])
         self._tsp_cb = None   # 回调：def callback() → list[int] | None
+        self._generate_all_cb = None  # 回调：def callback()
+
+        self._generate_all_btn = tk.Button(
+            self, text="⚡ 生成全部覆盖路径",
+            bg=COLORS.get("accent", "#e67e22"),
+            fg=COLORS.get("fg_on_accent", "#ffffff"),
+            activebackground=COLORS.get("bg_hover", "#e0e0e0"),
+            relief=tk.FLAT, font=FONTS["button"], cursor="hand2",
+            command=self._on_generate_all,
+        )
+        self._generate_all_btn.pack(fill=tk.X, padx=SPACING["md"], pady=(SPACING["sm"], 2))
 
         tk.Label(
             self, text="拖拽调整 Room 连接顺序",
@@ -250,6 +261,14 @@ class RoomOrderPanel(tk.Frame):
         """设置 TSP 优化回调，应返回 list[int]（新 room_id 顺序）或 None。"""
         self._tsp_cb = cb
 
+    def set_generate_all_callback(self, cb):
+        """设置生成全部路径回调。"""
+        self._generate_all_cb = cb
+
+    def _on_generate_all(self):
+        if self._generate_all_cb:
+            self._generate_all_cb()
+
     def refresh(self, room_ids):
         """用新的 room_ids 列表刷新面板。room_ids = [1, 3, 2, ...]"""
         self._room_ids = list(room_ids)
@@ -311,6 +330,7 @@ class Toolbar(tk.Frame):
         self.tool_manager = tool_manager
         self.current_breakpoint = None
         self._tool_buttons = {}
+        self._action_handlers: dict[str, callable] = {}
 
         groups = [
             ("编辑", [
@@ -374,9 +394,31 @@ class Toolbar(tk.Frame):
         self.scale_size.pack(side=tk.LEFT, padx=SPACING["xs"])
 
     def set_tool(self, name):
+        if name in self._action_handlers:
+            self._action_handlers[name]()
+            return
         if self.tool_manager:
             self.tool_manager.set_tool(name)
         self._highlight_tool(name)
+
+    def add_action_button(self, group_label, label, action_name, command):
+        self._action_handlers[action_name] = command
+        # 找到 btn_frame 末尾处插入
+        btn_frame = self.winfo_children()[0] if self.winfo_children() else None
+        if btn_frame is None:
+            return
+        tk.Frame(btn_frame, width=1, bg=COLORS["border_light"],
+                 bd=0).pack(side=tk.LEFT, fill=tk.Y, padx=4, pady=3)
+        tk.Label(btn_frame, text=group_label, bg=COLORS["toolbar_bg"],
+                 fg=COLORS["fg_secondary"], font=FONTS["caption"],
+                 padx=2).pack(side=tk.LEFT)
+        btn = styled_button(
+            btn_frame, text=label,
+            command=lambda: self.set_tool(action_name),
+            width=len(label) + 1,
+        )
+        btn.pack(side=tk.LEFT, padx=2, pady=2)
+        self._tool_buttons[action_name] = btn
 
     def _highlight_tool(self, tool_name):
         for name, btn in self._tool_buttons.items():
@@ -443,6 +485,12 @@ class Sidebar(tk.Frame):
         self.room_order_panel = RoomOrderPanel(self._room_order_panel.content)
         self.room_order_panel.pack(fill=tk.X, padx=SPACING["sm"], pady=SPACING["sm"])
 
+        self._boundary_refine_panel = CollapsibleFrame(self, title="边界修正", collapsed=False)
+        self._boundary_refine_panel.pack(fill=tk.X, pady=(SPACING["sm"], 0))
+        self.boundary_refine_panel = BoundaryRefinePanel(
+            self._boundary_refine_panel.content, parent_window=parent)
+        self.boundary_refine_panel.pack(fill=tk.X, padx=SPACING["sm"], pady=SPACING["sm"])
+
         self._path_panel_container = CollapsibleFrame(self, title="Path Params", collapsed=True)
         self._path_panel_container.pack(fill=tk.X, pady=(SPACING["sm"], 0))
 
@@ -472,3 +520,201 @@ class Sidebar(tk.Frame):
 
     def update_info(self, text: str):
         self._info_label.config(text=text)
+
+
+class BoundaryRefinePanel(tk.Frame):
+    def __init__(self, parent, parent_window):
+        super().__init__(parent, bg=COLORS["sidebar_bg"])
+        self._parent_window = parent_window
+
+        row = tk.Frame(self, bg=COLORS["sidebar_bg"])
+        row.pack(fill=tk.X, pady=2)
+        tk.Label(row, text="房间 A ID:", bg=COLORS["sidebar_bg"],
+                 fg=COLORS["fg_primary"], font=FONTS["body"]).pack(side=tk.LEFT)
+        self._entry_a = tk.Entry(row, width=6, font=FONTS["body"])
+        self._entry_a.pack(side=tk.LEFT, padx=4)
+
+        row2 = tk.Frame(self, bg=COLORS["sidebar_bg"])
+        row2.pack(fill=tk.X, pady=2)
+        tk.Label(row2, text="房间 B ID:", bg=COLORS["sidebar_bg"],
+                 fg=COLORS["fg_primary"], font=FONTS["body"]).pack(side=tk.LEFT)
+        self._entry_b = tk.Entry(row2, width=6, font=FONTS["body"])
+        self._entry_b.pack(side=tk.LEFT, padx=4)
+
+        btn = styled_button(self, text="执行边界修正", command=self._execute)
+        btn.pack(pady=4)
+
+        self._result_label = tk.Label(
+            self, text="", bg=COLORS["sidebar_bg"],
+            fg=COLORS["fg_secondary"], font=FONTS["caption"],
+            wraplength=180, justify=tk.LEFT)
+        self._result_label.pack(fill=tk.X, padx=4)
+
+    def _execute(self):
+        try:
+            a = int(self._entry_a.get().strip())
+            b = int(self._entry_b.get().strip())
+        except ValueError:
+            self._result_label.config(text="请输入有效的房间 ID")
+            return
+
+        win = self._parent_window
+        if win.map_data is None or win.map_data.metadata is None:
+            self._result_label.config(text="未加载地图")
+            return
+        if not win.annotations.area_labels:
+            self._result_label.config(text="无区域标签")
+            return
+
+        ids = [lab.area_id for lab in win.annotations.area_labels]
+        if a not in ids or b not in ids:
+            self._result_label.config(text=f"未找到房间 ID {a} 或 {b}")
+            return
+
+        try:
+            from ..utils.free_space_components import (
+                _world_to_image_pixel,
+                build_obstacle_semantic_mask,
+            )
+            import numpy as np, cv2
+
+            map_data = win.map_data
+            annotations = win.annotations
+            resolution = float(map_data.metadata.resolution)
+            origin_x = float(map_data.metadata.origin[0])
+            origin_y = float(map_data.metadata.origin[1])
+            height = int(map_data.height)
+            h = int(map_data.height)
+            w = int(map_data.width)
+
+            # 检查是否有扩张前原始 polygon 快照
+            orig_snapshots = getattr(win, '_orig_area_polygons', None)
+
+            obstacle_mask = build_obstacle_semantic_mask(map_data, annotations)
+            free_mask = (obstacle_mask == 0).astype(np.uint8)
+
+            assignment = np.full((h, w), -1, dtype=np.int32)
+            orig_masks = []
+            for i, lab in enumerate(annotations.area_labels):
+                pts = np.array([
+                    _world_to_image_pixel(px, py, resolution, origin_x, origin_y, height)
+                    for px, py in lab.polygon
+                ], dtype=np.int32).reshape((-1, 1, 2))
+                m = np.zeros((h, w), dtype=np.uint8)
+                cv2.fillPoly(m, [pts], 1)
+                assignment[m > 0] = i
+
+                # 原始 polygon：优先取快照，没有则取当前 polygon
+                if orig_snapshots and i < len(orig_snapshots) and len(orig_snapshots[i]) >= 3:
+                    orig_pts = np.array([
+                        _world_to_image_pixel(px, py, resolution, origin_x, origin_y, height)
+                        for px, py in orig_snapshots[i]
+                    ], dtype=np.int32).reshape((-1, 1, 2))
+                else:
+                    orig_pts = pts
+                om = np.zeros((h, w), dtype=np.uint8)
+                cv2.fillPoly(om, [orig_pts], 1)
+                orig_masks.append(om)
+
+            ia = ids.index(a)
+            ib = ids.index(b)
+
+            mask_a = (assignment == ia).astype(np.uint8)
+            mask_b = (assignment == ib).astype(np.uint8)
+            orig_a = orig_masks[ia]
+            orig_b = orig_masks[ib]
+
+            kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+            contact_a = cv2.dilate(mask_a, kernel, iterations=1) & mask_b
+            contact_b = cv2.dilate(mask_b, kernel, iterations=1) & mask_a
+            contact = contact_a | contact_b
+            if np.count_nonzero(contact) == 0:
+                self._result_label.config(text="两个房间不相邻")
+                return
+
+            dist_a = cv2.distanceTransform(orig_a, cv2.DIST_L2, cv2.DIST_MASK_PRECISE)
+            dist_b = cv2.distanceTransform(orig_b, cv2.DIST_L2, cv2.DIST_MASK_PRECISE)
+            pts = np.where(contact > 0)
+            d_a = float(dist_a[pts].mean()) * resolution
+            d_b = float(dist_b[pts].mean()) * resolution
+
+            thr = 0.05
+            if d_a < thr and d_b > thr:
+                winner, loser = ib, ia
+                reason = f"dA={d_a:.2f}m < 0.05, dB={d_b:.2f}m > 0.05 → B胜"
+            elif d_b < thr and d_a > thr:
+                winner, loser = ia, ib
+                reason = f"dB={d_b:.2f}m < 0.05, dA={d_a:.2f}m > 0.05 → A胜"
+            elif d_a < thr and d_b < thr:
+                if d_a >= d_b:
+                    winner, loser = ia, ib
+                    reason = f"均<0.05m, dA={d_a:.2f}m >= dB={d_b:.2f}m → A胜"
+                else:
+                    winner, loser = ib, ia
+                    reason = f"均<0.05m, dB={d_b:.2f}m > dA={d_a:.2f}m → B胜"
+            else:
+                self._result_label.config(
+                    text=f"dA={d_a:.2f}m, dB={d_b:.2f}m, 均 > 0.05m, 无需调整")
+                return
+
+            loser_mask = (assignment == loser).astype(np.uint8)
+            loser_orig = orig_masks[loser]
+            # 败者退回原始轮廓
+            shrink = loser_mask & ~loser_orig
+            assignment[shrink > 0] = -1
+
+            # 败者退出区全部给胜者
+            assignment[shrink > 0] = winner
+
+            # 更新胜者 polygon
+            region = (assignment == winner).astype(np.uint8) * 255
+            cs, _ = cv2.findContours(region, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            if cs:
+                c = max(cs, key=cv2.contourArea)
+                c = cv2.approxPolyDP(c, epsilon=1.5, closed=True)
+                if c.shape[0] >= 3:
+                    poly = [(origin_x + float(pt[0, 0]) * resolution,
+                             origin_y + float(height - pt[0, 1]) * resolution)
+                            for pt in c]
+                    annotations.area_labels[winner].polygon = poly
+
+            # 删除败者的 area_label（按 area_id 查找，避免索引错位）
+            loser_area_id = annotations.area_labels[loser].area_id
+            annotations.area_labels = [
+                lab for lab in annotations.area_labels if lab.area_id != loser_area_id]
+
+            win.canvas.refresh()
+            self._result_label.config(
+                text=f"{reason}\n败者 {['A','B'][ia==loser]} 已删除，胜者 {['A','B'][ia==winner]} 吞并其区域")
+
+        except Exception as e:
+            self._result_label.config(text=f"错误: {e}")
+
+    def _restore_original(self):
+        win = self._parent_window
+        orig_snapshots = getattr(win, '_orig_area_polygons', None)
+        if not orig_snapshots:
+            self._result_label.config(text="未找到原始多边形快照，请先运行区域标签扩展法")
+            return
+        try:
+            a = int(self._entry_a.get().strip())
+            b = int(self._entry_b.get().strip())
+        except ValueError:
+            self._result_label.config(text="请输入有效的房间 ID")
+            return
+
+        ids = [lab.area_id for lab in win.annotations.area_labels]
+        ia = ids.index(a) if a in ids else -1
+        ib = ids.index(b) if b in ids else -1
+        if ia == -1 or ib == -1:
+            self._result_label.config(text=f"未找到房间 ID {a} 或 {b}")
+            return
+        try:
+            if ia < len(orig_snapshots) and len(orig_snapshots[ia]) >= 3:
+                win.annotations.area_labels[ia].polygon = orig_snapshots[ia]
+            if ib < len(orig_snapshots) and len(orig_snapshots[ib]) >= 3:
+                win.annotations.area_labels[ib].polygon = orig_snapshots[ib]
+            win.canvas.refresh()
+            self._result_label.config(text=f"房间 {a} 和 {b} 已恢复原始轮廓")
+        except Exception as e:
+            self._result_label.config(text=f"错误: {e}")

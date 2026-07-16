@@ -1,17 +1,35 @@
 {
-  "map_id": "beiguoshangcheng_floor_3",
-  "ok": true,
-  "issues": [],
-  "warnings": [],
-  "repo_dir": "beiguoshangcheng_floor_3",
-  "expected_files": [
-    "beiguoshangcheng_floor_3/coverage_path_master.yaml",
-    "beiguoshangcheng_floor_3/room_sequence_master.yaml",
-    "beiguoshangcheng_floor_3/room_partition_master.yaml",
-    "beiguoshangcheng_floor_3/segmented_map_master.bin",
-    "beiguoshangcheng_floor_3/segmented_map_meta.json",
-    "beiguoshangcheng_floor_3/segmented_map.png",
-    "beiguoshangcheng_floor_3/meta.json"
+  "map_id": "beiguoshangcheng_floor_3_demo",
+  "ok": false,
+  "issues": [
+    "area_overlap: 区域 2(2) 与区域 3(3) 重叠 80338 px / 200.845 m^2",
+    "area_overlap: 区域 3(3) 与区域 5(5) 重叠 26339 px / 65.848 m^2",
+    "area_overlap: 区域 3(3) 与区域 6(6) 重叠 50 px / 0.125 m^2",
+    "area_overlap: 区域 3(3) 与区域 9(9) 重叠 107803 px / 269.508 m^2",
+    "area_overlap: 区域 6(6) 与区域 8(8) 重叠 180175 px / 450.438 m^2",
+    "area_overlap: 区域 6(6) 与区域 10(10) 重叠 10 px / 0.025 m^2",
+    "area_overlap: 区域 7(7) 与区域 12(12) 重叠 11 px / 0.028 m^2",
+    "area_overlap: 区域 10(10) 与区域 12(12) 重叠 28 px / 0.070 m^2",
+    "area_overlap: 区域 10(10) 与区域 13(13) 重叠 21 px / 0.053 m^2",
+    "area_overlap: 区域 10(10) 与区域 17(17) 重叠 169 px / 0.423 m^2",
+    "area_overlap: 区域 10(10) 与区域 18(18) 重叠 11 px / 0.028 m^2",
+    "area_overlap: 区域 12(12) 与区域 13(13) 重叠 25 px / 0.063 m^2",
+    "area_overlap: 区域 12(12) 与区域 14(14) 重叠 13 px / 0.033 m^2",
+    "area_overlap: 区域 13(13) 与区域 18(18) 重叠 1 px / 0.003 m^2",
+    "area_overlap: 区域 14(14) 与区域 15(15) 重叠 138 px / 0.345 m^2"
   ],
-  "area_count": 7
+  "warnings": [
+    "path_point_in_area_overlap: 区域 6 覆盖路径有 7 个点落在区域重叠像素内"
+  ],
+  "repo_dir": "beiguoshangcheng_floor_3_demo",
+  "expected_files": [
+    "beiguoshangcheng_floor_3_demo/coverage_path_master.yaml",
+    "beiguoshangcheng_floor_3_demo/room_sequence_master.yaml",
+    "beiguoshangcheng_floor_3_demo/room_partition_master.yaml",
+    "beiguoshangcheng_floor_3_demo/segmented_map_master.bin",
+    "beiguoshangcheng_floor_3_demo/segmented_map_meta.json",
+    "beiguoshangcheng_floor_3_demo/segmented_map.png",
+    "beiguoshangcheng_floor_3_demo/meta.json"
+  ],
+  "area_count": 18
 }

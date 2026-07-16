@@ -85,8 +85,8 @@ class CoveragePlanner:
         start_node = self._find_start_node(nodes, first_free, (float(sp_rot[0]), float(sp_rot[1])))
 
         path = self._greedy_walk(nodes, start_node, coverage_width_px, map_resolution)
-        path = self._cleanup_isolated_points(path, map_resolution)
         path = self._cleanup_close_points(path, map_resolution)
+        path = self._cleanup_isolated_points(path, map_resolution)
         path = self._bridge_jumps(path, map_resolution)
 
         path_px = transform_path_back(path, R)

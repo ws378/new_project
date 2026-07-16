@@ -58,4 +58,33 @@ class AddAnnotationCommand(Command):
             if self.refresh_cb:
                 self.refresh_cb()
 
+class BatchAddAreaLabelsCommand(Command):
+    """批量添加区域标签（单步撤销）"""
+
+    def __init__(self, annotations, polygons, refresh_cb=None):
+        self.annotations = annotations
+        self.polygons = list(polygons)  # list of world-coord polygon lists
+        self.created_ids: list[str] = []
+        self.refresh_cb = refresh_cb
+
+    def execute(self):
+        ann = self.annotations
+        if self.created_ids:
+            # Redo: remove then re-add
+            for pid in self.created_ids:
+                ann.remove_by_id(pid)
+            self.created_ids = []
+        for poly in self.polygons:
+            label = ann.add_area_label(poly)
+            self.created_ids.append(label.id)
+        if self.refresh_cb:
+            self.refresh_cb()
+
+    def undo(self):
+        for pid in self.created_ids:
+            self.annotations.remove_by_id(pid)
+        self.created_ids = []
+        if self.refresh_cb:
+            self.refresh_cb()
+
 # TODO: RemoveAnnotationCommand (如果未来支持删除/编辑)

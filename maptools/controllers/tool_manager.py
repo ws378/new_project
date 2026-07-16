@@ -45,6 +45,10 @@ class ToolManager:
     # --- 事件分发 ---
 
     def _on_press(self, event):
+        # 如果 Canvas 处于切割模式，优先交给切割处理
+        if getattr(self.canvas, '_cut_mode_active', False):
+            self.canvas._on_left_click(event)
+            return
         # 如果 Canvas 处于取点模式，优先交给取点处理
         if getattr(self.canvas, '_pick_start_mode', False):
             self.canvas._on_left_click(event)
@@ -61,12 +65,20 @@ class ToolManager:
             self.current_tool.on_release(event)
 
     def _on_move(self, event):
+        # 切割模式下更新预览线
+        if getattr(self.canvas, '_cut_mode_active', False):
+            self.canvas._on_cut_motion(event)
+            return
         if self.current_tool:
             self.current_tool.on_move(event)
         if hasattr(self.canvas, "handle_motion"):
             self.canvas.handle_motion(event)
 
     def _on_double_click(self, event):
+        # 切割模式下双击完成多边形
+        if getattr(self.canvas, '_cut_mode_active', False):
+            self.canvas._finalize_cut_polygon()
+            return
         if self.current_tool and hasattr(self.current_tool, 'on_double_click'):
             self.current_tool.on_double_click(event)
 

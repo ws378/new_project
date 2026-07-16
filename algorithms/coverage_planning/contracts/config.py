@@ -92,7 +92,7 @@ class CoveragePlannerConfig:
     contour_start_offset: float = 0.3
     contour_layer_gap: float = 0.5
     contour_layers: int = 0  # 0 = 自适应, >0 = 固定层数
-    min_perimeter_factor: float = 1.0
+    min_perimeter_factor: float = 5.0
     min_node_dist_factor: float = 0.4
     connection_dist_factor: float = 2.5
 
@@ -137,6 +137,8 @@ class CoveragePlannerConfig:
     bridge_astar_enable: bool = False
     debug_show_nodes_only: bool = False
     layer_bridge_enable: bool = True
+    turn_weight: float = 0.0
+    boustrophedon_turn_weight: float = 0.0
 
     # ------- map-tools artifact / adapter parameters -------
     map_yaml_path: str = ""

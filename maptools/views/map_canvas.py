@@ -62,6 +62,10 @@ class MapCanvas(tk.Canvas):
         self._derived_region_index_cache = None
         self._derived_region_mask_cache = {}
 
+        # 等高线叠加数据
+        self.show_contour = False
+        self.contour_polylines_world: list = []  # List[List[(wx, wy)]]
+
         # 参考轨迹叠加数据（只显示，不参与导出）
         self.reference_trajectory_world = []  # List[(wx, wy)]
 
@@ -78,6 +82,13 @@ class MapCanvas(tk.Canvas):
         # 临时取点模式 (设置覆盖路径起点)
         self._pick_start_mode = False
         self._pick_start_area_label = None
+
+        # 切割模式 (切割区域标签)
+        self._cut_mode_active = False
+        self._cut_area_label = None
+        self._cut_points_world: list = []  # List[(wx, wy)]
+        self._cut_preview_line_id = None
+        self._cut_callback = None
 
         # 选中状态数据 (供 SelectTool 使用)
         self.selected_item = None
@@ -329,17 +340,20 @@ class MapCanvas(tk.Canvas):
         if self.show_annotations:
             self._draw_annotations()
 
-        # 3. 绘制参考轨迹叠加
+        # 3. 绘制等高线叠加
+        self._draw_contour_overlay()
+
+        # 4. 绘制参考轨迹叠加
         self._draw_reference_trajectory()
 
-        # 4. 绘制覆盖路径叠加
+        # 5. 绘制覆盖路径叠加
         # 如果可编辑路径管理器有节点，优先使用可编辑渲染器
         if self.coverage_path_manager and self.coverage_path_manager.nodes:
             self._draw_coverage_paths_editable()
         else:
             self._draw_coverage_path()
 
-        # 5. 绘制辅助层
+        # 6. 绘制辅助层
         self._draw_overlay()
 
     def refresh_image_only(self):
@@ -771,7 +785,7 @@ class MapCanvas(tk.Canvas):
                                   fill="white", outline="black", tags="annotation_handle")
 
     def _draw_reference_trajectory(self):
-        """绘制只读参考轨迹：细蓝虚线。"""
+        """绘制只读参考轨迹：绿色实线。"""
         if not self.reference_trajectory_world or len(self.reference_trajectory_world) < 2:
             return
         if not self.coord_transformer:
@@ -788,11 +802,30 @@ class MapCanvas(tk.Canvas):
         line_width = 1 if self.zoom_level < 4.0 else 2
         self.create_line(
             points,
-            fill="#1e6cff",
+            fill="#00cc66",
             width=line_width,
-            dash=(6, 6),
             tags="reference_trajectory",
         )
+
+    def _draw_contour_overlay(self):
+        """绘制等高线叠加层（红色）"""
+        if not self.show_contour or not self.contour_polylines_world or not self.coord_transformer:
+            return
+
+        for pl in self.contour_polylines_world:
+            if len(pl) < 2:
+                continue
+            points = []
+            for wx, wy in pl:
+                cx, cy = self.coord_transformer.world_to_canvas(wx, wy)
+                points.extend([cx, cy])
+            line_width = 1 if self.zoom_level < 4.0 else 2
+            self.create_line(
+                points,
+                fill="#FF0000",
+                width=line_width,
+                tags="contour_overlay",
+            )
 
     def _draw_overlay(self):
         """绘制辅助层"""
@@ -1090,14 +1123,16 @@ class MapCanvas(tk.Canvas):
     # ==================== 双击居中 ====================
 
     def _on_double_click(self, event):
-        """双击将点击位置居中到画布中央。"""
+        """双击：切割模式下完成多边形，否则居中。"""
+        if self._cut_mode_active:
+            self._finalize_cut_polygon()
+            return
         if not self.original_image:
             return
         canvas_w = self.winfo_width()
         canvas_h = self.winfo_height()
         if canvas_w <= 0 or canvas_h <= 0:
             return
-        # 计算鼠标位置相对于当前视图的偏移
         dx = canvas_w / 2 - event.x
         dy = canvas_h / 2 - event.y
         self.pan_offset_x += dx
@@ -1235,6 +1270,10 @@ class MapCanvas(tk.Canvas):
                 label=f"删除覆盖路径 - {area_label.name}",
                 command=lambda area=area_label: self._trigger_delete_coverage(area),
             )
+        menu.add_command(
+            label=f"切割区域 - {area_label.name}",
+            command=lambda area=area_label: self._trigger_split_area(area),
+        )
 
     def _add_free_space_context_menu_items(self, menu, *, component_id=None, derived_region=None):
         toplevel = self.winfo_toplevel()
@@ -1276,6 +1315,12 @@ class MapCanvas(tk.Canvas):
         if self.delete_coverage_path_callback:
             self.delete_coverage_path_callback(area_label)
 
+    def _trigger_split_area(self, area_label):
+        """触发切割区域回调"""
+        toplevel = self.winfo_toplevel()
+        if hasattr(toplevel, "_on_split_area_label"):
+            toplevel._on_split_area_label(area_label)
+
     # ==================== 临时取点模式 ====================
 
     def _enter_pick_start_mode(self, area_label):
@@ -1298,10 +1343,116 @@ class MapCanvas(tk.Canvas):
         if hasattr(main_win, 'statusbar_left'):
             main_win.statusbar_left.config(text="Ready")
 
+    def _enter_cut_mode(self, area_label, callback):
+        """进入切割模式：等待用户点击多点定义切割多边形（双击/回车完成）"""
+        self._cut_mode_active = True
+        self._cut_area_label = area_label
+        self._cut_points_world = []
+        self._cut_preview_line_id = None
+        self._cut_callback = callback
+        self.config(cursor="crosshair")
+        main_win = self.winfo_toplevel()
+        if hasattr(main_win, 'statusbar_left'):
+            main_win.statusbar_left.config(
+                text=f"点击定义切割多边形（双击完成, Esc取消） - {area_label.name}")
+
+    def _exit_cut_mode(self):
+        """退出切割模式"""
+        self._cut_mode_active = False
+        self._cut_area_label = None
+        self._cut_points_world = []
+        self._cut_callback = None
+        if self._cut_preview_line_id is not None:
+            self.delete(self._cut_preview_line_id)
+            self._cut_preview_line_id = None
+        self.delete("cut_preview")
+        self.config(cursor="arrow")
+        main_win = self.winfo_toplevel()
+        if hasattr(main_win, 'statusbar_left'):
+            main_win.statusbar_left.config(text="Ready")
+
+    def _finalize_cut_polygon(self):
+        """完成多边形切割"""
+        if len(self._cut_points_world) < 3:
+            self._exit_cut_mode()
+            return
+        cb = self._cut_callback
+        points = list(self._cut_points_world)
+        self._exit_cut_mode()
+        if cb:
+            cb(points)
+
+    def _on_cut_left_click(self, event):
+        """切割模式下的左键点击：收集多边形顶点"""
+        if not self._cut_mode_active or not self.coord_transformer:
+            return
+
+        wx, wy = self.coord_transformer.canvas_to_world(event.x, event.y)
+        self._cut_points_world.append((wx, wy))
+        self._redraw_cut_preview()
+        return "break"
+
+    def _on_cut_double_click(self, event):
+        """切割模式下的双击：完成多边形"""
+        if not self._cut_mode_active:
+            return
+        self._finalize_cut_polygon()
+        return "break"
+
+    def _on_cut_motion(self, event):
+        """切割模式下的鼠标移动：更新多边形预览"""
+        if not self._cut_mode_active or not self._cut_points_world or not self.coord_transformer:
+            return
+        self._redraw_cut_preview(mouse_pos=(event.x, event.y))
+
+    def _redraw_cut_preview(self, mouse_pos=None):
+        """重绘切割多边形预览。mouse_pos=(cx,cy) 时显示为动态折线+闭合预览"""
+        self.delete("cut_preview")
+        if not self._cut_points_world or not self.coord_transformer:
+            return
+        pts = [self.coord_transformer.world_to_canvas(wx, wy)
+               for wx, wy in self._cut_points_world]
+        n = len(pts)
+
+        # 绘制已确定的点
+        for cx, cy in pts:
+            self.create_oval(cx - 4, cy - 4, cx + 4, cy + 4,
+                             fill="#FF0000", outline="", tags="cut_preview")
+        # 折线连接已确定的点
+        if n >= 2:
+            flat = []
+            for cx, cy in pts:
+                flat.append(cx)
+                flat.append(cy)
+            self.create_line(*flat, fill="#FF0000", width=3, dash=(6, 3), tags="cut_preview")
+
+        if mouse_pos:
+            mx, my = mouse_pos
+            # 从最后一个点到鼠标位置的动态线
+            lx, ly = pts[-1]
+            self.create_line(lx, ly, mx, my, fill="#FF0000", width=3,
+                             dash=(6, 3), tags="cut_preview")
+            if n >= 2:
+                # 闭合预览（首点到鼠标位置）
+                fx, fy = pts[0]
+                self.create_line(fx, fy, mx, my, fill="#FF4444", width=2,
+                                 dash=(3, 4), tags="cut_preview")
+        elif n >= 3:
+            # 已完成多边形：显示闭合线
+            flat = [pts[0][0], pts[0][1]]
+            for cx, cy in pts[1:]:
+                flat.append(cx)
+                flat.append(cy)
+            flat.append(pts[0][0])
+            flat.append(pts[0][1])
+            self.create_line(*flat, fill="#FF4444", width=2, dash=(3, 4), tags="cut_preview")
+
     def _on_left_click(self, event):
-        """左键点击事件：在取点模式下拦截并获取起点坐标"""
+        """左键点击事件：在取点/切割模式下拦截"""
+        if self._cut_mode_active:
+            return self._on_cut_left_click(event)
         if not self._pick_start_mode:
-            return  # 不在取点模式，不拦截
+            return
 
         if not self.coord_transformer:
             self._exit_pick_start_mode()
@@ -1321,8 +1472,10 @@ class MapCanvas(tk.Canvas):
         return "break"  # 阻止事件继续传播到当前工具
 
     def _on_escape(self, event):
-        """Escape 键处理：优先取消取点模式，若无，则转发给 ToolManager"""
-        if self._pick_start_mode:
+        """Escape 键处理：取消取点/切割模式，若无，则转发给 ToolManager"""
+        if self._cut_mode_active:
+            self._exit_cut_mode()
+        elif self._pick_start_mode:
             self._exit_pick_start_mode()
         else:
             # 伪造一个规范的keysym发送泛型按键事件

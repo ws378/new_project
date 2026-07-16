@@ -10,15 +10,16 @@ class TransformCommand(Command):
     - 如果是原点平移，图像不变，只存元数据
     - 如果是旋转，图像改变，需要保存图像快照 (内存开销较大，但操作频率低)
     """
-    def __init__(self, map_data, annotations, before_state, after_state, refresh_cb=None):
+    def __init__(self, map_data, annotations, before_state, after_state, refresh_cb=None, path_manager=None):
         self.map_data = map_data
         self.annotations = annotations
         self.before_state = before_state
         self.after_state = after_state
         self.refresh_cb = refresh_cb
+        self._path_manager = path_manager
 
     @staticmethod
-    def capture_state(map_data, annotations):
+    def capture_state(map_data, annotations, path_nodes=None):
         """捕获当前状态快照"""
         state = {
             "origin": copy.deepcopy(map_data.metadata.origin),
@@ -32,6 +33,8 @@ class TransformCommand(Command):
             "stations": copy.deepcopy(annotations.stations),
             "area_labels": copy.deepcopy(annotations.area_labels),
             "_next_area_id": copy.deepcopy(annotations._next_area_id),
+            # Path nodes
+            "path_nodes": copy.deepcopy(path_nodes) if path_nodes else None,
         }
         return state
 
@@ -52,6 +55,12 @@ class TransformCommand(Command):
         self.annotations.stations = copy.deepcopy(state["stations"])
         self.annotations.area_labels = copy.deepcopy(state["area_labels"])
         self.annotations._next_area_id = copy.deepcopy(state["_next_area_id"])
+
+        # 3. Restore Path Nodes
+        if state.get("path_nodes") is not None and hasattr(self, '_path_manager'):
+            mgr = self._path_manager
+            mgr.set_nodes(copy.deepcopy(state["path_nodes"]))
+            mgr.rebuild_spatial()
 
         if self.refresh_cb:
             self.refresh_cb()

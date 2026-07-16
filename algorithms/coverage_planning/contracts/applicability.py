@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -14,6 +15,9 @@ class ApplicabilityMetrics:
     junction_candidate_count: int = 0
     open_space_score: float = 0.0
     mixed_scene_score: float = 0.0
+    obstacle_count: int = 0
+    mean_clearance_px: float = 0.0
+    narrow_passage_ratio: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -26,4 +30,5 @@ class ApplicabilityResult:
     reasons: tuple[str, ...] = ()
     warnings: tuple[str, ...] = ()
     metrics: ApplicabilityMetrics = field(default_factory=ApplicabilityMetrics)
+    parameter_overrides: dict[str, Any] = field(default_factory=dict)
 

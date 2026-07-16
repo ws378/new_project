@@ -99,8 +99,8 @@ def _build_affine(angle_deg: float, w: int, h: int) -> tuple[np.ndarray, np.ndar
     M = cv2.getRotationMatrix2D(c, angle_deg, 1.0)
     cos_a = abs(M[0, 0])
     sin_a = abs(M[0, 1])
-    new_w = int(h * sin_a + w * cos_a)
-    new_h = int(h * cos_a + w * sin_a)
+    new_w = max(int(h * sin_a + w * cos_a), 1)
+    new_h = max(int(h * cos_a + w * sin_a), 1)
     M[0, 2] += new_w / 2 - c[0]
     M[1, 2] += new_h / 2 - c[1]
     return M, cv2.invertAffineTransform(M), new_w, new_h
@@ -787,8 +787,8 @@ class CStarCircleCoveragePlanner:
     def _run(self, room_map: np.ndarray, res: float,
              start: tuple[float, float],
              origin: tuple[float, float] = (0.0, 0.0)) -> CoverageResult:
-        cov_w = float(getattr(self.cfg, "coverage_width_m", 0.5))
-        step = max(int(round(cov_w / res)), 2)
+        step_m = float(getattr(self.cfg, "step", 0.5))
+        step = max(int(round(step_m / res)), 2)
 
         binary = (room_map > 0).astype(np.uint8) * 255
         angle = _detect_dominant_angle(binary)

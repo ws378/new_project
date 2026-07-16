@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import math
 import heapq
+import bisect
 from collections import deque
 
 import cv2
@@ -33,6 +34,7 @@ class _RCGNode:
         self.row = row
         self.col = col
         self.lap = col
+        self.family = -1
         self.state = Op
         self.left: _RCGNode | None = None
         self.right: _RCGNode | None = None
@@ -96,42 +98,124 @@ def _build_affine(angle_deg: float, w: int, h: int) -> tuple[np.ndarray, np.ndar
     M = cv2.getRotationMatrix2D(c, angle_deg, 1.0)
     cos_a = abs(M[0, 0])
     sin_a = abs(M[0, 1])
-    new_w = int(h * sin_a + w * cos_a)
-    new_h = int(h * cos_a + w * sin_a)
+    new_w = max(int(h * sin_a + w * cos_a), 1)
+    new_h = max(int(h * cos_a + w * sin_a), 1)
     M[0, 2] += new_w / 2 - c[0]
     M[1, 2] += new_h / 2 - c[1]
     return M, cv2.invertAffineTransform(M)
 
 
 def _build_graph(rotated: np.ndarray, step: int) -> _RCGGraph:
-    """在旋转后的地图上铺网格建图"""
+    """牛耕往复式扫描线取样建图"""
     h, w = rotated.shape
     free = rotated > 0
+    free_ys, free_xs = np.where(free)
+    if len(free_ys) == 0:
+        return _RCGGraph()
+
+    min_y, max_y = int(free_ys.min()), int(free_ys.max())
+    min_x, max_x = int(free_xs.min()), int(free_xs.max())
+    area_w = max_x - min_x + 1
+    area_h = max_y - min_y + 1
+
+    sweep_static = area_w < area_h
+    if sweep_static:
+        num_sweeps = max(1, area_w // step)
+        spacing = area_w / num_sweeps if num_sweeps > 0 else step
+    else:
+        num_sweeps = max(1, area_h // step)
+        spacing = area_h / num_sweeps if num_sweeps > 0 else step
+
     graph = _RCGGraph()
     nid = 0
+    raw_layers: list[list[_RCGNode]] = []
 
-    ys = range(0, h, step)
-    for ri, y in enumerate(ys):
-        xs = range(0, w, step)
-        for ci, x in enumerate(xs):
-            yi = min(y, h - 1)
-            xi = min(x, w - 1)
-            if free[yi, xi]:
-                node = _RCGNode(float(xi), float(yi), nid, ri, ci)
-                nid += 1
-                graph.add_node(node)
+    for i in range(num_sweeps + 1):
+        if sweep_static:
+            line_x = min_x + i * spacing
+            pts = _sample_col(free, int(round(line_x)), min_y, max_y, step)
+        else:
+            line_y = min_y + i * spacing
+            pts = _sample_row(free, int(round(line_y)), min_x, max_x, step)
+        if not pts:
+            continue
+        layer = [_RCGNode(x, y, nid + j, i, j) for j, (x, y) in enumerate(pts)]
+        for n in layer:
+            graph.add_node(n)
+        nid += len(layer)
+        raw_layers.append(layer)
 
-    for n in graph.nodes:
-        right = next((m for m in graph.nodes if m.row == n.row and m.col == n.col + 1), None)
-        if right is not None:
-            n.right = right
-            right.left = n
-        down = next((m for m in graph.nodes if m.col == n.col and m.row == n.row + 1), None)
-        if down is not None:
-            n.down = down
-            down.up = n
+    if not raw_layers:
+        return graph
+
+    for layer in raw_layers:
+        for i in range(len(layer)):
+            if i > 0:
+                layer[i].left = layer[i - 1]
+            if i < len(layer) - 1:
+                layer[i].right = layer[i + 1]
+
+    conn_max_d2 = (float(step) * 2.5) ** 2
+    for k in range(len(raw_layers) - 1):
+        upper = raw_layers[k]
+        lower = raw_layers[k + 1]
+        for u in upper:
+            best = min(lower, key=lambda n: (n.x - u.x) ** 2 + (n.y - u.y) ** 2)
+            if (best.x - u.x) ** 2 + (best.y - u.y) ** 2 < conn_max_d2:
+                u.down = best
+                best.up = u
 
     return graph
+
+
+def _sample_row(free: np.ndarray, row_y: int, x0: int, x1: int, step: int) -> list[tuple[float, float]]:
+    if row_y < 0 or row_y >= free.shape[0]:
+        return []
+    free_indices = np.where(free[row_y, x0:x1 + 1])[0]
+    if len(free_indices) == 0:
+        return []
+    segs = _segments(free_indices)
+    pts: list[tuple[float, float]] = []
+    for seg_start, seg_end in segs:
+        for px in range(seg_start, seg_end + 1, step):
+            pts.append((float(x0 + px), float(row_y)))
+        last = (float(x0 + seg_end), float(row_y))
+        if not pts or pts[-1] != last:
+            pts.append(last)
+    return pts
+
+
+def _sample_col(free: np.ndarray, col_x: int, y0: int, y1: int, step: int) -> list[tuple[float, float]]:
+    if col_x < 0 or col_x >= free.shape[1]:
+        return []
+    free_indices = np.where(free[y0:y1 + 1, col_x])[0]
+    if len(free_indices) == 0:
+        return []
+    segs = _segments(free_indices)
+    pts: list[tuple[float, float]] = []
+    for seg_start, seg_end in segs:
+        for py in range(seg_start, seg_end + 1, step):
+            pts.append((float(col_x), float(y0 + py)))
+        last = (float(col_x), float(y0 + seg_end))
+        if not pts or pts[-1] != last:
+            pts.append(last)
+    return pts
+
+
+def _segments(indices: np.ndarray) -> list[tuple[int, int]]:
+    if len(indices) == 0:
+        return []
+    segs: list[tuple[int, int]] = []
+    start = int(indices[0])
+    prev = int(indices[0])
+    for i in indices[1:]:
+        i_int = int(i)
+        if i_int != prev + 1:
+            segs.append((start, prev))
+            start = i_int
+        prev = i_int
+    segs.append((start, prev))
+    return segs
 
 
 def _select_goal(graph: _RCGGraph, cur: _RCGNode,
@@ -278,6 +362,46 @@ def _to_coords(path: list[_RCGNode]) -> list[tuple[float, float]]:
     return [(n.x, n.y) for n in path]
 
 
+def _remove_close_nodes(path: list[_RCGNode], res: float,
+                        min_dist_m: float = 0.5) -> list[_RCGNode]:
+    """Remove nodes that are too close to their predecessor (距离 < min_dist_m)."""
+    if len(path) < 2:
+        return path
+    thresh_px = min_dist_m / res
+    out = [path[0]]
+    for i in range(1, len(path)):
+        if math.hypot(path[i].x - out[-1].x, path[i].y - out[-1].y) >= thresh_px:
+            out.append(path[i])
+    if out[-1] is not path[-1]:
+        out.append(path[-1])
+    return out
+
+
+
+
+def _remove_isolated_nodes(path: list[_RCGNode], res: float,
+                           max_jump_m: float = 3.0) -> list[_RCGNode]:
+    """Remove isolated nodes whose predecessor and successor distances both exceed threshold.
+
+    A → B → C: if AB > max_jump AND BC > max_jump, remove B.
+    After removal, A → C → D is re-checked recursively.
+    """
+    if len(path) < 3:
+        return path
+    thresh_px = max_jump_m / res
+    out = [path[0]]
+    for i in range(1, len(path) - 1):
+        prev = out[-1]
+        cur = path[i]
+        nxt = path[i + 1]
+        d_prev = math.hypot(cur.x - prev.x, cur.y - prev.y)
+        d_next = math.hypot(nxt.x - cur.x, nxt.y - cur.y)
+        if d_prev <= thresh_px or d_next <= thresh_px:
+            out.append(cur)
+    out.append(path[-1])
+    return out
+
+
 class CStarTspCoveragePlanner:
     """C* 全覆盖路径规划器（TSP 版本）"""
 
@@ -299,8 +423,8 @@ class CStarTspCoveragePlanner:
     def _run(self, room_map: np.ndarray, res: float,
              start: tuple[float, float],
              origin: tuple[float, float] = (0.0, 0.0)) -> CoverageResult:
-        cov_w = float(getattr(self.cfg, "coverage_width_m", 0.5))
-        step = max(int(round(cov_w / res)), 2)
+        step_m = float(getattr(self.cfg, "step", 0.5))
+        step = max(int(round(step_m / res)), 2)
 
         binary = (room_map > 0).astype(np.uint8) * 255
         angle = 0.0
@@ -319,9 +443,32 @@ class CStarTspCoveragePlanner:
         tsp_order = [cur]
         visited = {cur.id}
         remaining = [n for n in graph.nodes if n.id != cur.id]
+        turn_weight = float(getattr(self.cfg, "turn_weight", 0.0))
+        prev_dir = None
         while remaining:
             current = tsp_order[-1]
-            best = min(remaining, key=lambda n: _dist(current, n))
+
+            if prev_dir is not None and turn_weight > 0:
+
+                def _cost(n, _c=current, _p=prev_dir):
+                    dx = n.x - _c.x
+                    dy = n.y - _c.y
+                    d = math.hypot(dx, dy)
+                    a = math.atan2(dy, dx)
+                    diff = abs(a - _p)
+                    if diff > math.pi:
+                        diff = 2 * math.pi - diff
+                    return d + diff * diff * turn_weight
+
+                best = min(remaining, key=_cost)
+            else:
+                best = min(remaining, key=lambda n: _dist(current, n))
+
+            dx = best.x - current.x
+            dy = best.y - current.y
+            if dx != 0.0 or dy != 0.0:
+                prev_dir = math.atan2(dy, dx)
+
             path = _astar(current, best)
             if path and len(path) > 1:
                 for n in path[1:]:
@@ -333,6 +480,9 @@ class CStarTspCoveragePlanner:
                 visited.add(best.id)
             remaining = [n for n in remaining if n.id not in visited]
 
+        tsp_order = _remove_close_nodes(tsp_order, res, min_dist_m=0.5)
+        tsp_order = _remove_isolated_nodes(tsp_order, res,
+                                           max_jump_m=1.5)
         path_px = _to_coords(tsp_order)
 
         out_px: list[tuple[float, float]] = []

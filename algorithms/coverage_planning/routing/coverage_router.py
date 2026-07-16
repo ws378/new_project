@@ -12,7 +12,9 @@ from ..contracts import (
     CoveragePose2D,
 )
 from ..modes import (
+    BASIC_IMPROVED_MODE,
     CHANNEL_TOPOLOGY_GRAPH_MODE,
+    CSTAR_MODES,
     REGION_BASIC_ROUTED_MODE,
     ROUTED_PLANNER_MODES,
     SHELF_AWARE_MODE,
@@ -113,6 +115,28 @@ def route_coverage_plan(request: CoveragePlanningRequest) -> CoveragePlanningRes
                 metrics=applicability.metrics,
                 artifacts_dir=result.diagnostics.artifacts_dir,
                 applied_public_config=request.public_config,
+                runtime=result.diagnostics.runtime,
+            ),
+        )
+
+    if planner_name in CSTAR_MODES or planner_name == BASIC_IMPROVED_MODE:
+        from ..planner_factory import run_formal_planner_request
+        result = run_formal_planner_request(request, planner_name)
+        if not result.success:
+            return result
+        return CoveragePlanningResult(
+            status=result.status,
+            path=result.path,
+            path_pixels=result.path_pixels,
+            diagnostics=CoveragePlanningDiagnostics(
+                selected_planner=planner_name,
+                scene_type=applicability.scene_type,
+                fallback_chain=applicability.fallback_chain,
+                reasons=tuple(applicability.reasons) + tuple(result.diagnostics.reasons),
+                warnings=tuple(applicability.warnings) + tuple(result.diagnostics.warnings),
+                metrics=applicability.metrics,
+                artifacts_dir=result.diagnostics.artifacts_dir,
+                applied_public_config=result.diagnostics.applied_public_config,
                 runtime=result.diagnostics.runtime,
             ),
         )

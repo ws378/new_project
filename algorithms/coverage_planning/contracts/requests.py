@@ -26,6 +26,7 @@ class CoveragePlanningRequest:
     public_config_source_keys: tuple[str, ...] = ()
     private_config: CoveragePlannerPrivateConfig | None = None
     artifacts_output_root: Path | None = None
+    forbidden_zone_count: int = 0
 
     def __post_init__(self) -> None:
         prepared_map = np.asarray(self.prepared_map)

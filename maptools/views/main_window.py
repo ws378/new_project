@@ -39,7 +39,11 @@ from ..adapters.coverage_planning_adapter import (
     route_coverage_plan,
     run_channel_topology_graph_adapter,
 )
-from .coverage_dialog import build_coverage_input_summary, show_coverage_dialog
+from .coverage_dialog import (
+    UI_PLANNER_CHOICES,
+    build_coverage_input_summary,
+    show_coverage_dialog,
+)
 from ..utils.coverage_repo_import import detect_yaml_kind, import_area_labels_json, import_coverage_repo
 from ..utils.coverage_repo_export import (
     build_area_region_mask,
@@ -257,7 +261,9 @@ class MainWindow(tk.Tk):
         # 覆盖路径数据管理
         self.coverage_path_manager = CoveragePathManager()
         self._last_coverage_planning_diagnostics = None
+        self._sim_proc = None
         self._free_space_components_var = tk.BooleanVar(value=False)
+        self._contour_var = tk.BooleanVar(value=False)
 
         # 初始化UI组件 (先创建占位，init_ui中布局)
 
@@ -322,7 +328,25 @@ class MainWindow(tk.Tk):
         view_menu.add_command(label="Coverage Planner Diagnostics...", command=self._show_coverage_planning_diagnostics)
         view_menu.add_separator()
         view_menu.add_command(label="检测障碍物生成区域标签...", command=self._detect_obstacles_as_area_labels)
+        view_menu.add_command(label="区域标签扩展法...", command=self._expand_area_labels)
+        view_menu.add_command(label="等高线扩展法...", command=self._expand_area_labels_contour)
+        view_menu.add_separator()
+        view_menu.add_command(label="从地图轮廓创建整图区域标签", command=self._generate_whole_map_area_label)
+        view_menu.add_checkbutton(
+            label="显示等高线",
+            variable=self._contour_var,
+            command=self._toggle_contour_overlay,
+        )
+        view_menu.add_command(
+            label="等高线外侧生成区域标签",
+            command=self._generate_regions_from_contour,
+        )
         self.menu_bar.add_cascade(label="View", menu=view_menu)
+
+        tools_menu = tk.Menu(self.menu_bar, tearoff=0)
+        tools_menu.add_command(label="路径跟踪动画", command=self._open_path_tracking)
+        tools_menu.add_command(label="启动仿真", command=self._launch_nav2_simulation)
+        self.menu_bar.add_cascade(label="Tools", menu=tools_menu)
 
         # 2. 状态栏 (底部)
         self.statusbar = tk.Frame(self, bg=COLORS["statusbar_bg"], height=24)
@@ -385,6 +409,7 @@ class MainWindow(tk.Tk):
         # Room 顺序面板回调
         self.sidebar.room_order_panel.set_apply_callback(self._apply_room_order)
         self.sidebar.room_order_panel.set_tsp_callback(self._on_tsp_optimize_room_order)
+        self.sidebar.room_order_panel.set_generate_all_callback(self._on_generate_all_coverage_paths)
 
         # 绑定标注数据
         self.canvas.set_annotations(self.annotations)
@@ -422,6 +447,160 @@ class MainWindow(tk.Tk):
             )
         else:
             self.statusbar_left.config(text="Free space components disabled")
+
+    def _toggle_contour_overlay(self):
+        enabled = bool(self._contour_var.get())
+        if enabled:
+            if not self.map_data or self.map_data.grid_map is None:
+                self._contour_var.set(False)
+                self._show_warning(
+                    problem="未加载地图",
+                    impact="无法生成等高线",
+                    suggestion="先加载地图后再显示等高线",
+                )
+                return
+            self._generate_contour_overlay()
+        self.canvas.show_contour = enabled
+        self.canvas.refresh()
+        self.statusbar_left.config(
+            text="等高线已显示" if enabled else "等高线已隐藏"
+        )
+
+    def _generate_contour_overlay(self):
+        """从当前地图生成等高线并存入 canvas"""
+        from ..utils.geometry_utils import extract_contour_polylines
+        from ..utils.free_space_components import build_obstacle_semantic_mask
+
+        meta = self.map_data.metadata
+        resolution = meta.resolution
+        origin_x, origin_y = meta.origin[0], meta.origin[1]
+        height = self.map_data.height
+        # 合并 base + brush 编辑 + 虚拟墙/禁行区 为完整障碍物遮罩
+        # obstacle_mask: 0=free, 255=obstacle
+        obstacle_mask = build_obstacle_semantic_mask(self.map_data, self.annotations)
+        binary = (obstacle_mask == 0).astype(np.uint8)
+
+        polylines_px = extract_contour_polylines(
+            binary,
+            resolution=resolution,
+            step_m=0.5,
+            start_offset_m=0.1,
+            layer_gap_m=0.5,
+            contour_layers=1,
+            min_perimeter_factor=1.0,
+        )
+        # 像素坐标 → 世界坐标（与 CoordinateTransformer.pixel_to_world 一致）
+        polylines_world = []
+        for pl in polylines_px:
+            world_pl = []
+            for col, row in pl:
+                wx = origin_x + col * resolution
+                wy = origin_y + (height - row) * resolution
+                world_pl.append((wx, wy))
+            polylines_world.append(world_pl)
+        self.canvas.contour_polylines_world = polylines_world
+        print(f"Generated {len(polylines_world)} contour polylines")
+
+    def _generate_regions_from_contour(self):
+        """从等高线外侧分割矩形区域标签（独立生成 0.3m 偏移等高线）"""
+        from ..utils.geometry_utils import (
+            extract_contour_polylines,
+            partition_contour_outer_region,
+        )
+        from ..utils.free_space_components import build_obstacle_semantic_mask
+        from ..controllers.commands.annotation_command import BatchAddAreaLabelsCommand
+
+        meta = self.map_data.metadata
+        resolution = meta.resolution
+        origin_x, origin_y = meta.origin[0], meta.origin[1]
+        height = self.map_data.height
+        # 独立生成 0.3m 偏移等高线，确保分区稳定
+        obstacle_mask = build_obstacle_semantic_mask(self.map_data, self.annotations)
+        binary = (obstacle_mask == 0).astype(np.uint8)
+
+        contour_polylines_px = extract_contour_polylines(
+            binary,
+            resolution=resolution,
+            step_m=0.5,
+            start_offset_m=0.3,
+            layer_gap_m=0.5,
+            contour_layers=1,
+            min_perimeter_factor=1.0,
+        )
+        if not contour_polylines_px:
+            self._show_warning(
+                problem="等高线生成失败",
+                impact="无外侧区域可划分",
+                suggestion="检查地图中是否有足够大的自由空间",
+            )
+            return
+
+        cells_px = partition_contour_outer_region(contour_polylines_px, binary)
+        if not cells_px:
+            self._show_warning(
+                problem="未生成区域",
+                impact="等高线外侧未找到可划分区域",
+                suggestion="检查等高线是否靠近地图边界",
+            )
+            return
+
+        # Convert each cell to world-coord polygon
+        world_polygons = []
+        for cell_px in cells_px:
+            world_poly = []
+            for col, row in cell_px:
+                wx = origin_x + col * resolution
+                wy = origin_y + (height - row) * resolution
+                world_poly.append((wx, wy))
+            world_polygons.append(world_poly)
+
+        cmd = BatchAddAreaLabelsCommand(
+            self.annotations,
+            world_polygons,
+            refresh_cb=self.canvas.refresh,
+        )
+        self.command_manager.execute(cmd)
+
+        self.statusbar_left.config(
+            text=f"已生成 {len(world_polygons)} 个区域标签"
+        )
+
+    def _generate_whole_map_area_label(self):
+        """从地图自由空间外轮廓创建一个整图区域标签。"""
+        from ..utils.geometry_utils import extract_outer_boundary_polygon
+        from ..utils.free_space_components import build_obstacle_semantic_mask
+        from ..controllers.commands.annotation_command import BatchAddAreaLabelsCommand
+
+        meta = self.map_data.metadata
+        resolution = meta.resolution
+        origin_x, origin_y = meta.origin[0], meta.origin[1]
+        height = self.map_data.height
+
+        obstacle_mask = build_obstacle_semantic_mask(self.map_data, self.annotations)
+        binary = (obstacle_mask == 0).astype(np.uint8)
+
+        polygon_px = extract_outer_boundary_polygon(binary, resolution=resolution)
+        if not polygon_px:
+            self._show_warning(
+                problem="未找到有效自由空间",
+                impact="无法创建区域标签",
+                suggestion="检查地图中是否有大于 0 的自由像素",
+            )
+            return
+
+        world_poly = []
+        for col, row in polygon_px:
+            wx = origin_x + col * resolution
+            wy = origin_y + (height - row) * resolution
+            world_poly.append((wx, wy))
+
+        cmd = BatchAddAreaLabelsCommand(
+            self.annotations,
+            [world_poly],
+            refresh_cb=self.canvas.refresh,
+        )
+        self.command_manager.execute(cmd)
+        self.statusbar_left.config(text="已从地图外轮廓创建整图区域标签")
 
     def _set_free_space_component_repair_radius(self):
         value = simpledialog.askfloat(
@@ -979,48 +1158,83 @@ class MainWindow(tk.Tk):
         
 
     def _detect_obstacles_as_area_labels(self):
-        """检测地图中的障碍物和禁行区轮廓，自动生成区域标签。"""
+        """检测障碍物和禁行区轮廓，生成区域标签并向外扩展0.1m。"""
         if self.map_data.metadata is None:
             self._show_warning(problem="未加载地图", impact="无法分析",
                                suggestion="先加载工程后再操作")
             return
 
-        from ..utils.free_space_components import build_obstacle_semantic_mask
-        obstacle_mask = build_obstacle_semantic_mask(self.map_data, self.annotations)
-        if cv2.countNonZero(obstacle_mask) == 0:
-            self.statusbar_left.config(text="地图中无检测到障碍物")
-            return
-
-        min_area = simpledialog.askfloat(
-            "最小面积 (m²)", "忽略小于此面积的障碍物 (m², 默认0.5):",
-            parent=self, minvalue=0.01, initialvalue=0.5)
-        if min_area is None:
+        try:
+            from ..utils.free_space_components import (
+                build_obstacle_semantic_mask,
+                build_forbidden_zone_mask,
+                _world_to_image_pixel,
+                image_pixel_to_world,
+            )
+            obstacle_mask = build_obstacle_semantic_mask(self.map_data, self.annotations)
+            forbidden_mask = build_forbidden_zone_mask(self.map_data, self.annotations)
+        except Exception as e:
+            self._show_error(problem=f"掩膜构建失败: {e}",
+                             impact="无法检测障碍物",
+                             suggestion="检查地图数据后重试")
             return
 
         resolution = float(self.map_data.metadata.resolution)
         origin_x = float(self.map_data.metadata.origin[0])
         origin_y = float(self.map_data.metadata.origin[1])
         height = int(self.map_data.height)
-        min_area_px = min_area / (resolution * resolution)
+        border = 2
 
-        contours, _ = cv2.findContours(
-            obstacle_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        min_area = simpledialog.askfloat(
+            "最小面积 (m²)", "忽略小于此面积的区域 (m², 默认0.5):",
+            parent=self, minvalue=0.01, initialvalue=0.5)
+        if min_area is None:
+            return
+
+        min_area_px = min_area / (resolution * resolution)
+        expand_px = max(1, int(round(0.1 / resolution)))
+
+        # 全局占用标记：0=free, 255=已占用
+        occupied = np.zeros(obstacle_mask.shape[:2], dtype=np.uint8)
 
         existing_ids = {a.area_id for a in self.annotations.area_labels}
         next_id = 1
         while next_id in existing_ids:
             next_id += 1
 
+        from ..models.annotations import AreaLabel
         from ..controllers.commands.annotation_command import AddAnnotationCommand
 
         added = 0
-        for contour in contours:
+
+        # ---- step 1: 检测障碍物轮廓 ----
+        obs_contour_mask = obstacle_mask.copy()
+        obs_contour_mask[:border, :] = 0
+        obs_contour_mask[-border:, :] = 0
+        obs_contour_mask[:, :border] = 0
+        obs_contour_mask[:, -border:] = 0
+
+        obs_contours, _ = cv2.findContours(
+            obs_contour_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        img_w = obstacle_mask.shape[1]
+        img_h = obstacle_mask.shape[0]
+
+        for contour in obs_contours:
             area_px = cv2.contourArea(contour)
             if area_px < min_area_px:
                 continue
+            x, y, w, h = cv2.boundingRect(contour)
+            if (x <= border or y <= border
+                    or x + w >= img_w - border
+                    or y + h >= img_h - border):
+                continue
+
             contour = cv2.approxPolyDP(contour, epsilon=1.5, closed=True)
             if contour.shape[0] < 3:
                 continue
+
+            # 转换为世界坐标 polygon
             polygon = []
             for pt in contour[:, 0, :]:
                 wx = origin_x + float(pt[0]) * resolution
@@ -1028,6 +1242,14 @@ class MainWindow(tk.Tk):
                 polygon.append((wx, wy))
             if len(polygon) < 3:
                 continue
+
+            # 标记此轮廓占用的像素，禁止禁行区标签侵入
+            pts_px = np.array([
+                _world_to_image_pixel(float(wx), float(wy), resolution, origin_x, origin_y, height)
+                for wx, wy in polygon
+            ], dtype=np.int32).reshape((-1, 1, 2))
+            cv2.fillPoly(occupied, [pts_px], 255)
+
             area_m2 = area_px * resolution * resolution
             label = AreaLabel(
                 id="", area_id=next_id,
@@ -1036,8 +1258,100 @@ class MainWindow(tk.Tk):
             )
             cmd = AddAnnotationCommand(
                 self.annotations, "area_label",
-                {"polygon": label.polygon, "name": label.name,
-                 "area_id": label.area_id},
+                {"polygon": label.polygon, "name": label.name, "area_id": label.area_id},
+                refresh_cb=self.canvas.refresh,
+            )
+            self.command_manager.execute(cmd)
+            next_id += 1
+            while next_id in existing_ids:
+                next_id += 1
+            added += 1
+
+        # ---- step 2: 检测禁行区轮廓 ----
+        forbidden_mask[:border, :] = 0
+        forbidden_mask[-border:, :] = 0
+        forbidden_mask[:, :border] = 0
+        forbidden_mask[:, -border:] = 0
+        # 从禁行区 mask 中挖掉已被障碍物占用的像素
+        forbidden_mask[occupied > 0] = 0
+
+        fz_contours, _ = cv2.findContours(
+            forbidden_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        for contour in fz_contours:
+            area_px = cv2.contourArea(contour)
+            if area_px < min_area_px:
+                continue
+            x, y, w, h = cv2.boundingRect(contour)
+            if (x <= border or y <= border
+                    or x + w >= img_w - border
+                    or y + h >= img_h - border):
+                continue
+
+            contour = cv2.approxPolyDP(contour, epsilon=1.5, closed=True)
+            if contour.shape[0] < 3:
+                continue
+
+            polygon = []
+            for pt in contour[:, 0, :]:
+                wx = origin_x + float(pt[0]) * resolution
+                wy = origin_y + float(height - pt[1]) * resolution
+                polygon.append((wx, wy))
+            if len(polygon) < 3:
+                continue
+
+            # ---- step 3: 禁行区标签向外扩展 0.1m ----
+            pts_px = np.array([
+                _world_to_image_pixel(float(wx), float(wy), resolution, origin_x, origin_y, height)
+                for wx, wy in polygon
+            ], dtype=np.int32).reshape((-1, 1, 2))
+
+            # 在 free 空间进行膨胀
+            free_mask = np.where(occupied > 0, 0, 255).astype(np.uint8)
+            label_mask = np.zeros(obstacle_mask.shape[:2], dtype=np.uint8)
+            cv2.fillPoly(label_mask, [pts_px], 1)
+
+            kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+            for _ in range(expand_px):
+                dilated = cv2.dilate(label_mask, kernel, iterations=1)
+                new_pixels = dilated & ~label_mask
+                allowed = new_pixels & (free_mask > 0).astype(np.uint8)
+                if cv2.countNonZero(allowed) == 0:
+                    break
+                label_mask = label_mask | allowed
+                free_mask[allowed > 0] = 0
+
+            # 提取最终轮廓
+            exp_contours, _ = cv2.findContours(label_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            if exp_contours:
+                exp_contour = max(exp_contours, key=cv2.contourArea)
+                exp_contour = cv2.approxPolyDP(exp_contour, epsilon=1.5, closed=True)
+                if exp_contour.shape[0] >= 3:
+                    polygon = []
+                    for pt in exp_contour[:, 0, :]:
+                        wx = origin_x + float(pt[0]) * resolution
+                        wy = origin_y + float(height - pt[1]) * resolution
+                        polygon.append((wx, wy))
+
+            if len(polygon) < 3:
+                continue
+
+            # 标记占用
+            pts_px = np.array([
+                _world_to_image_pixel(float(wx), float(wy), resolution, origin_x, origin_y, height)
+                for wx, wy in polygon
+            ], dtype=np.int32).reshape((-1, 1, 2))
+            cv2.fillPoly(occupied, [pts_px], 255)
+
+            area_m2 = area_px * resolution * resolution
+            label = AreaLabel(
+                id="", area_id=next_id,
+                name=f"禁行区 {area_m2:.1f}m²",
+                polygon=polygon, color="",
+            )
+            cmd = AddAnnotationCommand(
+                self.annotations, "area_label",
+                {"polygon": label.polygon, "name": label.name, "area_id": label.area_id},
                 refresh_cb=self.canvas.refresh,
             )
             self.command_manager.execute(cmd)
@@ -1048,7 +1362,97 @@ class MainWindow(tk.Tk):
 
         self.canvas.refresh()
         self.statusbar_left.config(
-            text=f"障碍物检测: {added} 个区域已生成 (min={min_area}m²)")
+            text=f"标签检测完成: {added} 个区域已生成 (min={min_area}m²)")
+
+    def _expand_area_labels(self):
+        """区域标签扩展法：将每个 AreaLabel 边界向外膨胀，直到撞到障碍物或相邻标签。"""
+        if self.map_data.metadata is None:
+            self._show_warning(problem="未加载地图", impact="无法扩展",
+                               suggestion="先加载工程后再操作")
+            return
+        if not self.annotations.area_labels:
+            self._show_warning(problem="无区域标签", impact="无法扩展",
+                               suggestion="先用\"检测障碍物生成区域标签\"或手动绘制区域标签")
+            return
+
+        step_size = simpledialog.askinteger(
+            "扩张步长 (像素)", "每次迭代扩张的像素数 (1=逐像素, 2=两像素一步, ..., 默认1):",
+            parent=self, minvalue=1, initialvalue=1)
+        if step_size is None:
+            return
+
+        # 保存扩张前的原始 polygon 快照，供边界修正面板使用
+        self._orig_area_polygons = [
+            list(lab.polygon) for lab in self.annotations.area_labels]
+
+        try:
+            from ..utils.free_space_components import expand_area_label_polygons
+            new_polygons = expand_area_label_polygons(
+                self.map_data, self.annotations, step_size=step_size)
+        except Exception as e:
+            self._show_error(problem=f"区域标签扩展失败: {e}",
+                             impact="无法扩展区域标签",
+                             suggestion="检查地图数据后重试")
+            return
+
+        updated = 0
+        for label, new_poly in zip(self.annotations.area_labels, new_polygons):
+            if len(new_poly) < 3:
+                continue
+            label.polygon = new_poly
+            updated += 1
+
+        self.canvas.refresh()
+        self.statusbar_left.config(
+            text=f"区域标签扩展完成: 已扩展 {updated} 个区域 (步长={step_size}px)")
+
+    def _expand_area_labels_contour(self):
+        """等高线扩展法：通过等高线对每个障碍物向外扩张，直到与相邻标签或边界相连。"""
+        if self.map_data.metadata is None:
+            self._show_warning(problem="未加载地图", impact="无法扩展",
+                               suggestion="先加载工程后再操作")
+            return
+        if not self.annotations.area_labels:
+            self._show_warning(problem="无区域标签", impact="无法扩展",
+                               suggestion="先用\"检测障碍物生成区域标签\"或手动绘制区域标签")
+            return
+
+        self._orig_area_polygons = [
+            list(lab.polygon) for lab in self.annotations.area_labels]
+
+        contour_gap = simpledialog.askfloat(
+            "等高线间距 (m)", "每层等高线的间距 (米, 默认0.2):",
+            parent=self, minvalue=0.01, initialvalue=0.2)
+        if contour_gap is None:
+            return
+
+        max_expand = simpledialog.askfloat(
+            "最大扩张距离 (m)", "扩张上限距离 (米, 默认2.0):",
+            parent=self, minvalue=0.1, initialvalue=2.0)
+        if max_expand is None:
+            return
+
+        try:
+            from ..utils.free_space_components import expand_area_labels_by_contour
+            new_polygons = expand_area_labels_by_contour(
+                self.map_data, self.annotations,
+                contour_gap=contour_gap, max_expand=max_expand)
+        except Exception as e:
+            self._show_error(problem=f"等高线扩展失败: {e}",
+                             impact="无法扩展区域标签",
+                             suggestion="检查地图数据后重试")
+            return
+
+        updated = 0
+        for label, new_poly in zip(self.annotations.area_labels, new_polygons):
+            if len(new_poly) < 3:
+                continue
+            label.polygon = new_poly
+            updated += 1
+
+        self.canvas.refresh()
+        self.statusbar_left.config(
+            text=f"等高线扩展法完成: 已扩展 {updated} 个区域 (间距={contour_gap}m, 上限={max_expand}m)")
 
     def _check_dirty_state(self):
         if bool(getattr(self, "_is_closing", False)) or not self._window_exists():
@@ -1220,6 +1624,9 @@ class MainWindow(tk.Tk):
             return
         if getattr(event, "state", 0) & 0x4:  # Ctrl key pressed
             return
+        # C 键：鼠标在区域标签上时进入切割模式
+        if tool_name == "crop" and self._try_enter_cut_mode(event):
+            return
         manager = self.__dict__.get("tool_manager")
         if manager is None:
             return
@@ -1227,6 +1634,23 @@ class MainWindow(tk.Tk):
         statusbar = self.__dict__.get("statusbar_left")
         if statusbar is not None:
             statusbar.config(text=f"Switched tool: {label}")
+    
+    def _try_enter_cut_mode(self, event) -> bool:
+        """C 键：鼠标在区域标签上时进入切割模式，返回 True 表示已处理。"""
+        canvas = self.__dict__.get("canvas")
+        if not canvas or getattr(canvas, '_cut_mode_active', False):
+            return False
+        try:
+            px, py = canvas.winfo_pointerxy()
+            cx = canvas.canvasx(px - canvas.winfo_rootx())
+            cy = canvas.canvasy(py - canvas.winfo_rooty())
+        except Exception:
+            return False
+        area = canvas._hit_test_area_label(cx, cy)
+        if area is not None:
+            self._on_split_area_label(area)
+            return True
+        return False
 
     def _get_toolbar_shortcut_hints(self) -> str:
         pairs = [
@@ -1892,6 +2316,11 @@ class MainWindow(tk.Tk):
             self._write_coverage_repo_preflight_report(coverage_repo_dir, map_id, preflight)
             if preflight.issues:
                 self._last_project_extra_warnings.extend(preflight.issues)
+                # preflight 失败时清理陈旧产物，避免与新区域不匹配
+                if repo_subdir.exists():
+                    shutil.rmtree(repo_subdir)
+                if legacy_repo_subdir.exists():
+                    shutil.rmtree(legacy_repo_subdir)
             else:
                 try:
                     export_coverage_repo(
@@ -1909,6 +2338,8 @@ class MainWindow(tk.Tk):
                         shutil.rmtree(legacy_repo_subdir)
                 except Exception as exc:
                     self._last_project_extra_warnings.append(f"coverage_repo_export_failed: {exc}")
+                    if repo_subdir.exists():
+                        shutil.rmtree(repo_subdir)
         elif repo_subdir.exists():
             shutil.rmtree(repo_subdir)
             if legacy_repo_subdir.exists():
@@ -2891,6 +3322,64 @@ class MainWindow(tk.Tk):
             text=f"Updated selected area Room ID {old_room_id} -> {new_room_id}; path nodes updated: {changed_nodes}"
         )
 
+    def _on_split_area_label(self, area_label):
+        """进入多边形切割模式：用户绘制多边形来切掉区域标签的一块。"""
+        self._cutting_area_label = area_label
+        self.canvas._enter_cut_mode(
+            area_label,
+            callback=lambda points: self._do_split_area_label(area_label, points),
+        )
+
+    def _do_split_area_label(self, area_label, cut_polygon_points):
+        """用切割多边形从区域标签中减去一块。"""
+        from ..utils.geometry_utils import subtract_polygon
+        from ..controllers.commands.split_area_label_command import SplitAreaLabelCommand
+
+        if len(cut_polygon_points) < 3:
+            self.statusbar_left.config(text="切割失败：至少需要三个点定义切割多边形")
+            return
+
+        polygon = list(area_label.polygon)
+        clip = list(cut_polygon_points)
+
+        remaining, cut_out = subtract_polygon(polygon, clip)
+
+        if remaining is None and cut_out is None:
+            self._show_warning(
+                problem="切割失败",
+                impact="没有有效剩余区域",
+                suggestion="确保切割多边形与区域标签有重叠",
+            )
+            return
+
+        if cut_out is None:
+            self._show_warning(
+                problem="切割失败",
+                impact="切割多边形与区域标签无重叠",
+                suggestion="确保切割多边形与区域标签有交集",
+            )
+            return
+
+        if remaining is None or len(remaining) < 3:
+            self._show_warning(
+                problem="切割后剩余区域过小",
+                impact="无法形成有效区域",
+                suggestion="绘制小一点的切割多边形",
+            )
+            return
+
+        cmd = SplitAreaLabelCommand(
+            self.annotations,
+            area_label,
+            remaining,
+            cut_out or clip,
+            refresh_cb=self.canvas.refresh,
+        )
+        self.command_manager.execute(cmd)
+        self.statusbar_left.config(
+            text=f"区域 {area_label.name} 已切出多边形区域"
+        )
+
     def _coverage_area_key(self, area_label) -> int:
         return area_room_id(area_label)
 
@@ -2954,27 +3443,34 @@ class MainWindow(tk.Tk):
 
         return "cancel"
 
-    def _generate_coverage_path_for_area(self, area_label, start_world_xy=None):
-        """执行覆盖路径生成；外层负责确定起点来源。"""
+    def _generate_coverage_path_for_area(self, area_label, start_world_xy=None, config_override=None):
+        """执行覆盖路径生成；外层负责确定起点来源。
+
+        返回 (end_x, end_y) 用于链式调用，失败返回 None。
+        """
         # 1. 弹出参数对话框
-        config = show_coverage_dialog(
-            self,
-            input_summary=build_coverage_input_summary(
+        if config_override is not None:
+            config = config_override
+            planner_warning = None
+        else:
+            config = show_coverage_dialog(
                 self,
-                area_name=getattr(area_label, "name", ""),
-                start_point_set=bool(start_world_xy is not None),
-            ),
-        )
-        if config is None:
-            return
-        config, planner_warning = self._resolve_planner_config(config)
-        if planner_warning:
-            self._show_warning(
-                problem="CTC 模式不可用",
-                impact="已自动降级为 basic 模式，覆盖路径流程会继续执行",
-                suggestion=f"{planner_warning}; 如需启用请补齐依赖后重试",
-                title="Planner Fallback",
+                input_summary=build_coverage_input_summary(
+                    self,
+                    area_name=getattr(area_label, "name", ""),
+                    start_point_set=bool(start_world_xy is not None),
+                ),
             )
+            if config is None:
+                return
+            config, planner_warning = self._resolve_planner_config(config)
+            if planner_warning:
+                self._show_warning(
+                    problem="CTC 模式不可用",
+                    impact="已自动降级为 basic 模式，覆盖路径流程会继续执行",
+                    suggestion=f"{planner_warning}; 如需启用请补齐依赖后重试",
+                    title="Planner Fallback",
+                )
         self._log_coverage_canvas_state(
             "generate_before",
             area_id=int(area_label.area_id),
@@ -3038,15 +3534,27 @@ class MainWindow(tk.Tk):
         try:
             planner_mode = getattr(config, "planner_mode", BASIC_MODE)
             selected_area_planning_map = build_selected_area_planning_map(planning_map_binary, roi_mask)
+            prepared_map = preprocess_total_map(
+                raw_map=selected_area_planning_map,
+                resolution_m_per_px=float(res),
+                open_kernel_m=float(getattr(config, "open_kernel_m", 0.6)),
+                obstacle_expand_m=float(getattr(config, "obstacle_expand_m", 0.6)),
+                region_mask=roi_mask,
+                output_root=Path(config.artifacts_output_root) if getattr(config, "artifacts_output_root", "") else None,
+            )
+            if prepared_map is None or cv2.countNonZero(prepared_map) < 9:
+                self._show_error(
+                    problem="区域自由空间过小",
+                    impact="无法生成覆盖路径",
+                    suggestion="检查区域多边形是否包含足够的可行区域",
+                )
+                self.statusbar_left.config(text="Area too small for coverage planning.")
+                return
+            fz_count = len(self.annotations.forbidden_zones) + sum(
+                1 for _ in self.annotations.iter_derived_constraint_regions("forbidden_zone")
+            )
             request = CoveragePlanningRequest(
-                prepared_map=preprocess_total_map(
-                    raw_map=selected_area_planning_map,
-                    resolution_m_per_px=float(res),
-                    open_kernel_m=float(getattr(config, "open_kernel_m", 0.6)),
-                    obstacle_expand_m=float(getattr(config, "obstacle_expand_m", 0.6)),
-                    region_mask=roi_mask,
-                    output_root=Path(config.artifacts_output_root) if getattr(config, "artifacts_output_root", "") else None,
-                ),
+                prepared_map=prepared_map,
                 map_resolution=float(res),
                 starting_position_px=(start_u, start_v),
                 map_origin_xy=(float(origin_x), float(origin_y)),
@@ -3055,6 +3563,7 @@ class MainWindow(tk.Tk):
                 map_yaml_path=Path(self.map_data.yaml_path) if self.map_data.yaml_path else None,
                 public_config=config,
                 artifacts_output_root=Path(config.artifacts_output_root) if getattr(config, "artifacts_output_root", "") else None,
+                forbidden_zone_count=fz_count,
             )
             if planner_mode == AUTO_MODE:
                 result = route_coverage_plan(request)
@@ -3107,32 +3616,7 @@ class MainWindow(tk.Tk):
         segment_id = 0
         base_idx = len(manager.nodes)
 
-        # 如果用户手动指定了起点且该像素是自由的，前置插入作为第 0 个节点
-        if start_world_xy is not None and path_world:
-            su = int(round((s_wx - origin_x) / res))
-            sv = int(round(h - (s_wy - origin_y) / res))
-            if (0 <= su < selected_area_planning_map.shape[1] and
-                0 <= sv < selected_area_planning_map.shape[0] and
-                selected_area_planning_map[sv, su] == 255):
-                import math
-                first_pose = path_world[0]
-                dir_yaw = math.atan2(first_pose.y - s_wy, first_pose.x - s_wx)
-                click_node = CoveragePathNode(
-                    id=base_idx,
-                    room=room_id,
-                    segment=segment_id,
-                    x=s_wx,
-                    y=s_wy,
-                    yaw=dir_yaw,
-                    u=(s_wx - origin_x) / res,
-                    v=h - (s_wy - origin_y) / res,
-                    acc_dist=0.0,
-                    room_dist=0.0,
-                    seg_dist=0.0,
-                )
-                manager.nodes.append(click_node)
-                base_idx += 1
-
+        
         for i, pose in enumerate(path_world):
             u = (pose.x - origin_x) / res
             v = h - (pose.y - origin_y) / res
@@ -3185,6 +3669,283 @@ class MainWindow(tk.Tk):
                 requested_mode=planner_mode,
             )
         )
+
+        self._show_coverage_metrics(path_world, result)
+        comparison_modes = getattr(config, "comparison_modes", ())
+        if comparison_modes:
+            self._run_comparison_planners(area_label, start_world_xy, request, comparison_modes)
+
+        return (path_world[-1].x, path_world[-1].y)
+
+    def _on_generate_all_coverage_paths(self):
+        """为所有区域标签一键生成覆盖路径，自动连接房间终点→起点。"""
+        areas = list(self.annotations.area_labels)
+        if not areas:
+            self._show_error("无区域标签", "无法生成", "请先用区域标注工具添加区域标签")
+            return
+
+        # 按质心最近邻排序，缩短跨房间移动距离
+        def _centroid(a):
+            xs = [p[0] for p in a.polygon]
+            ys = [p[1] for p in a.polygon]
+            return (sum(xs) / len(xs), sum(ys) / len(ys))
+
+        centroids = [_centroid(a) for a in areas]
+        n = len(areas)
+        sorted_indices = [0]
+        remaining = list(range(1, n))
+        while remaining:
+            last_c = centroids[sorted_indices[-1]]
+            best = min(remaining, key=lambda i: (centroids[i][0] - last_c[0])**2 + (centroids[i][1] - last_c[1])**2)
+            sorted_indices.append(best)
+            remaining.remove(best)
+        sorted_areas = [areas[i] for i in sorted_indices]
+
+        # 弹出参数对话框一次，应用于全部区域
+        config = show_coverage_dialog(
+            self,
+            input_summary=build_coverage_input_summary(
+                self,
+                area_name=f"全部区域 ({n}个)",
+                start_point_set=False,
+            ),
+        )
+        if config is None:
+            return
+        config, planner_warning = self._resolve_planner_config(config)
+        if planner_warning:
+            self._show_warning(
+                problem="CTC 模式不可用",
+                impact="已自动降级为 basic 模式",
+                suggestion="如需启用请补齐依赖后重试",
+            )
+        prev_end = None
+        success_count = 0
+        fail_msgs = []
+        for i, area in enumerate(sorted_areas):
+            rid = area_room_id(area)
+            self.statusbar_left.config(text=f"[{i+1}/{n}] 正在生成 Room {rid}...")
+            self.update()
+            start_xy = prev_end  # chain: previous end → current start
+            end_xy = self._generate_coverage_path_for_area(
+                area, start_world_xy=start_xy, config_override=config,
+            )
+            if end_xy is not None:
+                prev_end = end_xy
+                success_count += 1
+            else:
+                fail_msgs.append(str(rid))
+        # 最终状态
+        total_pts = len(self.coverage_path_manager.nodes)
+        parts = [f"全部生成完成: {success_count}/{n} 区域成功, 共 {total_pts} 路径点"]
+        if fail_msgs:
+            parts.append(f"失败区域: {', '.join(fail_msgs)}")
+        self.statusbar_left.config(text=" | ".join(parts))
+        if success_count:
+            self.canvas.refresh()
+            self._refresh_room_order_panel()
+
+    def _compute_path_metrics(self, path_world):
+        total_len = 0.0
+        turns = 0
+        for i in range(1, len(path_world)):
+            dx = path_world[i].x - path_world[i - 1].x
+            dy = path_world[i].y - path_world[i - 1].y
+            total_len += math.hypot(dx, dy)
+        for i in range(2, len(path_world)):
+            a1 = math.atan2(path_world[i - 1].y - path_world[i - 2].y,
+                            path_world[i - 1].x - path_world[i - 2].x)
+            a2 = math.atan2(path_world[i].y - path_world[i - 1].y,
+                            path_world[i].x - path_world[i - 1].x)
+            diff = abs(a2 - a1)
+            if diff > math.pi:
+                diff = 2 * math.pi - diff
+            if math.degrees(diff) > 30.0:
+                turns += 1
+        coverage_pts = len(set((round(p.x, 2), round(p.y, 2)) for p in path_world))
+        return total_len, turns, coverage_pts
+
+    def _open_path_tracking(self):
+        from .path_tracking_dialog import show_path_tracking
+        show_path_tracking(self, self.coverage_path_manager, self.map_data)
+
+    def _launch_nav2_simulation(self):
+        import os
+        import signal
+        import subprocess
+        import tempfile
+
+        import yaml
+
+        if not self.map_data or not self.coverage_path_manager.nodes:
+            self._show_warning(
+                problem="无路径数据",
+                impact="无法启动仿真",
+                suggestion="请先生成覆盖路径",
+            )
+            return
+
+        # Kill previous simulation processes to avoid stale map/odom topics
+        self._cleanup_simulation()
+
+        from ..utils.export import Exporter
+
+        export_dir = tempfile.mkdtemp(prefix="nav2_export_")
+        try:
+            exporter = Exporter(self.map_data, self.annotations)
+            exporter.export(export_dir)
+        except Exception as e:
+            self._show_error(problem=f"地图导出失败: {e}", impact="无法启动仿真", suggestion="重试")
+            return
+
+        map_yaml = os.path.join(export_dir, "map.yaml")
+        if not os.path.isfile(map_yaml):
+            self._show_error(problem="导出未生成 map.yaml", impact="无法启动仿真", suggestion="重试")
+            return
+
+        nodes = self.coverage_path_manager.nodes
+        poses = [{"x": float(n.x), "y": float(n.y)} for n in nodes]
+        payload = {
+            "map_id": getattr(self.map_data, "map_id", ""),
+            "paths": [{
+                "room_id": 0,
+                "segments": [{"segment_id": 0, "start_index": 0, "end_index": len(poses) - 1, "type": "source_chunk"}],
+                "poses": poses,
+                "confirmed": False,
+                "planner_diagnostics": {},
+            }],
+        }
+        path_yaml = os.path.join(export_dir, "coverage_path.yaml")
+        with open(path_yaml, "w") as f:
+            yaml.dump(payload, f, default_flow_style=False)
+
+        rviz_config = os.path.join(os.path.dirname(__file__), "..", "..", "ros_nodes", "coverage_sim.rviz")
+        rviz_config = os.path.abspath(rviz_config)
+        launch_script = os.path.join(os.path.dirname(__file__), "..", "..", "ros_nodes", "launch_nav2_sim_b.py")
+        launch_script = os.path.abspath(launch_script)
+
+        if not os.path.isfile(launch_script):
+            self._show_error(problem=f"找不到启动脚本: {launch_script}", impact="无法启动仿真", suggestion="确认 ros_nodes 目录完整")
+            return
+
+        self._sim_proc = subprocess.Popen(
+            ["python3", launch_script, "--map-yaml", map_yaml, "--path-yaml", path_yaml,
+             "--rviz-config", rviz_config],
+        )
+        self.statusbar_left.config(text="仿真已启动（输出在启动终端）。")
+
+    def _cleanup_simulation(self):
+        proc = getattr(self, '_sim_proc', None)
+        if proc and proc.poll() is None:
+            try:
+                proc.terminate()
+                proc.wait(timeout=3)
+            except Exception:
+                proc.kill()
+        import subprocess
+        subprocess.run(
+            ["pkill", "-f", "launch_nav2_sim|diff_drive_sim|coverage_path_commander|controller_server|nav2_costmap_2d|map_server.*nav2|static_transform_publisher|rviz2|virtual_laser|pointcloud_from_clicks|simulated_3d_lidar"],
+            timeout=5, capture_output=True,
+        )
+        self._sim_proc = None
+
+    def _show_coverage_metrics(self, path_world, result):
+        if not path_world:
+            return
+        total_len, turns, coverage_pts = self._compute_path_metrics(path_world)
+        msg = (
+            f"路径长度: {total_len:.2f} m\n"
+            f"路径点数: {len(path_world)}\n"
+            f"覆盖点数: {coverage_pts}\n"
+            f"转弯次数 (>30°): {turns}"
+        )
+        if hasattr(self, "_last_metrics_toplevel") and self._last_metrics_toplevel:
+            try:
+                self._last_metrics_toplevel.destroy()
+            except tk.TclError:
+                pass
+        win = tk.Toplevel(self)
+        win.title("覆盖路径统计")
+        win.configure(bg=COLORS["bg_primary"])
+        win.resizable(False, False)
+        tk.Label(
+            win, text=msg, justify=tk.LEFT,
+            bg=COLORS["bg_primary"], fg=COLORS["fg_primary"],
+            font=FONTS["body"], padx=20, pady=16,
+        ).pack()
+        tk.Button(
+            win, text="关闭",
+            bg=COLORS.get("bg_active", "#4a90d9"),
+            fg=COLORS.get("fg_on_accent", "#ffffff"),
+            relief=tk.FLAT, font=FONTS["button"], cursor="hand2",
+            command=win.destroy,
+        ).pack(pady=(0, 10))
+        self._last_metrics_toplevel = win
+
+    def _run_comparison_planners(self, area_label, start_world_xy, request, comparison_modes):
+        from algorithms.coverage_planning.routing import route_coverage_plan
+        from algorithms.coverage_planning.routing.coverage_router import (
+            run_formal_planner_request,
+        )
+        from algorithms.coverage_planning.adapters.channel_topology_graph_adapter import (
+            run_channel_topology_graph_adapter,
+        )
+        results = []
+        for cm in comparison_modes:
+            self.statusbar_left.config(
+                text=f"Running comparison planner: {cm}...")
+            self.update()
+            try:
+                import copy
+                cm_request = copy.copy(request)
+                if cm == CHANNEL_TOPOLOGY_GRAPH_MODE:
+                    cm_result = run_channel_topology_graph_adapter(cm_request)
+                elif cm == AUTO_MODE:
+                    cm_result = route_coverage_plan(cm_request)
+                else:
+                    cm_result = run_formal_planner_request(cm_request, cm)
+            except Exception as e:
+                cm_result = None
+            if cm_result and cm_result.success and cm_result.path:
+                l, t, cp = self._compute_path_metrics(cm_result.path)
+                label = dict(UI_PLANNER_CHOICES).get(cm, cm)
+                results.append((label, l, t, cp, len(cm_result.path)))
+            else:
+                label = dict(UI_PLANNER_CHOICES).get(cm, cm)
+                results.append((label, 0.0, 0, 0, 0))
+
+        self._show_comparison_popup(results)
+        self.statusbar_left.config(text="Comparison complete.")
+
+    def _show_comparison_popup(self, results):
+        last = getattr(self, "_last_metrics_toplevel", None)
+        if last:
+            try:
+                last.destroy()
+            except tk.TclError:
+                pass
+        win = tk.Toplevel(self)
+        win.title("规划器对比结果")
+        win.configure(bg=COLORS["bg_primary"])
+        win.resizable(False, False)
+        header = f"{'规划器':<16} {'路径长度(m)':<14} {'转弯数':<8} {'覆盖点数':<10} {'总点数':<8}"
+        sep = "-" * len(header)
+        lines = [header, sep]
+        for label, l, t, cp, total in results:
+            status = "失败" if l <= 0 else f"{l:<8.2f}    {t:<6}    {cp:<8}    {total:<6}"
+            lines.append(f"{label:<16} {status}")
+        tk.Label(
+            win, text="\n".join(lines), justify=tk.LEFT,
+            bg=COLORS["bg_primary"], fg=COLORS["fg_primary"],
+            font=("Consolas", 10), padx=20, pady=16,
+        ).pack()
+        tk.Button(
+            win, text="关闭",
+            bg=COLORS.get("bg_active", "#4a90d9"),
+            fg=COLORS.get("fg_on_accent", "#ffffff"),
+            relief=tk.FLAT, font=FONTS["button"], cursor="hand2",
+            command=win.destroy,
+        ).pack(pady=(0, 10))
 
     def _new_coverage_path(self):
         """新建空白路径"""

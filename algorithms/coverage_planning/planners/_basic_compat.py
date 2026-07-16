@@ -114,8 +114,8 @@ def compute_rotation_matrix(
     h, w = room_map.shape[:2]
     cos_a = abs(R[0, 0])
     sin_a = abs(R[0, 1])
-    new_w = int(h * sin_a + w * cos_a)
-    new_h = int(h * cos_a + w * sin_a)
+    new_w = max(int(h * sin_a + w * cos_a), 1)
+    new_h = max(int(h * cos_a + w * sin_a), 1)
 
     R[0, 2] += 0.5 * new_w - center[0]
     R[1, 2] += 0.5 * new_h - center[1]

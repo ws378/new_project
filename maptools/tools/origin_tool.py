@@ -10,7 +10,9 @@ class OriginTool(BaseTool):
 
     def on_press(self, event):
         # 捕获状态
-        before_state = TransformCommand.capture_state(self.canvas.map_data, self.canvas.annotations)
+        mgr = self.canvas.coverage_path_manager
+        path_nodes = list(mgr.nodes) if mgr else None
+        before_state = TransformCommand.capture_state(self.canvas.map_data, self.canvas.annotations, path_nodes)
 
         # 获取点击点的世界坐标
         cx = self.canvas.canvasx(event.x)
@@ -90,7 +92,7 @@ class OriginTool(BaseTool):
         self._shift_annotations(dx, dy)
 
         # Capture after state
-        after_state = TransformCommand.capture_state(self.canvas.map_data, self.canvas.annotations)
+        after_state = TransformCommand.capture_state(self.canvas.map_data, self.canvas.annotations, path_nodes)
 
         # Submit command
         if self.controller and hasattr(self.controller, 'command_manager'):
@@ -99,7 +101,8 @@ class OriginTool(BaseTool):
                 self.canvas.annotations,
                 before_state,
                 after_state,
-                refresh_cb=self.canvas.refresh
+                refresh_cb=self.canvas.refresh,
+                path_manager=mgr,
             )
             self.controller.command_manager.execute(cmd)
 
@@ -123,3 +126,21 @@ class OriginTool(BaseTool):
 
         for s in anns.stations:
             s.position = (s.position[0]+dx, s.position[1]+dy)
+
+        # Shift coverage path nodes (world coords)
+        mgr = self.canvas.coverage_path_manager
+        if mgr and mgr.nodes:
+            res = self.canvas.map_data.metadata.resolution
+            new_ox, new_oy, _ = self.canvas.map_data.metadata.origin
+            map_h = self.canvas.map_data.height
+            for p in mgr.nodes:
+                p.x += dx
+                p.y += dy
+                p.u = (p.x - new_ox) / res
+                p.v = map_h - (p.y - new_oy) / res
+            mgr.rebuild_spatial()
+
+        # Shift area labels
+        for area in anns.area_labels:
+            if area.polygon:
+                area.polygon = [(x+dx, y+dy) for x, y in area.polygon]

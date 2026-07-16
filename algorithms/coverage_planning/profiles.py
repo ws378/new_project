@@ -115,7 +115,7 @@ PLANNER_MODE_PROFILES: dict[str, PlannerModeProfile] = {
         profile_id="cstar_tsp_default",
         profile_version=1,
         profile_status="research_baseline",
-        default_overrides={},
+        default_overrides={"turn_weight": 1.0},
     ),
     BOUSTROPHEDON_MODE: PlannerModeProfile(
         planner_mode=BOUSTROPHEDON_MODE,

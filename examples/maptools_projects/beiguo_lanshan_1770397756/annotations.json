@@ -1,257 +1,1197 @@
 {
   "version": "1.0",
-  "constraint_segments": [],
-  "derived_constraint_regions": [],
-  "stations": [],
-  "area_labels": [
+  "constraint_segments": [
     {
-      "id": "71fdfa33-52ca-45f9-a0e5-3a05af469443",
-      "area_id": 1,
-      "name": "1",
-      "polygon": [
+      "id": "79ebb2b0-1034-4196-a945-80b6e1177033",
+      "name": "Virtual Wall",
+      "points": [
         [
-          3.8808022511218265,
-          7.803496990025991
+          3.70910904443304,
+          82.19668932658189
         ],
         [
-          23.108183103239455,
-          8.034687942155664
-        ],
-        [
-          23.146714928594402,
-          32.34826974112606
-        ],
-        [
-          2.9175066172481987,
-          32.34826974112606
-        ],
-        [
-          3.187229394732814,
-          19.054789993669992
-        ],
-        [
-          2.686315665118526,
-          10.385129288807327
-        ],
-        [
-          2.7633793158284163,
-          9.113579052094138
+          3.776615844852744,
+          80.79592321787302
         ]
       ],
-      "color": "#4CAF50"
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
     },
     {
-      "id": "c3027d7d-4049-4315-a81f-0f09725c5ef9",
-      "area_id": 2,
-      "name": "2",
-      "polygon": [
+      "id": "3643ad82-c67b-4617-8d58-3bf110c63d46",
+      "name": "Virtual Wall",
+      "points": [
         [
-          4.467753387670724,
-          0.3186922946720472
+          3.8441226452724475,
+          80.82967661808289
         ],
         [
-          4.583348863735559,
-          -10.470218804712577
-        ],
-        [
-          13.638327822147666,
-          -11.163791661101602
-        ],
-        [
-          13.90805059963228,
-          -7.81152285522138
-        ],
-        [
-          13.83098694892239,
-          -5.961995238184002
-        ],
-        [
-          14.023646075697116,
-          0.5113514214467685
-        ],
-        [
-          4.120966959476217,
-          0.3186922946720472
+          8.890255976645312,
+          80.9815669190272
         ]
       ],
-      "color": "#2196F3"
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
     },
     {
-      "id": "db463ad0-af5e-4f53-a66c-9b1a8688a159",
-      "area_id": 3,
-      "name": "3",
-      "polygon": [
+      "id": "8dbb6ae5-4927-443b-8e6e-ef4bce7220e2",
+      "name": "Virtual Wall",
+      "points": [
         [
-          20.812922877778167,
-          74.68013229406127
+          16.13831206121945,
+          78.29262243509062
         ],
         [
-          20.316475757359026,
-          70.15005232023658
-        ],
-        [
-          20.62675520762099,
-          59.9108304615918
-        ],
-        [
-          20.68881109767338,
-          57.18037129928652
-        ],
-        [
-          20.87497876783056,
-          56.68392417886737
-        ],
-        [
-          25.218891071498046,
-          56.80803595897217
-        ],
-        [
-          36.699230731190696,
-          56.62186828881498
-        ],
-        [
-          36.326895390876345,
-          61.896618943268365
-        ],
-        [
-          36.078671830666764,
-          68.35043150871721
-        ],
-        [
-          32.479430207628,
-          72.25995258201795
-        ],
-        [
-          27.20467955317461,
-          74.49396462390408
-        ],
-        [
-          25.653282301864795,
-          74.92835585427082
+          18.519926369861093,
+          78.33072826402889
         ]
       ],
-      "color": "#FF9800"
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
     },
     {
-      "id": "bb42ea1f-9ab5-4028-b87f-5c602fddbb10",
-      "area_id": 4,
-      "name": "4",
-      "polygon": [
+      "id": "e4e39c50-d81e-44ee-98c7-0a668f498a62",
+      "name": "Virtual Wall",
+      "points": [
         [
-          43.75466386780839,
-          54.167445008351834
+          13.566168607886482,
+          78.04493454699188
         ],
         [
-          56.39149966029562,
-          52.36218275228224
-        ],
-        [
-          56.67357188780649,
-          34.027487964075306
-        ],
-        [
-          56.78640077881086,
-          28.611701195866488
-        ],
-        [
-          57.27466780463219,
-          18.07365201939664
-        ],
-        [
-          44.885209355671975,
-          17.923476765469857
-        ],
-        [
-          43.98415783211124,
-          46.38168738459662
+          15.09040176541713,
+          78.01635517528818
         ]
       ],
-      "color": "#9C27B0"
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
     },
     {
-      "id": "e8eff139-186d-4449-9a30-79197dd61f64",
-      "area_id": 5,
-      "name": "6",
-      "polygon": [
+      "id": "87b17050-510b-4ff8-b661-f550107328af",
+      "name": "Virtual Wall",
+      "points": [
         [
-          2.5630923399401677,
-          54.198247295596005
+          5.644541606315411,
+          99.32333269981747
         ],
         [
-          2.9354276802545236,
-          42.09734873537944
-        ],
-        [
-          7.093172313764834,
-          42.34557229558901
-        ],
-        [
-          21.800418256181896,
-          42.779963525955765
-        ],
-        [
-          23.165647837334536,
-          42.65585174585097
-        ],
-        [
-          23.475927287596498,
-          54.508526745857964
+          4.668536835340081,
+          98.22902432023905
         ]
       ],
-      "color": "#00BCD4"
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
     },
     {
-      "id": "e09c3c9e-39f1-4b2f-a348-35c8a58c162b",
-      "area_id": 6,
-      "name": "6",
-      "polygon": [
+      "id": "b74af543-60eb-4456-947c-0c469dd86365",
+      "name": "Virtual Wall",
+      "points": [
         [
-          36.01519863219923,
-          12.180890817788338
+          13.19823894100012,
+          101.92193120517582
         ],
         [
-          36.74858642372752,
-          2.364777300409841
-        ],
-        [
-          30.148096299973016,
-          2.364777300409841
-        ],
-        [
-          28.06076181639254,
-          -3.1074239133011616
-        ],
-        [
-          27.383788470366436,
-          -10.61054516509045
-        ],
-        [
-          27.72227514337948,
-          -14.108240786225302
-        ],
-        [
-          42.61568875595373,
-          -15.575016369281876
-        ],
-        [
-          71.10498373455219,
-          -15.744259705788405
-        ],
-        [
-          74.37702157367835,
-          -12.979951876181804
-        ],
-        [
-          73.98212045516313,
-          13.139936391325307
-        ],
-        [
-          38.32819089778842,
-          13.986153073857942
+          13.318231331393918,
+          99.67762908855111
         ]
       ],
-      "color": "#E91E63"
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "301f629c-0023-45f6-ab49-188859e3a359",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          16.193604538237878,
+          102.03303527035528
+        ],
+        [
+          15.815850716627775,
+          100.61979156127278
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "ab41dbd3-6aa0-4c8c-bf5c-2983b3d985fd",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          17.04539448087516,
+          63.53738620058961
+        ],
+        [
+          17.416926313023254,
+          62.36563196073794
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "7f5175a9-a254-436d-91a3-e38daefcfe4b",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          12.438948729014744,
+          47.25501570083128
+        ],
+        [
+          12.480865140846834,
+          45.4002144772612
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "351279bc-f02e-4400-a9f9-e7aa27bad686",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          4.370039451336943,
+          47.29693211266337
+        ],
+        [
+          4.3909976572529885,
+          45.06488318260446
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "28be96ac-51c2-428b-83f2-d22d1b1a8628",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          8.769134419333184,
+          44.65908779776073
+        ],
+        [
+          9.277402182481087,
+          48.39635076208354
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "827fcc82-785b-4e84-94b7-9476a31dcc0e",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          44.67115520014457,
+          44.502084508306424
+        ],
+        [
+          44.56243482300063,
+          39.664027725401255
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "517a7bd4-0f6d-4ad9-9e83-c293d0b0bc8f",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          44.37217416299873,
+          38.359383199674014
+        ],
+        [
+          44.56243482300063,
+          31.211018402460212
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "e0e3fe85-4122-497c-98fd-6c84203d86e0",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          44.64397510585857,
+          30.477155856738648
+        ],
+        [
+          44.29063388014079,
+          27.8406867109982
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "84d20e92-fbfc-4d6b-86d0-8efbac76a404",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          73.05651553159052,
+          0.21079652721059006
+        ],
+        [
+          73.23751821904727,
+          -1.713547834171834
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "86dd35f6-43c8-4069-8122-75c122ca8f77",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          71.5007207529495,
+          -6.099708829334716
+        ],
+        [
+          71.83139116935594,
+          -9.398539888246567
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "3af48128-3275-42a4-b0c3-0b225195efed",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          71.91012222088128,
+          -9.39066678309403
+        ],
+        [
+          72.88638725979553,
+          -9.382793677941493
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "fa9cf899-453c-4afa-8eae-e094a27718aa",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          73.02813430785933,
+          8.426850433417343
+        ],
+        [
+          73.0424490445003,
+          7.024006242602169
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "b3f4c4e4-3c31-41e8-b66f-893d03cef493",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          72.89741117621718,
+          12.619663540595973
+        ],
+        [
+          74.19454597767016,
+          12.689401970781603
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "8853f215-5c40-4301-a853-d9c2491b2c2f",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          48.79722845335348,
+          16.282699885336186
+        ],
+        [
+          52.92824672688819,
+          16.282699885336186
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "48aa0cdb-94b5-4455-8658-2d23792bfecf",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          53.491173745294375,
+          15.858339517614588
+        ],
+        [
+          53.53447582363333,
+          14.567937583114222
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "0ff4f7c3-1c04-4247-a3e1-df166e04da93",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          59.34337082301933,
+          14.613817001155894
+        ],
+        [
+          59.406769395915376,
+          13.396564401551935
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "67a86aa4-337d-4f42-84a5-0e260e5d0e91",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          62.55133861155893,
+          14.765973576106397
+        ],
+        [
+          62.60205746987576,
+          13.447283259868769
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "0d96c990-b59e-4490-b878-99175f66a86c",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          63.692512923687644,
+          16.071984177764804
+        ],
+        [
+          63.70519263826685,
+          14.702575003210349
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "d726ffdf-2ef7-4f9e-8b9d-189a998115fe",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          65.11264095655892,
+          14.79133300526481
+        ],
+        [
+          65.31551638982624,
+          12.420226378952918
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "b69cc5e8-cce9-4c08-a4b8-34d3f402d8e7",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          66.22845583952922,
+          16.338258183928176
+        ],
+        [
+          66.27917469784605,
+          14.29682413667571
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "9eb10ff5-4937-46d0-b439-cddaa9cdb86a",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          46.205438775059136,
+          13.35078807243493
+        ],
+        [
+          46.62585655769814,
+          13.336122335831242
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "73de5167-056b-4f44-8c1c-a3ea0629f10f",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          30.86399202177324,
+          -9.337819161140327
+        ],
+        [
+          32.219611870393905,
+          -9.264361927963819
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "a801667b-0a66-47e0-a9a5-2698bd0467f4",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          23.229543204030385,
+          -12.0159721128747
+        ],
+        [
+          24.199178681960046,
+          -11.938842018039402
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "40437ada-16ab-4b5f-b87a-6335e3506fc8",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          15.04172943790634,
+          -11.80479591597145
+        ],
+        [
+          20.469904770162245,
+          -11.490422827230766
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "7e64475e-0863-4b71-b84a-165c227eb87c",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          2.7402750325030656,
+          -0.7780794402683142
+        ],
+        [
+          2.876503370957364,
+          -4.676305740652872
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "fba55153-8c59-41a8-837b-cc6403aa5729",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          3.3585421070264214,
+          -0.9143077787226233
+        ],
+        [
+          3.3480630040683987,
+          -5.221219094470051
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "f841a712-25a9-4a46-8b98-c8c917db7898",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          7.2783824899020555,
+          -3.2657775616059084
+        ],
+        [
+          6.999916938170783,
+          -3.822708665068447
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "fb15bfe7-b913-4ae0-adbe-efa59be1a3a0",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          9.432175475671695,
+          -11.900458590138928
+        ],
+        [
+          7.688714721030621,
+          -13.839186949299808
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "16c2ff41-5b55-4416-bf23-6cf754ca4a9a",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          30.869510171474555,
+          -4.963003915539346
+        ],
+        [
+          32.72431139504461,
+          -4.721984547504817
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "60c43220-681f-4ad7-bd50-f05bfb899c16",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          40.08064167157673,
+          -5.224981489489906
+        ],
+        [
+          41.47436236499378,
+          -5.224981489489906
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "18c4857f-64c9-4961-a709-f1692544f1eb",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          30.96382209809676,
+          4.478667849639322
+        ],
+        [
+          32.70335318912858,
+          4.5101051585134115
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "f421738f-cf8b-4b94-bc69-47a27d624599",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          40.92944901117659,
+          4.667291702883752
+        ],
+        [
+          43.06718601461327,
+          4.75112452654794
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "4bcb78ca-680c-46fb-b6d5-7cc0c6085024",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          8.195221523601813,
+          87.23214327683601
+        ],
+        [
+          9.112666008318598,
+          87.26467676920187
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "b1403cae-ab83-4aa2-afdd-15b4fc0a114d",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          6.4188928404267624,
+          86.73112749440205
+        ],
+        [
+          8.0520741571921,
+          86.7376341928752
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "1e7395ca-1379-4d74-94a2-4e6d1417571d",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          3.0569380337447427,
+          89.09055860092566
+        ],
+        [
+          3.6023579900801703,
+          88.03203987085246
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "632a1703-00fa-454c-b696-2e63a8b05740",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          4.794565211672923,
+          89.70163095941257
+        ],
+        [
+          5.60118072487565,
+          89.68696522280891
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "412378a6-fb83-4f64-9934-d643bed00853",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          17.17949992048088,
+          108.07229884724096
+        ],
+        [
+          17.50836795341202,
+          108.07674300984813
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "e6d61833-a5d8-45ec-93ee-cda5da7dcaa4",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          25.693490083527248,
+          74.15732381833284
+        ],
+        [
+          25.791123885787147,
+          71.1725190063874
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "302f48fe-88ff-464d-bd19-9b6c75f7d09f",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          29.054882418475156,
+          75.4126155616744
+        ],
+        [
+          32.48601318360872,
+          75.49630167789716
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "747b9679-cd36-40b7-a1f6-efc61ac89761",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          30.113528465827844,
+          59.40397467846246
+        ],
+        [
+          34.735860780611674,
+          59.473136757985415
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "e8cf5ecc-bb09-4294-a756-d161e46ccfb1",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          48.376720371733896,
+          58.11289573574933
+        ],
+        [
+          44.594610251839356,
+          57.25780996951232
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "0e983e3f-f103-4f4d-b09f-cd758c5122ec",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          47.45585877732479,
+          49.49626224520699
+        ],
+        [
+          47.55452251958292,
+          45.582600468968295
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "337d6d28-efca-4df7-8c4a-72b328f09751",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          53.67167453958626,
+          46.37191040703324
+        ],
+        [
+          53.8690020241025,
+          43.510661881547804
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "e45485fc-5dcd-4097-b688-cadaf8b7f55f",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          56.467147236899635,
+          52.32462285660638
+        ],
+        [
+          56.36848349464151,
+          43.67510145197801
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "60db6190-efb2-478c-ac98-c265a0addd53",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          64.57548208948046,
+          37.18866730152854
+        ],
+        [
+          65.32865713548537,
+          35.97521861629838
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "023c73c3-5188-4fe4-a9d2-81eda35eebe9",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          65.37050019359677,
+          35.877584814038485
+        ],
+        [
+          65.9841983792304,
+          32.669617025498994
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "07f6bb59-69c2-4c4f-afcd-a6473f17762c",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          65.95630300715615,
+          32.64172165342474
+        ],
+        [
+          68.45293880780211,
+          32.83698925794452
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "6406acda-3427-4773-a02f-dad18e8b99ba",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          68.46688649383923,
+          32.90672768813016
+        ],
+        [
+          68.77373558665606,
+          31.344586851971812
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "5285d164-1a69-411e-b97e-f09dae367be9",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          66.37473358827,
+          30.396144201447086
+        ],
+        [
+          66.44447201845564,
+          30.298510399187194
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "c74d0edd-12d6-47fd-ad3e-748580a3d65c",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          69.87560278358919,
+          30.061399736556012
+        ],
+        [
+          70.57298708544559,
+          28.44346815624914
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "e1a8c04d-fa60-4323-a3de-1796482d4bf6",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          58.35492285877058,
+          29.007194091214004
+        ],
+        [
+          62.39558261060826,
+          29.15034145762371
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "c49c3d25-5c7f-41b0-94c7-93af451af193",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          56.8388621145223,
+          31.62288687742776
+        ],
+        [
+          56.85838220994181,
+          29.970185465242963
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "4be026e0-f9a1-493b-a818-e5f1232b0980",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          47.75208705271892,
+          31.42331346740562
+        ],
+        [
+          47.815485625614954,
+          29.97782600537596
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "a332a092-3a35-4139-b21d-aa3913bae367",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          58.60806013103141,
+          66.95448881752277
+        ],
+        [
+          58.79832079103329,
+          63.61133722034687
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "2a89cb0e-a881-4faf-a3f0-871c84133b32",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          58.71678050817535,
+          63.17645571177114
+        ],
+        [
+          58.82550088531927,
+          61.1651287346084
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "a1835bd2-4140-447e-8303-e897d59b0324",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          58.79832079103329,
+          60.81178750889063
+        ],
+        [
+          58.526519848173464,
+          58.66456006029797
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "b3286adc-1fd0-4135-b67e-7fb2421294ba",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          58.689600413889366,
+          56.76195346027917
+        ],
+        [
+          58.3090790938856,
+          55.56602931169593
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "3d89368a-765c-4ab8-96df-0e0db5ba703a",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          56.29725646064598,
+          78.7679019332792
+        ],
+        [
+          54.775171180630934,
+          78.74072183899322
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "ac9f5395-2de9-4afb-80b9-5c60152abc51",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          55.15644198058979,
+          69.22070785055426
+        ],
+        [
+          55.576497983191345,
+          67.21926454404097
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
+    },
+    {
+      "id": "34477215-1950-4733-ae6e-df5c6bb5c2a0",
+      "name": "Virtual Wall",
+      "points": [
+        [
+          58.78869094426206,
+          69.73960055965031
+        ],
+        [
+          58.66514506114396,
+          67.34281042715905
+        ]
+      ],
+      "closed": false,
+      "constraint_type": "virtual_wall",
+      "color": "#1e6cff",
+      "metadata": {}
     }
   ],
-  "_next_area_id": 7
+  "derived_constraint_regions": [],
+  "stations": [],
+  "area_labels": [],
+  "_next_area_id": 21
 }

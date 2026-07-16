@@ -175,80 +175,112 @@ def _ecd_sample_nodes(
     free_mask: np.ndarray,
     step: int,
 ) -> list[_Node]:
+    """牛耕往复式扫描线取样建图"""
     h, w = free_mask.shape
+    free_ys, free_xs = np.where(free_mask)
+    if len(free_ys) == 0:
+        return []
 
-    obstacles = (free_mask == 0).astype(np.uint8)
-    critical_x: set[int] = set()
-    cnts, _ = cv2.findContours(obstacles, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    for cnt in cnts:
-        peri = cv2.arcLength(cnt, True)
-        eps = max(2.0, min(5.0, 0.003 * peri))
-        approx = cv2.approxPolyDP(cnt, eps, True)
-        for pt in approx[:, 0]:
-            x = pt[0]
-            if 0 < x < w - 1:
-                critical_x.add(x)
+    min_y, max_y = int(free_ys.min()), int(free_ys.max())
+    min_x, max_x = int(free_xs.min()), int(free_xs.max())
+    area_w = max_x - min_x + 1
+    area_h = max_y - min_y + 1
 
-    for x in range(0, w, max(step * 2, 8)):
-        critical_x.add(x)
-    critical_x = sorted(critical_x)
-    if not critical_x or critical_x[0] > 0:
-        critical_x.insert(0, 0)
-    if critical_x[-1] < w:
-        critical_x.append(w)
-    deduped = [critical_x[0]]
-    for cx in critical_x[1:]:
-        if cx - deduped[-1] >= 2:
-            deduped.append(cx)
-    critical_x = deduped
-
-    cell_id = np.full((h, w), -1, dtype=np.int32)
-    ncells = 0
-    for i in range(len(critical_x) - 1):
-        x1, x2 = critical_x[i], critical_x[i + 1]
-        if x2 - x1 < 1:
-            continue
-        col_any = np.any(free_mask[:, x1:x2] > 0, axis=1)
-        in_free = False
-        y_start = 0
-        for y in range(h):
-            if not in_free and col_any[y]:
-                y_start = y
-                in_free = True
-            elif in_free and not col_any[y]:
-                cell_id[y_start:y, x1:x2] = ncells
-                ncells += 1
-                in_free = False
-        if in_free:
-            cell_id[y_start:h, x1:x2] = ncells
-            ncells += 1
+    sweep_static = area_w < area_h
+    if sweep_static:
+        num_sweeps = max(1, area_w // step)
+        spacing = area_w / num_sweeps if num_sweeps > 0 else step
+    else:
+        num_sweeps = max(1, area_h // step)
+        spacing = area_h / num_sweeps if num_sweeps > 0 else step
 
     nodes: list[_Node] = []
     nid = 0
-    node_grid: list[list[_Node | None]] = [[None] * w for _ in range(h)]
+    raw_layers: list[list[_Node]] = []
 
-    for y in range(0, h, step):
-        for x in range(0, w, step):
-            cid = cell_id[y, x]
-            if cid < 0:
-                continue
-            if free_mask[y, x] == 0:
-                continue
-            n = _Node(float(x), float(y), nid)
+    for i in range(num_sweeps + 1):
+        if sweep_static:
+            line_x = min_x + i * spacing
+            pts = _sample_col(free_mask, int(round(line_x)), min_y, max_y, step)
+        else:
+            line_y = min_y + i * spacing
+            pts = _sample_row(free_mask, int(round(line_y)), min_x, max_x, step)
+        if not pts:
+            continue
+        layer = [_Node(x, y, nid + j) for j, (x, y) in enumerate(pts)]
+        for n in layer:
             nid += 1
-            nodes.append(n)
-            node_grid[y][x] = n
+        nodes.extend(layer)
+        raw_layers.append(layer)
 
-    for y in range(0, h, step):
-        for x in range(0, w, step):
-            n = node_grid[y][x]
-            if n is None:
-                continue
-            if x + step < w and node_grid[y][x + step] is not None:
-                n.right = node_grid[y][x + step]
-                node_grid[y][x + step].left = n
-            if y + step < h and node_grid[y + step][x] is not None:
-                n.down = node_grid[y + step][x]
-                node_grid[y + step][x].up = n
+    if not raw_layers:
+        return nodes
+
+    for layer in raw_layers:
+        for i in range(len(layer)):
+            if i > 0:
+                layer[i].left = layer[i - 1]
+            if i < len(layer) - 1:
+                layer[i].right = layer[i + 1]
+
+    conn_max_d2 = (float(step) * 2.5) ** 2
+    for k in range(len(raw_layers) - 1):
+        upper = raw_layers[k]
+        lower = raw_layers[k + 1]
+        for u in upper:
+            best = min(lower, key=lambda n: (n.x - u.x) ** 2 + (n.y - u.y) ** 2)
+            if (best.x - u.x) ** 2 + (best.y - u.y) ** 2 < conn_max_d2:
+                u.down = best
+                best.up = u
 
     return nodes
+
+
+def _sample_row(free_mask: np.ndarray, row_y: int, x0: int, x1: int, step: int) -> list[tuple[float, float]]:
+    if row_y < 0 or row_y >= free_mask.shape[0]:
+        return []
+    free_indices = np.where(free_mask[row_y, x0:x1 + 1])[0]
+    if len(free_indices) == 0:
+        return []
+    segs = _segments(free_indices)
+    pts: list[tuple[float, float]] = []
+    for seg_start, seg_end in segs:
+        for px in range(seg_start, seg_end + 1, step):
+            pts.append((float(x0 + px), float(row_y)))
+        last = (float(x0 + seg_end), float(row_y))
+        if not pts or pts[-1] != last:
+            pts.append(last)
+    return pts
+
+
+def _sample_col(free_mask: np.ndarray, col_x: int, y0: int, y1: int, step: int) -> list[tuple[float, float]]:
+    if col_x < 0 or col_x >= free_mask.shape[1]:
+        return []
+    free_indices = np.where(free_mask[y0:y1 + 1, col_x])[0]
+    if len(free_indices) == 0:
+        return []
+    segs = _segments(free_indices)
+    pts: list[tuple[float, float]] = []
+    for seg_start, seg_end in segs:
+        for py in range(seg_start, seg_end + 1, step):
+            pts.append((float(col_x), float(y0 + py)))
+        last = (float(col_x), float(y0 + seg_end))
+        if not pts or pts[-1] != last:
+            pts.append(last)
+    return pts
+
+
+def _segments(indices: np.ndarray) -> list[tuple[int, int]]:
+    if len(indices) == 0:
+        return []
+    segs: list[tuple[int, int]] = []
+    start = int(indices[0])
+    prev = int(indices[0])
+    for i in indices[1:]:
+        i_int = int(i)
+        if i_int != prev + 1:
+            segs.append((start, prev))
+            start = i_int
+        prev = i_int
+    segs.append((start, prev))
+    return segs

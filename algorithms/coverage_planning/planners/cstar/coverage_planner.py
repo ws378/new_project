@@ -109,8 +109,8 @@ def _build_affine(angle_deg: float, w: int, h: int) -> tuple[np.ndarray, np.ndar
     M = cv2.getRotationMatrix2D(c, angle_deg, 1.0)
     cos_a = abs(M[0, 0])
     sin_a = abs(M[0, 1])
-    new_w = int(h * sin_a + w * cos_a)
-    new_h = int(h * cos_a + w * sin_a)
+    new_w = max(int(h * sin_a + w * cos_a), 1)
+    new_h = max(int(h * cos_a + w * sin_a), 1)
     M[0, 2] += new_w / 2 - c[0]
     M[1, 2] += new_h / 2 - c[1]
     return M, cv2.invertAffineTransform(M), new_w, new_h
@@ -330,7 +330,8 @@ def _build_graph(rotated: np.ndarray, step: int,
 
 
 def _boustrophedon_order(graph: _RCGGraph,
-                         start: _RCGNode | None = None) -> list[_RCGNode]:
+                         start: _RCGNode | None = None,
+                         turn_weight: float = 0.0) -> list[_RCGNode]:
     """分层贪心顺序：走完一层后，全局找最近未访问节点，跳到那一层继续走。"""
     rows: dict[int, list[_RCGNode]] = {}
     for n in graph.nodes:
@@ -348,10 +349,16 @@ def _boustrophedon_order(graph: _RCGGraph,
     while remaining:
         row = rows[current_ri]
         if not order:
-            order.extend(row)
+            if start is not None and start in row:
+                ci = row.index(start)
+                order.extend(row[ci:])
+                order.extend(row[:ci])
+            else:
+                order.extend(row)
         else:
             prev_last = order[-1]
-            closest = min(row, key=lambda n: _dist(prev_last, n))
+            prev_dir = _prev_direction(order)
+            closest = _best_entry(prev_last, row, prev_dir, turn_weight)
             ci = row.index(closest)
             order.extend(row[ci:])
             order.extend(reversed(row[:ci]))
@@ -365,6 +372,32 @@ def _boustrophedon_order(graph: _RCGGraph,
                          key=lambda ri: min(_dist(prev_last, n) for n in rows[ri]))
 
     return order
+
+
+def _prev_direction(order: list[_RCGNode]) -> float | None:
+    if len(order) < 2:
+        return None
+    dx = order[-1].x - order[-2].x
+    dy = order[-1].y - order[-2].y
+    if dx == 0.0 and dy == 0.0:
+        return None
+    return math.atan2(dy, dx)
+
+
+def _best_entry(prev_last: _RCGNode, candidates: list[_RCGNode],
+                prev_dir: float | None, turn_weight: float) -> _RCGNode:
+    if turn_weight <= 0 or prev_dir is None:
+        return min(candidates, key=lambda n: _dist(prev_last, n))
+
+    def _score(n):
+        d = _dist(prev_last, n)
+        a = math.atan2(n.y - prev_last.y, n.x - prev_last.x)
+        diff = abs(a - prev_dir)
+        if diff > math.pi:
+            diff = 2 * math.pi - diff
+        return d * (1.0 + (1.0 - math.cos(diff)) * turn_weight)
+
+    return min(candidates, key=_score)
 
 
 def _label_connected_components(graph: _RCGGraph):
@@ -670,8 +703,8 @@ class CStarRectCoveragePlanner:
     def _run(self, room_map: np.ndarray, res: float,
              start: tuple[float, float],
              origin: tuple[float, float] = (0.0, 0.0)) -> CoverageResult:
-        cov_w = float(getattr(self.cfg, "coverage_width_m", 0.5))
-        step = max(int(round(cov_w / res)), 2)
+        step_m = float(getattr(self.cfg, "step", 0.5))
+        step = max(int(round(step_m / res)), 2)
 
         binary = (room_map > 0).astype(np.uint8) * 255
         if getattr(self.cfg, "auto_rotate", True):
@@ -697,7 +730,20 @@ class CStarRectCoveragePlanner:
         if not graph.nodes:
             return CoverageResult.failure_result(1, "C*: 自由空间无节点")
 
-        _label_connected_components(graph)
+        sp = M_fwd @ np.array([start[0], start[1], 1.0])
+        sx, sy = float(sp[0]), float(sp[1])
+        free_rotated = rotated > 0
+        cur = None
+        if (0 <= int(round(sy)) < out_h and 0 <= int(round(sx)) < out_w and
+            free_rotated[int(round(sy)), int(round(sx))]):
+            nearest = min(graph.nodes, key=lambda n: _dist(n, _RCGNode(sx, sy, -1, 0, 0)))
+            col = nearest.col - 0.5 if nearest.left is None else (nearest.left.col + nearest.col) / 2.0
+            cur = _RCGNode(sx, sy, max(n.id for n in graph.nodes) + 1, nearest.row, col)
+            cur.family = nearest.family
+            graph.add_node(cur)
+
+        if cur is None:
+            cur = min(graph.nodes, key=lambda n: _dist(n, _RCGNode(sx, sy, -1, 0, 0)))
 
         if getattr(self.cfg, "debug_show_nodes_only", False):
             debug_node_coords = []
@@ -707,21 +753,20 @@ class CStarRectCoveragePlanner:
             return CoverageResult.success_result(
                 [], [], runtime_metadata={"debug_all_nodes": debug_node_coords})
 
-        sp = M_fwd @ np.array([start[0], start[1], 1.0])
-        cur = min(graph.nodes, key=lambda n: _dist(n, _RCGNode(sp[0], sp[1], -1, 0, 0)))
-
-        comps: dict[int, list[_RCGNode]] = {}
+        groups: dict[int, list[_RCGNode]] = {}
         for n in graph.nodes:
-            comps.setdefault(n.component, []).append(n)
-        comp_order = sorted(comps.keys(),
-                            key=lambda c: min(_dist(n, cur) for n in comps[c]))
+            groups.setdefault(n.family, []).append(n)
+        group_order = sorted(groups.keys(),
+                             key=lambda g: min(_dist(n, cur) for n in groups[g]))
         bridge_astar = getattr(self.cfg, "bridge_astar_enable", False)
+        turn_weight = float(getattr(self.cfg, "boustrophedon_turn_weight", 0.0))
         path_nodes: list[_RCGNode] = []
-        for ci in comp_order:
+        for gi in group_order:
             sg = _RCGGraph()
-            sg.nodes = comps[ci]
+            sg.nodes = groups[gi]
             part = _boustrophedon_order(sg,
-                                        start=cur if not path_nodes else None)
+                                        start=cur if not path_nodes else None,
+                                        turn_weight=turn_weight)
 
             if bridge_astar and path_nodes and part:
                 a, b = path_nodes[-1], part[0]
